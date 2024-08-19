@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "115036149089",
+    "project_id": "renal-app",
+    "storage_bucket": "renal-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:115036149089:android:82d681f3cff220f54aa120",
+        "android_client_info": {
+          "package_name": "com.syb.rent_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDW-5bhyRKZGryAWLcpXeCC5gDo0Wmameo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,48 @@
+{
+  "hiWelcomeBack": "היי, ברוכים הבאים",
+  "blah": "בלה",
+  "categories": "קטגוריות",
+  "bestSellersOf": "הכי נמכרים של {category}",
+  "@bestSellersOf": {
+    "placeholders": {
+      "category": {}
+    }
+  },
+  "home": "בית",
+  "user": "משתמש",
+  "myProfile": "הפרופיל שלי",
+  "profile": "פרופיל",
+  "wishlist": "רשימת המשאלות",
+  "myOrders": "ההזמנות שלי",
+  "notifications": "התראות",
+  "paymentMethod": "שיטת תשלום",
+  "settings": "הגדרות",
+  "help": "עזרה",
+  "privacyPolicy": "מדיניות פרטיות",
+  "logout": "התנתק",
+  "tools": "כלים",
+  "sport": "ספורט",
+  "camping": "מחנאות",
+  "kitchen": "מטבח",
+  "school": "בית ספר",
+  "events": "אירועים",
+  "travel": "טיולים",
+  "boats": "ספינות",
+  "games": "משחקים",
+  "pets": "חיות מחמד",
+  "welcome": "ברוכים הבאים",
+  "pleaseEnterYourDetailsToProceed": "אנא הכניסו את פרטיכם כדי להמשיך",
+  "usernameOrEmail": "שם משתמש או אימייל",
+  "password": "סיסמה",
+  "login": "התחברות",
+  "forgotPassword": "שכחת סיסמה?",
+  "createAccount": "צור משתמש",
+  "fullName": "שם מלא",
+  "email": "אימייל",
+  "mobileNumber": "מספר טלפון",
+  "dateOfBirth": "תאריך לידה",
+  "confirmPassword": "אישור סיסמה",
+  "byContinuingYouAgreeToTerms": "לחיצה על הרשמה מאשרת שקראת תנאי שימוש ומדיניות פרטיות",
+  "signUp": "הרשמה"
+
+}

@@ -1,0 +1,48 @@
+{
+  "hiWelcomeBack": "Hi, Welcome Back",
+  "blah": "blah",
+  "categories": "Categories",
+  "bestSellersOf": "Best Sellers Of {category}",
+  "@bestSellersOf": {
+    "placeholders": {
+      "category": {}
+    }
+  },
+  "home": "Home",
+  "user": "User",
+  "myProfile": "My Profile",
+  "profile": "Profile",
+  "wishlist": "Wishlist",
+  "myOrders": "My Orders",
+  "notifications": "Notifications",
+  "paymentMethod": "Payment Method",
+  "settings": "Settings",
+  "help": "Help",
+  "privacyPolicy": "Privacy Policy",
+  "logout": "Logout",
+  "tools": "Tools",
+  "sport": "Sport",
+  "camping": "Camping",
+  "kitchen": "Kitchen",
+  "school": "School",
+  "events": "Events",
+  "travel": "Travel",
+  "boats": "Boats",
+  "games": "Games",
+  "pets": "Pets",
+  "welcome": "Welcome",
+  "pleaseEnterYourDetailsToProceed": "Please Enter Your Details To Proceed",
+  "usernameOrEmail": "Username or Email",
+  "password": "Password",
+  "login": "Log In",
+  "forgotPassword": "Forgot Password?",
+  "createAccount": "Create Account",
+  "fullName": "Full name",
+  "email": "Email",
+  "mobileNumber": "Mobile Number",
+  "dateOfBirth": "Date of Birth",
+  "confirmPassword": "Confirm Password",
+  "byContinuingYouAgreeToTerms": "By continuing, you agree to Terms of Use and Privacy Policy",
+  "signUp": "Sign Up"
+
+}
