@@ -36,7 +36,7 @@ const kSmallBlackTextStyle = TextStyle(
 
 const kButtonTextStyle = TextStyle(
   color: kDarkYellow,
-  fontSize: 28,
+  fontSize: 24,
   fontWeight: FontWeight.bold,
 );
 
@@ -67,8 +67,14 @@ const kTextFieldDecoration = InputDecoration(
   hintStyle: kTextFieldHintTextStyle,
 );
 
-const kButtonStyle = ButtonStyle(
+const kDarkButtonStyle = ButtonStyle(
   backgroundColor: WidgetStatePropertyAll(kPastelYellow),
+  textStyle: WidgetStatePropertyAll(kButtonTextStyle),
+  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
+);
+
+const kLightButtonStyle = ButtonStyle(
+  backgroundColor: WidgetStatePropertyAll(kLightYellow),
   textStyle: WidgetStatePropertyAll(kButtonTextStyle),
   padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
 );

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
+import 'package:rent_app/widgets/TextAndTextField.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import 'home_screen.dart';
+import 'package:rent_app/widgets/navigateButton.dart';
 import 'main_screen.dart';
-import 'user_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
   static String id = 'registration_screen';
@@ -16,26 +16,51 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
+  final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
 
-  String name = '';
-  String email = '';
-  String phoneNumber = '';
-  String dateOfBirthday = '';
-  String password = '';
-  String confirmPassword = '';
+  late TextEditingController nameController;
+  late TextEditingController emailController;
+  late TextEditingController phoneNumberController;
+  late TextEditingController dateOfBirthController;
+  late TextEditingController passwordController;
+  late TextEditingController confirmPasswordController;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController();
+    emailController = TextEditingController();
+    phoneNumberController = TextEditingController();
+    dateOfBirthController = TextEditingController();
+    passwordController = TextEditingController();
+    confirmPasswordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    phoneNumberController.dispose();
+    dateOfBirthController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    var localization = AppLocalizations.of(context)!;
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.createAccount),
+          title: Text(localization.createAccount),
           titleTextStyle: kTopHeaderTextStyle,
           centerTitle: true,
           leading: IconButton(
             onPressed: () {
-              //Back
-              //
+              Navigator.pop(context);
             },
             icon: Icon(Icons.arrow_back),
           ),
@@ -46,104 +71,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  AppLocalizations.of(context)!.fullName,
-                  style: kBlackTextStyle,
-                ),
-                TextField(
-                  decoration: kTextFieldDecoration,
-                  onChanged: (nameValue) {
-                    setState(() {
-                      name = nameValue;
-                    });
-                  },
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  AppLocalizations.of(context)!.email,
-                  style: kBlackTextStyle,
-                ),
-                TextField(
-                  decoration: kTextFieldDecoration,
-                  onChanged: (emailValue) {
-                    setState(() {
-                      email = emailValue;
-                    });
-                  },
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-
-                Text(
-                  AppLocalizations.of(context)!.mobileNumber,
-                  style: kBlackTextStyle,
-                ),
-                TextField(
-                  decoration: kTextFieldDecoration,
-                  onChanged: (phoneNumberValue) {
-                    setState(() {
-                      phoneNumber = phoneNumberValue;
-                    });
-                  },
-                  keyboardType: TextInputType.phone,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-
-                Text(
-                  AppLocalizations.of(context)!.dateOfBirth,
-                  style: kBlackTextStyle,
-                ),
-                TextField(
-                  decoration: kTextFieldDecoration,
-                  onChanged: (dateValue) {
-                    setState(() {
-                      dateOfBirthday = dateValue;
-                    });
-                  },
-                  keyboardType: TextInputType.datetime,
-                ),
-                SizedBox(
-                  height: 20,
-                ),//Todo: change to date
-
-                Text(
-                  AppLocalizations.of(context)!.password,
-                  style: kBlackTextStyle,
-                ),
-                TextField(
-                  decoration: kTextFieldDecoration,
-                  onChanged: (passwordValue) {
-                    setState(() {
-                      password = passwordValue;
-                    });
-                  },
-                  obscureText: true,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-
-                Text(
-                  AppLocalizations.of(context)!.confirmPassword,
-                  style: kBlackTextStyle,
-                ),
-                TextField(
-                  decoration: kTextFieldDecoration,
-                  obscureText: true,
-                  onChanged: (passwordValue) {
-                    if (password != passwordValue) {
-                      //error TODO:
-                    } else {
-                      //ok TODO:
-                    }
-                  },
-                ),
+                TextAndTextField(title: localization.fullName, controller: nameController,),
+                TextAndTextField(title: localization.email, controller: emailController, keyboardType: TextInputType.emailAddress,),
+                TextAndTextField(title: localization.mobileNumber, controller: phoneNumberController, keyboardType: TextInputType.phone),
+                TextAndTextField(title: localization.dateOfBirth, controller: dateOfBirthController, keyboardType: TextInputType.datetime,),
+                TextAndTextField(title: localization.password, controller: passwordController, isObscureText: true,),
+                TextAndTextField(title: localization.confirmPassword, controller: confirmPasswordController, isObscureText: true,),
 
                 SizedBox(
                   height: 25,
@@ -151,33 +84,36 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 Align(
                     alignment: Alignment.center,
                     child: Text(
-                      AppLocalizations.of(context)!.byContinuingYouAgreeToTerms,
+                      localization.byContinuingYouAgreeToTerms,
                       style: kSmallBlackTextStyle,
                     )), //TODO
                 SizedBox(
                   height: 5,
                 ),
-                Align(
-                  alignment: Alignment.center,
-                  child: TextButton(
-                    child: Text(AppLocalizations.of(context)!.signUp),
-                    onPressed: () async {
-                      try {
-                        final newUser =
-                            await _auth.createUserWithEmailAndPassword(
-                                email: email, password: password);
-                        if (newUser != null) {
-                          Navigator.pushNamed(context, MainScreen.id);
-                        }
-                      } catch (e) {
-                        print(e);
+                Center(
+                  child: CustomButton(title: localization.signUp, buttonStyle: kDarkButtonStyle, onPress: () async {
+                    try {
+                      if(passwordController.text != confirmPasswordController.text){
+                        throw 'password confirmation failed'; //TODO
                       }
-                    },
-                    style: kButtonStyle,
-                  ),
+                      final newUser =
+                      await _auth.createUserWithEmailAndPassword(
+                          email: emailController.text, password: passwordController.text);
+                      if (newUser != null) {
+                        _firestore.collection('users').doc(newUser.user?.uid).set({
+                          'fullName': nameController.text,
+                          'phoneNumber': phoneNumberController.text,
+                          'DateofBirth': dateOfBirthController.text,
+                        });
+                        Navigator.of(context).pushNamedAndRemoveUntil(MainScreen.id,
+                              (Route<dynamic> route) => false, // This removes all previous routes
+                        );
+                      }
+                    } catch (e) {
+                      print(e);//TODO
+                    }
+                  },),
                 ),
-
-
                 //TODO: continue
               ],
             ),

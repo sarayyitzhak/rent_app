@@ -17,7 +17,9 @@ class ItemCard extends StatelessWidget {
           Expanded(
               child: Container(
                   child: Image.network(
-                      'https://images.pexels.com/photos/2820884/pexels-photo-2820884.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500'))),
+                      'https://images.pexels.com/photos/2820884/pexels-photo-2820884.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+                    fit: BoxFit.cover,))),
+
           Text(
             'Product Name',
             style: kHeadersTextStyle,
