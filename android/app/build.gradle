@@ -49,6 +49,10 @@ flutter {
 dependencies {
     implementation platform('com.google.firebase:firebase-bom:33.1.2')
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-appcheck")
+    implementation("com.google.firebase:firebase-appcheck-safetynet:16.1.2")
+    implementation("com.google.firebase:firebase-appcheck-debug")
 
 //    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
 }

@@ -1,69 +1,136 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+import 'package:rent_app/screens/welcome_screen.dart';
+import 'package:rent_app/services/user_services.dart';
 import 'package:flutter/material.dart';
+import 'package:rent_app/widgets/custom_app_bar.dart';
 import '../constants.dart';
+import '../main.dart';
 
-class UserScreen extends StatelessWidget {
-  final _auth = FirebaseAuth.instance;
+class UserScreen extends StatefulWidget {
   static String id = 'user_screen';
+
   UserScreen({super.key});
 
   @override
+  State<UserScreen> createState() => _UserScreenState();
+}
+
+class _UserScreenState extends State<UserScreen> {
+  final _auth = FirebaseAuth.instance;
+ //????
+  final _firestore = FirebaseFirestore.instance;
+
+  // late final userUid;
+  late Future<dynamic> userData;
+  var localization;
+
+  // late Future<Map<String, dynamic>> userData = userServices.getUserData(userUid!);
+  UserServices userServices = UserServices(FirebaseAuth.instance, FirebaseFirestore.instance);
+
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    userData = userServices.getUserData(userUid!);
+  }
+  @override
   Widget build(BuildContext context) {
+    var localization = AppLocalizations.of(context)!;
+
+    print('===================================');
+    print(userData.toString());
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text(AppLocalizations.of(context)!.myProfile, style: kTopHeaderTextStyle,),
+        appBar: CustomAppBar(
+          title: localization.myProfile,
+          isBackButton: false,
         ),
         body: Container(
-          padding: EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: EdgeInsets.all(30),
-                width: double.infinity,
-                child: const Column(
-                  children: [
-                    CircleAvatar(
-                      child: Icon(Icons.account_circle_rounded, size: 40,),
-                      backgroundColor: kLightYellow,
-                      // radius: 20,
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: EdgeInsets.all(30),
+              width: double.infinity,
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    child: Icon(
+                      Icons.account_circle_rounded,
+                      size: 40,
                     ),
-                    Text('Saray Yitzhak', style: kBlackHeaderTextStyle,), //TODO: add user details
-
-                  ],
-                ),
+                    backgroundColor: kLightYellow,
+                    // radius: 20,
+                  ),
+                  Text(
+                    'saray',
+                    style: kBlackHeaderTextStyle,
+                  ), //TODO: add user details
+                ],
               ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: kPastelYellow,
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(onPressed: () {}, child: iconAboveText(Icons.person_outline, AppLocalizations.of(context)!.profile)),
-                    TextButton(onPressed: () {}, child: iconAboveText(Icons.receipt_long_outlined, AppLocalizations.of(context)!.wishlist)),
-                    TextButton(onPressed: () {}, child: iconAboveText(Icons.shop_2_outlined, AppLocalizations.of(context)!.myOrders)),
-                  ],
-                ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: kPastelYellow,
               ),
-              SizedBox(
-                height: 20,
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                      onPressed: () {},
+                      child: iconAboveText(
+                          Icons.person_outline, localization.profile)),
+                  TextButton(
+                      onPressed: () {},
+                      child: iconAboveText(Icons.receipt_long_outlined,
+                          localization.wishlist)),
+                  TextButton(
+                      onPressed: () {},
+                      child: iconAboveText(
+                          Icons.shopping_cart_outlined, localization.myItems)),
+                ],
               ),
-              buildButton(label: AppLocalizations.of(context)!.notifications, icon: Icons.notifications_none, onPress: (){}),
-              buildButton(label: AppLocalizations.of(context)!.paymentMethod, icon: Icons.credit_card, onPress: (){}),
-              buildButton(label: AppLocalizations.of(context)!.settings, icon: Icons.settings_outlined, onPress: (){}),
-              buildButton(label: AppLocalizations.of(context)!.help, icon: Icons.help_outline, onPress: (){}),
-              buildButton(label: AppLocalizations.of(context)!.privacyPolicy, icon: Icons.key, onPress: (){}),
-              buildButton(label: AppLocalizations.of(context)!.logout, icon: Icons.logout, onPress: (){ _auth.signOut();}),
-            ],
-          ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            buildButton(
+                label: localization.notifications,
+                icon: Icons.notifications_none,
+                onPress: () {}),
+            buildButton(
+                label: localization.paymentMethod,
+                icon: Icons.credit_card,
+                onPress: () {}),
+            buildButton(
+                label: localization.settings,
+                icon: Icons.settings_outlined,
+                onPress: () {}),
+            buildButton(
+                label: localization.help,
+                icon: Icons.help_outline,
+                onPress: () {}),
+            buildButton(
+                label: localization.privacyPolicy,
+                icon: Icons.key,
+                onPress: () {}),
+            buildButton(
+                label: localization.logout,
+                icon: Icons.logout,
+                onPress: () {
+                  _auth.signOut();
+                  userUid = '';
+                  Navigator.of(context).pushNamedAndRemoveUntil(WelcomeScreen.id,
+                  (Route<dynamic> route) => false,);
+                }),
+          ],
         ),
+                  ),
       ),
     );
   }
@@ -80,15 +147,35 @@ Map<String, IconData> buttonsTextAndIcon = {
 
 //models
 
-TextButton buildButton({required String label, required IconData icon, required VoidCallback onPress}) {
-  return TextButton.icon(onPressed: onPress, label: Text(label, style: kBlackTextStyle,), icon: CircleAvatar(child: Icon(icon), backgroundColor: kPastelYellow,),);
+TextButton buildButton(
+    {required String label,
+    required IconData icon,
+    required VoidCallback onPress}) {
+  return TextButton.icon(
+    onPressed: onPress,
+    label: Text(
+      label,
+      style: kBlackTextStyle,
+    ),
+    icon: CircleAvatar(
+      child: Icon(icon),
+      backgroundColor: kPastelYellow,
+    ),
+  );
 }
 
-Column iconAboveText(IconData icon, String label){
+Column iconAboveText(IconData icon, String label) {
   return Column(
     children: [
-      Icon(icon, color: Colors.black54, size: 40,),
-      Text(label, style: kSmallBlackTextStyle,),
+      Icon(
+        icon,
+        color: Colors.black54,
+        size: 40,
+      ),
+      Text(
+        label,
+        style: kSmallBlackTextStyle,
+      ),
     ],
   );
 }

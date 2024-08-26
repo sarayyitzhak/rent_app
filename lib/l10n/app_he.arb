@@ -1,4 +1,5 @@
 {
+  "language" : "he",
   "hiWelcomeBack": "היי, ברוכים הבאים",
   "blah": "בלה",
   "categories": "קטגוריות",
@@ -14,6 +15,18 @@
   "profile": "פרופיל",
   "wishlist": "רשימת המשאלות",
   "myOrders": "ההזמנות שלי",
+  "myItems": "המוצרים שלי",
+  "addItem": "הוסף מוצר",
+  "noImageSelected": "לא נבחרה תמונה",
+  "pickImageFrom": "בחרו תמונה מ:",
+  "camera": "מצלמה",
+  "gallery": "גלריה",
+  "title": "כותרת",
+  "price": "מחיר",
+  "category": "קטגוריה",
+  "condition": "מצב",
+  "description": "תיאור",
+  "address": "כתובת",
   "notifications": "התראות",
   "paymentMethod": "שיטת תשלום",
   "settings": "הגדרות",
@@ -43,6 +56,8 @@
   "dateOfBirth": "תאריך לידה",
   "confirmPassword": "אישור סיסמה",
   "byContinuingYouAgreeToTerms": "לחיצה על הרשמה מאשרת שקראת תנאי שימוש ומדיניות פרטיות",
-  "signUp": "הרשמה"
+  "signUp": "הרשמה",
+  "setLocation": "בחר מיקום",
+  "searchLocation": "חפש מיקום"
 
 }

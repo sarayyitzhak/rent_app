@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
+import 'package:rent_app/screens/user_items_screen.dart';
 import 'home_screen.dart';
 import 'user_screen.dart';
 import 'login_screen.dart';
@@ -17,6 +18,7 @@ class _MainScreenState extends State<MainScreen> {
 
   static List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
+    UserItemsScreen(),
     // LoginScreen(),
     UserScreen(),
   ];
@@ -36,6 +38,10 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_bag),
+            label: 'My Items',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

@@ -23,7 +23,7 @@ class LogoScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset('images/handshake.png'),
+              Image.asset(kWhiteLogoImage),
               Text('BORRO', style: TextStyle(color: Colors.white, fontSize: 60,letterSpacing: 1, fontWeight: FontWeight.bold),),
             ],
           ),

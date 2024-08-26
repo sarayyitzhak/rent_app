@@ -3,6 +3,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+const kYellowLogoImage = 'images/handshake_yellow.png';
+const kWhiteLogoImage = 'images/handshake.png';
+const kGoogleApiKey = 'AIzaSyDHz-rjDLdurz6ugj5oXvG4DaeRfR0QXIA';
+const kMapTilerApiKey = '90JJ6DPLZWrrH2aGs87z';
+
+const kMapUrl = 'https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=$kMapTilerApiKey';
+
 const kTopHeaderTextStyle = TextStyle(
   color: kDarkYellow,
   fontSize: 28,
@@ -40,6 +47,7 @@ const kButtonTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
 );
 
+
 const kTextFieldHintTextStyle = TextStyle(
   color: kPastelYellow,
   fontSize: 14,
@@ -76,6 +84,14 @@ const kDarkButtonStyle = ButtonStyle(
 const kLightButtonStyle = ButtonStyle(
   backgroundColor: WidgetStatePropertyAll(kLightYellow),
   textStyle: WidgetStatePropertyAll(kButtonTextStyle),
+  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
+);
+
+const kAddressButtonStyle = ButtonStyle(
+  alignment: Alignment.topRight,
+  fixedSize: WidgetStatePropertyAll(Size(400, 20)),
+  backgroundColor: WidgetStatePropertyAll(kLightYellow),
+  textStyle: WidgetStatePropertyAll(kSmallBlackTextStyle),
   padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
 );
 

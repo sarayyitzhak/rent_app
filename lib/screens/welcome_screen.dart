@@ -3,7 +3,7 @@ import 'package:rent_app/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/screens/login_screen.dart';
 import 'package:rent_app/screens/registration_screen.dart';
-import 'package:rent_app/widgets/navigateButton.dart';
+import 'package:rent_app/widgets/custom_button.dart';
 
 
 class WelcomeScreen extends StatelessWidget {
@@ -21,7 +21,7 @@ class WelcomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset('images/handshake_yellow.png'),
+              Image.asset(kYellowLogoImage),
               Text(
                 'BORRO',
                 style: TextStyle(

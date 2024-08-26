@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
-import 'package:rent_app/widgets/TextAndTextField.dart';
+import 'package:rent_app/main.dart';
+import 'package:rent_app/widgets/custom_app_bar.dart';
+import 'package:rent_app/widgets/text_and_text_field.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:rent_app/widgets/navigateButton.dart';
+import 'package:rent_app/widgets/custom_button.dart';
 import 'main_screen.dart';
 
 
@@ -40,17 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
     var localization = AppLocalizations.of(context)!;
 
     return SafeArea(child: Scaffold(
-      appBar: AppBar(
-        title: Text(localization.login),
-        titleTextStyle: kTopHeaderTextStyle,
-        centerTitle: true,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back),
-        ),
-      ),
+      appBar: CustomAppBar(title: localization.login),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(30.0),
@@ -72,6 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   try{
                     final user = await _auth.signInWithEmailAndPassword(email: emailController.text, password: passwordController.text);
                     if(user != null){
+                      userUid = user.user?.uid;
                       Navigator.of(context).pushNamedAndRemoveUntil(MainScreen.id,
                             (Route<dynamic> route) => false, // This removes all previous routes
                       );

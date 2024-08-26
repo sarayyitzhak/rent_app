@@ -6,7 +6,8 @@ class TextAndTextField extends StatelessWidget {
   TextEditingController controller;
   TextInputType keyboardType;
   bool isObscureText;
-  TextAndTextField({super.key, required this.title, required this.controller, this.keyboardType = TextInputType.text, this.isObscureText = false});
+  Function()? onTapped;
+  TextAndTextField({super.key, required this.title, required this.controller, this.keyboardType = TextInputType.text, this.isObscureText = false, this.onTapped = null});
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +21,7 @@ class TextAndTextField extends StatelessWidget {
         TextField(
           decoration: kTextFieldDecoration,
           controller: controller,
+          onTap: onTapped,
           keyboardType: keyboardType,
           textInputAction: TextInputAction.next,
           obscureText: isObscureText,

@@ -1,4 +1,5 @@
 {
+  "language" : "en",
   "hiWelcomeBack": "Hi, Welcome Back",
   "blah": "blah",
   "categories": "Categories",
@@ -14,6 +15,18 @@
   "profile": "Profile",
   "wishlist": "Wishlist",
   "myOrders": "My Orders",
+  "myItems": "My Items",
+  "addItem": "Add Item",
+  "noImageSelected": "No image selected",
+  "pickImageFrom": "Pick an image from:",
+  "camera": "Camera",
+  "gallery": "Gallery",
+  "title": "Title",
+  "price": "Price",
+  "category": "Category",
+  "condition": "Condition",
+  "description": "Description",
+  "address": "Address",
   "notifications": "Notifications",
   "paymentMethod": "Payment Method",
   "settings": "Settings",
@@ -43,6 +56,8 @@
   "dateOfBirth": "Date of Birth",
   "confirmPassword": "Confirm Password",
   "byContinuingYouAgreeToTerms": "By continuing, you agree to Terms of Use and Privacy Policy",
-  "signUp": "Sign Up"
+  "signUp": "Sign Up",
+  "setLocation": "Set Location",
+  "searchLocation": "Search Location"
 
 }
