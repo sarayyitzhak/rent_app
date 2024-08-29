@@ -42,7 +42,7 @@ class _UserItemsScreenState extends State<UserItemsScreen> {
             children: [
               Expanded(
                 child: FutureBuilder(
-                    future: getItemsByField(userDetails, 'items'),
+                    future: getUserItemsByField(userDetails, 'items'),
                     initialData: [
                       Container(
                           height: 600,

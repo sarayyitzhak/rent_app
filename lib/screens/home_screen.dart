@@ -15,6 +15,7 @@ import 'package:rent_app/models/category.dart';
 
 import '../main.dart';
 import '../models/item.dart';
+import '../services/firebase_services.dart';
 
 class HomeScreen extends StatefulWidget {
   static String id = 'home_screen';
@@ -48,49 +49,6 @@ class _HomeScreenState extends State<HomeScreen> {
           }));
     }
     return categoriesCards;
-  }
-
-  // List<Widget> buildBestSellerList(ItemCategory category) {
-  //   List<Widget> items = ;
-  //
-  //
-  //
-  //
-  //   for (int i = 0; i < 10; i++) {
-  //     list.add(Padding(
-  //       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 3),
-  //       child: Container(color: kLightYellow,),//TODO: add itemCards
-  //     ));
-  //   }
-  //   return list;
-  // }
-
-  Future<List> getItems(ItemCategory category) async {
-    List<Item> items = await getItemsByCategory(category);
-    return getItemCards(items);
-  }
-
-  List<ItemCard> getItemCards(List<Item> items) {
-    List<ItemCard> itemCards = [];
-    for (Item item in items) {
-      itemCards.add(ItemCard(item: item));
-    }
-    return itemCards;
-  }
-
-  Future<List<Item>> getItemsByCategory(ItemCategory category) async {
-    List<Item> items = [];
-    var getItems = await _firestore.collection('items').where(
-        'categories', arrayContains: category.idx).get();
-    var itemsDoc = getItems.docs;
-    if (itemsDoc.isNotEmpty) {
-      for (var itemDoc in itemsDoc) {
-        Map<String, dynamic>? itemData = itemDoc.data();
-        var item = mapAsItem(itemData, itemDoc.reference);
-        items.add(item);
-      }
-    }
-    return items;
   }
 
   @override
@@ -142,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Expanded(
                 child: FutureBuilder(
-                    future: getItems(_selectedCategory),
+                    future: getItemsFilterByCategory(_firestore, _selectedCategory),
                     initialData: [Container(
                         height: 600,
                         child: GridView.count(

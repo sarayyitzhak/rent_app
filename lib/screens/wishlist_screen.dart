@@ -23,7 +23,7 @@ class WishlistScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: FutureBuilder(
-                    future: getItemsByField(userDetails, 'wishlist'),
+                    future: getUserItemsByField(userDetails, 'wishlist'),
                     builder: (context, snapshot) {
                       if (snapshot.hasData &&
                           snapshot.data != null &&
