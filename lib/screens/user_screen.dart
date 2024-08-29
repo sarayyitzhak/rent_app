@@ -2,11 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/screens/welcome_screen.dart';
+import 'package:rent_app/screens/wishlist_screen.dart';
 import 'package:rent_app/services/user_services.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import '../constants.dart';
 import '../main.dart';
+import '../models/user.dart';
 
 class UserScreen extends StatefulWidget {
   static String id = 'user_screen';
@@ -27,20 +29,18 @@ class _UserScreenState extends State<UserScreen> {
   var localization;
 
   // late Future<Map<String, dynamic>> userData = userServices.getUserData(userUid!);
-  UserServices userServices = UserServices(FirebaseAuth.instance, FirebaseFirestore.instance);
+  // UserServices userServices = UserServices(FirebaseAuth.instance, FirebaseFirestore.instance);
 
-@override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    userData = userServices.getUserData(userUid!);
+  void getUser() async {
+    userDetails = await getUserDetailsByUid(userUid!);
   }
+
+
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
+    // getUser();
 
-    print('===================================');
-    print(userData.toString());
+    var localization = AppLocalizations.of(context)!;
     return SafeArea(
       child: Scaffold(
         appBar: CustomAppBar(
@@ -66,9 +66,13 @@ class _UserScreenState extends State<UserScreen> {
                     // radius: 20,
                   ),
                   Text(
-                    'saray',
+                    userDetails.name,
                     style: kBlackHeaderTextStyle,
                   ), //TODO: add user details
+                  Text(
+                    userDetails.email,
+                    style: kBlackTextStyle,
+                  ),
                 ],
               ),
             ),
@@ -86,7 +90,9 @@ class _UserScreenState extends State<UserScreen> {
                       child: iconAboveText(
                           Icons.person_outline, localization.profile)),
                   TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, WishlistScreen.id);
+                      },
                       child: iconAboveText(Icons.receipt_long_outlined,
                           localization.wishlist)),
                   TextButton(

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/models/category.dart';
+import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/screens/user_items_screen.dart';
 import 'package:rent_app/services/address_services.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
@@ -31,7 +32,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
   final _auth = FirebaseAuth.instance;
   final storageRef = FirebaseStorage.instance.ref();
   File? _image;
-  var userUid = 'O3mgqVZxaVUwkquZSW4Yg0zfeJM2'; // TODO: delete
 
 
 
@@ -39,7 +39,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   late TextEditingController priceController;
   late TextEditingController descriptionController;
   late TextEditingController addressController;
-  late String conditionValue;
+  late Condition conditionValue;
   late AddressInfo addressValue =
       AddressInfo(latitude: 0, longitude: 0, addressData: {'city': '', 'road': ''});
   var _selectedCategories = [];
@@ -119,7 +119,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await ImagePicker().pickImage(source: source);
+    final pickedFile = await ImagePicker().pickImage(source: source, imageQuality: 15);
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
@@ -278,21 +278,24 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: DropdownMenu(
                       width: double.infinity,
-                      onSelected: (String? value) {
+                      onSelected: (value) {
                         setState(() {
                           conditionValue = value!;
                         });
                       },
-                      dropdownMenuEntries: const [
-                        DropdownMenuEntry<String>(value: 'new', label: 'new'),
-                        DropdownMenuEntry<String>(
-                            value: 'used as new', label: 'used as new'),
-                        DropdownMenuEntry<String>(
-                            value: 'used in good shape',
-                            label: 'used in good shape'),
-                        DropdownMenuEntry<String>(
-                            value: 'used in medium shape',
-                            label: 'used in medium shape'),
+                      dropdownMenuEntries: [
+                        DropdownMenuEntry<Condition>(
+                            value: Condition.NEW,
+                            label: Condition.NEW.title),
+                        DropdownMenuEntry<Condition>(
+                            value: Condition.USED_AS_NEW,
+                            label: Condition.USED_AS_NEW.title),
+                        DropdownMenuEntry<Condition>(
+                            value: Condition.USED_IN_GOOD_SHAPE,
+                            label: Condition.USED_IN_GOOD_SHAPE.title),
+                        DropdownMenuEntry<Condition>(
+                            value: Condition.USED_IN_MEDIUM_SHAPE,
+                            label: Condition.USED_IN_MEDIUM_SHAPE.title),
                       ],
                       inputDecorationTheme: InputDecorationTheme(
                         fillColor: kLightYellow,
@@ -337,25 +340,23 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 ),
 
                 CustomButton(title: localization.addItem, onPress: () async {
-                  Item newItem = Item(userUid: userUid.toString(), imageRef: '', title: titleController.text, price: double.parse(priceController.text), location: addressValue, description: descriptionController.text, condition: conditionValue, categories: _selectedCategories);
                   var itemDoc = _firestore.collection('items').doc();
                   final itemRef = storageRef.child(itemDoc.id);
                   UploadTask uploadTask = itemRef.putFile(_image!);
                   TaskSnapshot taskSnapshot = await uploadTask;
                   var imageDownloadUrl = await taskSnapshot.ref.getDownloadURL();
 
+
+                  Item newItem = Item(itemReference: itemDoc, contactUser: userDetails.userReference, imageRef: '', title: titleController.text, price: double.parse(priceController.text), location: addressValue, description: descriptionController.text, condition: conditionValue, categories: _selectedCategories);
                   newItem.imageRef = imageDownloadUrl;
                   itemDoc.set(newItem.itemAsMap());
-                  
-                  var userDoc = _firestore.collection('users').doc(userUid);
-                  var userGet = await userDoc.get();
+
+                  // var userDoc = _firestore.collection('users').doc(userUid);
+                  var userGet = await userDetails.userReference.get();
                   if (userGet.exists) {
-                    Map<String, dynamic> userData = userGet.data()!;
-                    var userItems = userData['userItems'];
-                    if(userItems == null){
-                      userDoc.update({'userItems': []});
-                    }
-                    userDoc.update({'userItems': FieldValue.arrayUnion([itemDoc.id])});
+                    Map<String, dynamic> userData = userGet.data()! as Map<String, dynamic>;
+                    var userItems = userData['items'];
+                    userDetails.userReference.update({'items': FieldValue.arrayUnion([itemDoc])});
                   } else {
                     //problem
                   }

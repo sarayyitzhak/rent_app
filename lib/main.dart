@@ -1,5 +1,7 @@
 import 'package:rent_app/screens/add_item_screen.dart';
+import 'package:rent_app/screens/item_screen.dart';
 import 'package:rent_app/screens/user_items_screen.dart';
+import 'package:rent_app/screens/wishlist_screen.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:rent_app/services/user_services.dart';
@@ -10,6 +12,7 @@ import 'package:rent_app/constants.dart';
 import 'package:rent_app/screens/login_screen.dart';
 import 'package:rent_app/screens/logo_screen.dart';
 import 'package:rent_app/screens/welcome_screen.dart';
+import 'models/user.dart';
 import 'screens/home_screen.dart';
 import 'screens/user_screen.dart';
 import 'screens/registration_screen.dart';
@@ -19,6 +22,7 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 import 'firebase_options.dart';
 
 String? userUid;
+late UserDetails userDetails;
 
 void main() async {
   try {
@@ -88,7 +92,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       initialRoute: checkUserConnected(),
-      // initialRoute: WelcomeScreen.id,
+      // initialRoute: ItemScreen.id,
       routes: {
         LogoScreen.id: (context) => LogoScreen(),
         MainScreen.id: (context) => MainScreen(),
@@ -99,6 +103,8 @@ class MyApp extends StatelessWidget {
         UserScreen.id: (context) => UserScreen(),
         UserItemsScreen.id: (context) => UserItemsScreen(),
         AddItemScreen.id: (context) => AddItemScreen(),
+        ItemScreen.id: (context) => ItemScreen(),
+        WishlistScreen.id: (context) => WishlistScreen(),
       },
       localizationsDelegates: [
         AppLocalizations.delegate,

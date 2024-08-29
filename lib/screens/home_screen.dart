@@ -13,6 +13,7 @@ import 'package:rent_app/widgets/item_card.dart';
 import '../constants.dart';
 import 'package:rent_app/models/category.dart';
 
+import '../main.dart';
 import '../models/item.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -80,12 +81,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<List<Item>> getItemsByCategory(ItemCategory category) async {
     List<Item> items = [];
     var getItems = await _firestore.collection('items').where(
-        'categories', arrayContains: category.title).get();
+        'categories', arrayContains: category.idx).get();
     var itemsDoc = getItems.docs;
     if (itemsDoc.isNotEmpty) {
       for (var itemDoc in itemsDoc) {
         Map<String, dynamic>? itemData = itemDoc.data();
-        var item = mapAsItem(itemData);
+        var item = mapAsItem(itemData, itemDoc.reference);
         items.add(item);
       }
     }
@@ -99,6 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Padding(
           padding: EdgeInsets.all(20.0),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
@@ -144,6 +146,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     initialData: [Container(
                         height: 600,
                         child: GridView.count(
+                            // childAspectRatio: MediaQuery.of(context).size.width /
+                            //     (MediaQuery.of(context).size.height / 4),
                             crossAxisCount: 2,
                             crossAxisSpacing: 5,
                             children: [

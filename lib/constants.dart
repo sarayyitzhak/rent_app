@@ -100,3 +100,4 @@ const kLightYellow = Color(0xFFFAF0E6);
 const kPastelYellow = Color(0xFFFFDB9D);
 const kActiveButtonColor = Color(0xFFFFD181);
 const kBlackColor = Color(0xFF000000);
+const kWhiteColor = Color(0xFFFFFFFF);

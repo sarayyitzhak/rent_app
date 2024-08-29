@@ -58,6 +58,11 @@
   "byContinuingYouAgreeToTerms": "לחיצה על הרשמה מאשרת שקראת תנאי שימוש ומדיניות פרטיות",
   "signUp": "הרשמה",
   "setLocation": "בחר מיקום",
-  "searchLocation": "חפש מיקום"
+  "searchLocation": "חפש מיקום",
+  "usersReviews": "ביקורות",
+  "rentItem": "השכר",
+  "item": "מוצר",
+  "contactUserDetails": "פרטי איש קשר"
+
 
 }

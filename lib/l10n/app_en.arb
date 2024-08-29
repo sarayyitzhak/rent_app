@@ -58,6 +58,10 @@
   "byContinuingYouAgreeToTerms": "By continuing, you agree to Terms of Use and Privacy Policy",
   "signUp": "Sign Up",
   "setLocation": "Set Location",
-  "searchLocation": "Search Location"
+  "searchLocation": "Search Location",
+  "usersReviews": "Users reviews",
+  "rentItem": "Rent",
+  "item": "Item",
+  "contactUserDetails": "Contact User Details"
 
 }

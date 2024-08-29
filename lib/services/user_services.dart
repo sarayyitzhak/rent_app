@@ -6,7 +6,8 @@ class UserServices{
   UserServices(this._auth, this._firestore);
 
   Future<dynamic> getUserData(String userUid) async{
-    return await _firestore.collection('users').doc(userUid).get();
+    var userDoc =  await _firestore.collection('users').doc(userUid).get();
+    return userDoc.data();
   }
 
   User? getCurrentUser() {
