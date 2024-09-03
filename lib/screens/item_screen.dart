@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/models/user.dart';
-import 'package:rent_app/widgets/chat_icon.dart';
+import 'package:rent_app/widgets/chat_icon_button.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/custom_button.dart';
-import 'package:rent_app/widgets/wishlist_icon.dart';
+import 'package:rent_app/widgets/wishlist_icon_button.dart';
 
 import '../services/firebase_services.dart';
 
@@ -95,7 +95,7 @@ class ItemScreen extends StatelessWidget {
                         SizedBox(
                           width: 5,
                         ),
-                        ChatIconButton(),
+                        ChatIconButton(item: item,),
                       ],
                     )
                   ],

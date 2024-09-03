@@ -2,19 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:rent_app/screens/user_screen.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 import 'package:rent_app/widgets/reusable_card.dart';
-import 'package:rent_app/widgets/item_card.dart';
 import '../constants.dart';
 import 'package:rent_app/models/category.dart';
-
-import '../main.dart';
-import '../models/item.dart';
 import '../services/firebase_services.dart';
 
 class HomeScreen extends StatefulWidget {

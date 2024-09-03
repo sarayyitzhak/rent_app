@@ -115,7 +115,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       if (newUser != null) {
                         userUid = newUser.user?.uid;
                         DocumentReference userReference = _firestore.collection('users').doc(userUid);
-                        userDetails = UserDetails(userReference: userReference, name: nameController.text, email: emailController.text, phoneNumber: int.parse(phoneNumberController.text), items: [], wishlist: []);
+                        userDetails = UserDetails(userReference: userReference, name: nameController.text, email: emailController.text, phoneNumber: int.parse(phoneNumberController.text), items: [], wishlist: [], chats: []);
                         userReference.set(userDetails.userAsMap());
                         Navigator.of(context).pushNamedAndRemoveUntil(MainScreen.id,
                               (Route<dynamic> route) => false, // This removes all previous routes

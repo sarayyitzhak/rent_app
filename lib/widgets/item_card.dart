@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/screens/item_screen.dart';
-import 'package:rent_app/widgets/chat_icon.dart';
-import 'package:rent_app/widgets/wishlist_icon.dart';
+import 'package:rent_app/widgets/chat_icon_button.dart';
+import 'package:rent_app/widgets/wishlist_icon_button.dart';
 import '../constants.dart';
 import '../models/item.dart';
 
@@ -16,10 +16,12 @@ class IsInWishlist{
 class ItemCard extends StatelessWidget {
   final Item item;
   ItemCard({super.key, required this.item});
+  late bool isMine;
 
   @override
   Widget build(BuildContext context) {
     IsInWishlist isInWishlist = IsInWishlist(userDetails.wishlist.contains(item.itemReference));
+    isMine = item.contactUser == userDetails.userReference;
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: GestureDetector(
@@ -70,11 +72,13 @@ class ItemCard extends StatelessWidget {
                     '${item.price}₪',
                     style: kHeadersTextStyle,
                   ), //price
-                  Row(
-                    children: [
-                      WishlistIconButton(item: item,),
-                      ChatIconButton(),
-                    ],
+                  Container(
+                    child: isMine ? null : Row(
+                      children: [
+                        WishlistIconButton(item: item,),
+                        ChatIconButton(item: item,),
+                      ],
+                    ),
                   )
                 ],
               )

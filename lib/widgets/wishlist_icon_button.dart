@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/screens/item_screen.dart';
-import 'package:rent_app/widgets/wishlist_icon.dart';
+import 'package:rent_app/widgets/wishlist_icon_button.dart';
 import '../constants.dart';
 import '../models/item.dart';
-
+import 'package:rent_app/main.dart';
 
 class WishlistIconButton extends StatefulWidget {
   Item item;

@@ -13,7 +13,8 @@ class UserDetails{
   // Timestamp dateOfBirth;
   List items;
   List wishlist;
-  UserDetails({required this.userReference, required this.name, required this.email, required this.phoneNumber, required this.items, required this.wishlist});
+  List chats;
+  UserDetails({required this.userReference, required this.name, required this.email, required this.phoneNumber, required this.items, required this.wishlist, required this.chats});
 
 
   Map<String, dynamic> userAsMap(){
@@ -22,7 +23,8 @@ class UserDetails{
       'email': email,
       'phoneNumber': phoneNumber,
       'items': items,
-      'wishlist': wishlist
+      'wishlist': wishlist,
+      'chats': chats
     };
   }
 }
@@ -30,7 +32,7 @@ class UserDetails{
 UserDetails mapAsUser(Map<String, dynamic> map){
   final _firestore = FirebaseFirestore.instance;
   DocumentReference userReference = _firestore.collection('users').doc(userUid);
-  return UserDetails(userReference: userReference, name: map['fullName'], email: map['email'], phoneNumber: map['phoneNumber'], items: map['items'], wishlist: map['wishlist']);
+  return UserDetails(userReference: userReference, name: map['fullName'], email: map['email'], phoneNumber: map['phoneNumber'], items: map['items'], wishlist: map['wishlist'], chats: map['chats']);
 }
 
 Future<UserDetails> getUserDetailsByUid(String uid) async {

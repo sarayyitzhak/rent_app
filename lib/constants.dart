@@ -95,9 +95,40 @@ const kAddressButtonStyle = ButtonStyle(
   padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
 );
 
+const kMessageContainerDecoration = BoxDecoration(
+  border: Border(
+    top: BorderSide(color: kActiveButtonColor, width: 2.0),
+  ),
+);
+
+const kMessageTextFieldDecoration = InputDecoration(
+  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+  hintText: 'Type your message here...',
+  border: InputBorder.none,
+);
+
+const kSendButtonTextStyle = TextStyle(
+  color: kActiveButtonColor,
+  fontWeight: FontWeight.bold,
+  fontSize: 18.0,
+);
+
 const kDarkYellow = Color(0xFFFFC30B);
 const kLightYellow = Color(0xFFFAF0E6);
 const kPastelYellow = Color(0xFFFFDB9D);
 const kActiveButtonColor = Color(0xFFFFD181);
 const kBlackColor = Color(0xFF000000);
 const kWhiteColor = Color(0xFFFFFFFF);
+const kBlue = Colors.lightBlueAccent;
+
+const kUserSideBubbleEn = BorderRadius.only(
+    topLeft: Radius.circular(30),
+    bottomLeft: Radius.circular(30),
+    bottomRight: Radius.circular(30),
+);
+
+const kContactSideBubbleEn = BorderRadius.only(
+    topRight: Radius.circular(30),
+    bottomLeft: Radius.circular(30),
+    bottomRight: Radius.circular(30),
+);

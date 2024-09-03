@@ -1,0 +1,113 @@
+import 'dart:ffi';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
+import 'package:provider/provider.dart';
+import 'package:rent_app/db/chatDB.dart';
+import 'package:rent_app/main.dart';
+import 'package:rent_app/screens/chat_screen.dart';
+import 'package:rent_app/screens/item_screen.dart';
+import 'package:rent_app/widgets/wishlist_icon_button.dart';
+import '../constants.dart';
+
+import '../models/item.dart';
+
+class ChatIconButton extends StatefulWidget {
+  Item item;
+  ChatIconButton({super.key, required this.item});
+
+  @override
+  State<ChatIconButton> createState() => _ChatIconButtonState();
+}
+
+class _ChatIconButtonState extends State<ChatIconButton> {
+  final _firestore = FirebaseFirestore.instance;
+  late List<DocumentReference> participants;
+
+  void goToChat(Chat? chat) async {
+    Navigator.pushNamed(context, ChatScreen.id, arguments: ChatScreenArguments(chat!));
+  }
+
+  Future<Chat> createNewChat(Isar isar) async {
+    DocumentReference chatDoc = _firestore.collection('chats').doc();
+    userDetails.userReference.update({
+      'chats': FieldValue.arrayUnion([chatDoc])
+    });
+    widget.item.contactUser.update({
+      'chats': FieldValue.arrayUnion([chatDoc])
+    });
+    userDetails.chats.add(chatDoc);
+    chatDoc.set({
+      'participants': [userDetails.userReference, widget.item.contactUser],
+    });
+    chatDoc.collection('messages').add({//do it after first message is sent
+      'sender': 1,
+      'text': 'hi how are you',
+      'sentAt': Timestamp.now(),
+      'read': true,
+    });
+    Chat chat = Chat()..participants = participants.map((p) => p.path).toList()..cloudKey = chatDoc.id;
+    await isar.writeTxn(() async {
+      await isar.chats.put(chat);
+    });
+    return chat;
+  }
+
+  Future<Chat?> getChat(Isar isar) async {
+
+
+     var c = await isar.chats.filter().participantsElementContains(userDetails.userReference.path).participantsElementContains(widget.item.contactUser.path).findFirst();
+     return c;
+
+    // List participants = await isar.chats.filter().participantsElementContains(widget.item.contactUser.id).findAll();//user is in the participants
+    // if(participants.isNotEmpty){
+      //go to chat
+    // } else {
+      //create chat
+    // }
+    // CollectionReference chatsRef = _firestore.collection('chats'); // maybe better somehow
+    // var chat = chatsRef.where('participants', arrayContains: [userDetails.userReference, widget.item.contactUser]);
+    //
+    // for(DocumentReference chat in userDetails.chats){
+    //   var chatDoc = await chat.get();
+    //   var chatData = chatDoc.data() as Map<String, dynamic>;
+    //   participants = chatData['participants'];
+    //   if(participants.contains(widget.item.contactUser)){
+    //     return chatData;
+    //   }
+    // }
+    // return null;
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isar = Provider.of<Isar>(context);
+
+    return IconButton(
+        padding: EdgeInsets.all(3),
+        constraints: BoxConstraints(),
+        style: const ButtonStyle(
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap, // the '2023' part
+        ),
+        onPressed: () async {
+          Chat? chat = await getChat(isar);
+          Chat newChat;
+          if(chat == null) {
+            //create chat
+            chat = await createNewChat(isar);
+          }
+          goToChat(chat);
+        },
+        icon: CircleAvatar(
+          child: Icon(
+            Icons.chat_bubble,
+            size: 15,
+            color: kWhiteColor,
+          ),
+          radius: 15,
+          backgroundColor: kActiveButtonColor,
+        ));
+  }
+}
