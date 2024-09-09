@@ -10,6 +10,8 @@ const kMapTilerApiKey = '90JJ6DPLZWrrH2aGs87z';
 
 const kMapUrl = 'https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=$kMapTilerApiKey';
 
+const kIconRadius = 12.0;
+
 const kTopHeaderTextStyle = TextStyle(
   color: kDarkYellow,
   fontSize: 28,

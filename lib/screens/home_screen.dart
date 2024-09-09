@@ -1,13 +1,17 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rent_app/models/user.dart';
 import 'package:rent_app/widgets/reusable_card.dart';
+import '../add_users.dart';
 import '../constants.dart';
 import 'package:rent_app/models/category.dart';
 import '../services/firebase_services.dart';
+import '../widgets/scrollable_item_grid.dart';
 
 class HomeScreen extends StatefulWidget {
   static String id = 'home_screen';
@@ -43,94 +47,61 @@ class _HomeScreenState extends State<HomeScreen> {
     return categoriesCards;
   }
 
+
+
   @override
   Widget build(BuildContext context) {
+    // create10Users();
+    // return Text('finished');
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 18.0),
-                child: Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 18.0),
+                    child: Row(
                       children: [
-                        Text(
-                          AppLocalizations.of(context)!.hiWelcomeBack,
-                          style: kTopHeaderTextStyle,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.hiWelcomeBack,
+                              style: kTopHeaderTextStyle,
+                            ),
+                            Text('מה תרצו לחפש?', style: kBlackTextStyle,),
+                          ],
                         ),
-                        Text(AppLocalizations.of(context)!.blah),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.categories,
+                    style: kHeadersTextStyle,
+                  ),
+                  Container(
+                    height: 85,
+                    child: ListView(
+                      children: buildCategoriesList(),
+                      scrollDirection: Axis.horizontal,
+                    ),
+                  ),
+                  Text(
+                    // 'Best Sellers of ${categories[_selectedCategoryIdx].title}',
+                    AppLocalizations.of(context)!.bestSellersOf(
+                        _selectedCategory.title), //TODO: check how to do it with dynamic string
+                    style: kHeadersTextStyle,
+                  ),
+                ],
               ),
-              Text(
-                AppLocalizations.of(context)!.categories,
-                style: kHeadersTextStyle,
-              ),
-              Container(
-                height: 85,
-                child: ListView(
-                  children: buildCategoriesList(),
-                  scrollDirection: Axis.horizontal,
-                ),
-              ),
-              Text(
-                // 'Best Sellers of ${categories[_selectedCategoryIdx].title}',
-                AppLocalizations.of(context)!.bestSellersOf(
-                    _selectedCategory.title), //TODO: check how to do it with dynamic string
-                style: kHeadersTextStyle,
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Expanded(
-                child: FutureBuilder(
-                    future: getItemsFilterByCategory(_firestore, _selectedCategory),
-                    initialData: [Container(
-                        height: 600,
-                        child: GridView.count(
-                            // childAspectRatio: MediaQuery.of(context).size.width /
-                            //     (MediaQuery.of(context).size.height / 4),
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 5,
-                            children: [
-                              LoadingAnimationWidget.waveDots(
-                                  color: Colors.white, size: 10)]))],
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData &&
-                          snapshot.data != null &&
-                          snapshot.data!.isNotEmpty) {
-                        List? itemCards = snapshot.data;
-                        return GridView.count(
-
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 1,
-                          children: itemCards as List<Widget>,
-                        );
-                      } else {
-                        return Container(
-                          height: 600,
-                          child: GridView.count(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 15,
-                            children: [
-                              LoadingAnimationWidget.waveDots(
-                                  color: Colors.white, size: 10)
-                            ],
-                          ),
-                        );
-                      }
-                    }),
-              ),
-            ],
-          ),
+            ),
+            Expanded(child: ScrollableItemGrid(future: getItemsFilterByCategory(_firestore, _selectedCategory),)),
+          ],
         ),
       ),
     );

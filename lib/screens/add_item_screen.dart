@@ -43,7 +43,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   late AddressInfo addressValue =
       AddressInfo(latitude: 0, longitude: 0, addressData: {'city': '', 'road': ''});
   var _selectedCategories = [];
-  late List<dynamic> categories;
+  // late List<dynamic> categories;
   final List<MultiSelectItem<ItemCategory>> _categoryItems = ItemCategory.values
       .map((category) => MultiSelectItem<ItemCategory>(category, category.toString().split('.').last))
       .toList();
@@ -216,6 +216,52 @@ class _AddItemScreenState extends State<AddItemScreen> {
     super.dispose();
   }
 
+  Future<void> onAddItemButtonPressed() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent user from closing the dialog
+      builder: (context) {
+        return Center(
+          child: CircularProgressIndicator(color: kPastelYellow,),
+        );
+      },
+    );
+
+
+    var itemDoc = _firestore.collection('items').doc();
+    final itemRef = storageRef.child(itemDoc.id);
+    UploadTask uploadTask = itemRef.putFile(_image!);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    var imageDownloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+    Item newItem = Item(
+        itemReference: itemDoc,
+        contactUser: userDetails.userReference,
+        imageRef: '',
+        title: titleController.text,
+        price: int.parse(priceController.text),
+        location: addressValue,
+        description: descriptionController.text,
+        condition: conditionValue,
+        categories: _selectedCategories,
+        createdAt: Timestamp.now()
+    );
+    newItem.imageRef = imageDownloadUrl;
+    itemDoc.set(newItem.itemAsMap());
+
+    // var userDoc = _firestore.collection('users').doc(userUid);
+    var userGet = await userDetails.userReference.get();
+    if (userGet.exists) {
+      Map<String, dynamic> userData = userGet.data()! as Map<String, dynamic>;
+      var userItems = userData['items'];
+      userDetails.userReference.update({'items': FieldValue.arrayUnion([itemDoc])});
+    } else {
+      //problem
+    }
+    Navigator.pop(context);
+    Navigator.popAndPushNamed(context, UserItemsScreen.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     var localization = AppLocalizations.of(context)!;
@@ -339,30 +385,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   height: 15,
                 ),
 
-                CustomButton(title: localization.addItem, onPress: () async {
-                  var itemDoc = _firestore.collection('items').doc();
-                  final itemRef = storageRef.child(itemDoc.id);
-                  UploadTask uploadTask = itemRef.putFile(_image!);
-                  TaskSnapshot taskSnapshot = await uploadTask;
-                  var imageDownloadUrl = await taskSnapshot.ref.getDownloadURL();
-
-
-                  Item newItem = Item(itemReference: itemDoc, contactUser: userDetails.userReference, imageRef: '', title: titleController.text, price: double.parse(priceController.text), location: addressValue, description: descriptionController.text, condition: conditionValue, categories: _selectedCategories);
-                  newItem.imageRef = imageDownloadUrl;
-                  itemDoc.set(newItem.itemAsMap());
-
-                  // var userDoc = _firestore.collection('users').doc(userUid);
-                  var userGet = await userDetails.userReference.get();
-                  if (userGet.exists) {
-                    Map<String, dynamic> userData = userGet.data()! as Map<String, dynamic>;
-                    var userItems = userData['items'];
-                    userDetails.userReference.update({'items': FieldValue.arrayUnion([itemDoc])});
-                  } else {
-                    //problem
-                  }
-                  Navigator.popAndPushNamed(context, UserItemsScreen.id);
-                  // Navigator.pop(context);
-                })
+                CustomButton(title: localization.addItem, onPress: onAddItemButtonPressed),
               ],
             ),
           ),

@@ -8,7 +8,7 @@ enum ItemCategory {
   SCHOOL('School', Icons.school, 4),
   EVENTS('Events', Icons.groups, 5),
   TRAVEL('Travel', Icons.airplanemode_active, 6),
-  BOATS('Boats', Icons.directions_boat, 7),
+  BOATS('Electronics', Icons.electric_bolt_rounded, 7),
   GAMES('Games', Icons.extension, 8),
   PETS('Pets', Icons.pets, 9);
 

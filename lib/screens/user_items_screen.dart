@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:rent_app/widgets/custom_button.dart';
 import 'package:rent_app/widgets/item_card.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:rent_app/widgets/scrollable_item_grid.dart';
 import '../constants.dart';
 import 'package:rent_app/widgets/custom_button.dart';
 import '../main.dart';
@@ -35,60 +36,20 @@ class _UserItemsScreenState extends State<UserItemsScreen> {
     return SafeArea(
         child: Scaffold(
       appBar: CustomAppBar(title: localization.myItems, isBackButton: false),
-      body: Container(
-          padding: EdgeInsets.all(10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: FutureBuilder(
-                    future: getUserItemsByField(userDetails, 'items'),
-                    initialData: [
-                      Container(
-                          height: 600,
-                          child: GridView.count(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 5,
-                              children: [
-                                LoadingAnimationWidget.waveDots(
-                                    color: Colors.white, size: 10)
-                              ]))
-                    ],
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData &&
-                          snapshot.data != null &&
-                          snapshot.data!.isNotEmpty) {
-                        List? itemCards = snapshot.data;
-                        return GridView.count(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 1,
-                          children: itemCards as List<Widget>,
-                        );
-                      } else {
-                        return Container(
-                          height: 600,
-                          child: GridView.count(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 15,
-                            children: [
-                              LoadingAnimationWidget.waveDots(
-                                  color: Colors.white, size: 10)
-                            ],
-                          ),
-                        );
-                      }
-                    }),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CustomButton(
-                    title: localization.addItem,
-                    onPress: () {
-                      Navigator.pushNamed(context, AddItemScreen.id);
-                    }),
-              )
-            ],
-          )),
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(child: ScrollableItemGrid(future: getItemsFilterByContactUser(_firestore, userDetails.userReference))),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CustomButton(
+                title: localization.addItem,
+                onPress: () {
+                  Navigator.pushNamed(context, AddItemScreen.id);
+                }),
+          )
+        ],
+      ),
     ));
   }
 }

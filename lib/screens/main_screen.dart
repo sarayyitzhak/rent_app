@@ -122,7 +122,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final isar = Provider.of<Isar>(context);
-    syncData(isar);
+    // syncData(isar);
     return Scaffold(
       body: _widgetOptions[_selectedBottomBarIndex],
       bottomNavigationBar: BottomNavigationBar(

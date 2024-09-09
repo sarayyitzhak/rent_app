@@ -65,6 +65,28 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   //   }
   // }
 
+  Future<void> onRegisterButtonPressed() async {
+    try {
+      if(passwordController.text != confirmPasswordController.text){
+        throw 'password confirmation failed'; //TODO
+      }
+      final newUser =
+          await _auth.createUserWithEmailAndPassword(
+          email: emailController.text, password: passwordController.text);
+      if (newUser != null) {
+        userUid = newUser.user?.uid;
+        DocumentReference userReference = _firestore.collection('users').doc(userUid);
+        userDetails = UserDetails(userReference: userReference, name: nameController.text, email: emailController.text, phoneNumber: int.parse(phoneNumberController.text), items: [], wishlist: [], chats: []);
+        userReference.set(userDetails.userAsMap());
+        Navigator.of(context).pushNamedAndRemoveUntil(MainScreen.id,
+              (Route<dynamic> route) => false, // This removes all previous routes
+        );
+      }
+    } catch (e) {
+      print(e);//TODO
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var localization = AppLocalizations.of(context)!;
@@ -104,27 +126,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   height: 5,
                 ),
                 Center(
-                  child: CustomButton(title: localization.signUp, buttonStyle: kDarkButtonStyle, onPress: () async {
-                    try {
-                      if(passwordController.text != confirmPasswordController.text){
-                        throw 'password confirmation failed'; //TODO
-                      }
-                      final newUser =
-                      await _auth.createUserWithEmailAndPassword(
-                          email: emailController.text, password: passwordController.text);
-                      if (newUser != null) {
-                        userUid = newUser.user?.uid;
-                        DocumentReference userReference = _firestore.collection('users').doc(userUid);
-                        userDetails = UserDetails(userReference: userReference, name: nameController.text, email: emailController.text, phoneNumber: int.parse(phoneNumberController.text), items: [], wishlist: [], chats: []);
-                        userReference.set(userDetails.userAsMap());
-                        Navigator.of(context).pushNamedAndRemoveUntil(MainScreen.id,
-                              (Route<dynamic> route) => false, // This removes all previous routes
-                        );
-                      }
-                    } catch (e) {
-                      print(e);//TODO
-                    }
-                  },),
+                  child: CustomButton(title: localization.signUp, buttonStyle: kDarkButtonStyle, onPress: onRegisterButtonPressed,),
                 ),
               ],
             ),

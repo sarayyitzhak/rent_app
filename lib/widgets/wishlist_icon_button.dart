@@ -20,7 +20,7 @@ class _WishlistIconButtonState extends State<WishlistIconButton> {
   Widget build(BuildContext context) {
     bool isIn = userDetails.wishlist.contains(widget.item.itemReference);
     return IconButton(
-        padding: EdgeInsets.all(3),
+        padding: EdgeInsets.symmetric(horizontal: 3),
         constraints: BoxConstraints(),
         style: const ButtonStyle(
           tapTargetSize: MaterialTapTargetSize
@@ -41,9 +41,9 @@ class _WishlistIconButtonState extends State<WishlistIconButton> {
 
         },
         icon: CircleAvatar(
-          child: Icon(Icons.favorite, size: 15, color: isIn ? kActiveButtonColor : kWhiteColor,),
-          radius: 15,
-          backgroundColor: isIn ? kLightYellow : kActiveButtonColor,
+          child: Icon(Icons.favorite, size: 15, color: kWhiteColor,/*color: isIn ? kActiveButtonColor : kWhiteColor,*/),
+          radius: kIconRadius,
+          backgroundColor: isIn ? Colors.pink.shade200 : kActiveButtonColor,
         ));
   }
 }

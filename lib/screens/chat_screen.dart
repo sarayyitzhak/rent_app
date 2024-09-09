@@ -5,8 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:isar/isar.dart';
 import 'package:provider/provider.dart';
-import 'package:rent_app/db/chatDB.dart';
-import 'package:rent_app/db/messageDB.dart';
+import 'package:rent_app/models/chat.dart';
+import 'package:rent_app/models/message.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 
@@ -38,7 +38,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void getUserIndex(Chat chat) { // to know that he is the sender
-    userIndex =  chat.participants!.indexOf(userDetails.userReference.path);
+    userIndex =  chat.participants!.indexOf(userDetails.userReference);
   }
 
   @override
@@ -46,7 +46,6 @@ class _ChatScreenState extends State<ChatScreen> {
     final arg = ModalRoute.of(context)!.settings.arguments as ChatScreenArguments;
     chat = arg.chat;
     getUserIndex(chat);
-    chatDoc = _firestore.collection('chats').doc(chat.cloudKey);
 
     final isar = Provider.of<Isar>(context);
     return Scaffold(
@@ -56,7 +55,7 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            MessagesStream(chat: chat, userIdx: userIndex, chatDoc: chatDoc),
+            MessagesStream(chat: chat, userIdx: userIndex, chatDoc: chat.cloudKey),
             Container(
               decoration: kMessageContainerDecoration,
               child: Row(
@@ -74,19 +73,12 @@ class _ChatScreenState extends State<ChatScreen> {
                   TextButton(
                     onPressed: () {
                       messageTextController.clear();
-                      chatDoc.collection('messages').add({
+                      chat.cloudKey.collection('messages').add({
                         'sender': userIndex,
                         'text': messageText,
                         'sentAt': Timestamp.now(),
                         'read': false
                       });
-                      final message = Message()..sender = userIndex..text = messageText..sentAt = Timestamp.now().toDate()..read = false;
-                      chat.messages.add(message);
-                      isar.writeTxn(() async {
-                        await isar.messages.put(message); // check if needed
-                        await chat.messages.save();
-                      });
-                      // messageId++;
                     },
                     child: Text(
                       'Send',

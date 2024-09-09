@@ -10,14 +10,15 @@ class Item{
   late DocumentReference contactUser;
   late String imageRef;
   late String title;
-  late double price;
+  late int price;
   // DateTime uploadTime;
   late AddressInfo location;
   late String description;
   late Condition condition;
   late List<dynamic> categories;
+  late Timestamp createdAt;
   // List<String> reviews;
-  Item({required this.itemReference, required this.contactUser, required this.imageRef, required this.title, required this.price, required this.location, required this.description, required this.condition, required this.categories});
+  Item({required this.itemReference, required this.contactUser, required this.imageRef, required this.title, required this.price, required this.location, required this.description, required this.condition, required this.categories, required this.createdAt});
 
 
   Map<String, dynamic> itemAsMap(){
@@ -30,6 +31,7 @@ class Item{
       'description': description,
       'condition': condition.idx,
       'categories': categories.map((c) => c.idx).toList(),
+      'createdAt': createdAt
       // 'uploadTime':
     };
   }
@@ -47,6 +49,6 @@ Item mapAsItem(Map<String, dynamic> map, DocumentReference itemRef){
   }
   Condition condition = getCondFromIdx(map['condition']);
   // uploadTime = DateTime()
-  Item item = Item(itemReference: itemRef, contactUser: map['contactUser'], imageRef: map['imageRef'], title: map['title'], price: map['price'], location: location, description: map['description'], condition: condition, categories: categoryList);
+  Item item = Item(itemReference: itemRef, contactUser: map['contactUser'], imageRef: map['imageRef'], title: map['title'], price: map['price'], location: location, description: map['description'], condition: condition, categories: categoryList, createdAt: map['createdAt']);
   return item;
 }

@@ -4,7 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:provider/provider.dart';
-import 'package:rent_app/db/chatDB.dart';
+import 'package:rent_app/models/Message.dart';
+import 'package:rent_app/models/chat.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/screens/chat_screen.dart';
 import 'package:rent_app/screens/item_screen.dart';
@@ -31,6 +32,7 @@ class _ChatIconButtonState extends State<ChatIconButton> {
 
   Future<Chat> createNewChat(Isar isar) async {
     DocumentReference chatDoc = _firestore.collection('chats').doc();
+    Chat chat = Chat(participants: [userDetails.userReference, widget.item.contactUser], cloudKey: chatDoc);
     userDetails.userReference.update({
       'chats': FieldValue.arrayUnion([chatDoc])
     });
@@ -47,18 +49,26 @@ class _ChatIconButtonState extends State<ChatIconButton> {
       'sentAt': Timestamp.now(),
       'read': true,
     });
-    Chat chat = Chat()..participants = participants.map((p) => p.path).toList()..cloudKey = chatDoc.id;
-    await isar.writeTxn(() async {
-      await isar.chats.put(chat);
-    });
+    // Chat chat = Chat()..participants = participants.map((p) => p.path).toList()..cloudKey = chatDoc.id;
+    // await isar.writeTxn(() async {
+    //   await isar.chats.put(chat);
+    // });
     return chat;
   }
 
-  Future<Chat?> getChat(Isar isar) async {
+  Future<Chat?> getChat() async {
+    var usersChats = await _firestore.collection('chats').where('participants', arrayContains: userDetails.userReference).get();
+    for(var chat in usersChats.docs){
+      Map<String, dynamic> chatData = chat.data();
+      if(chatData['participants'][0] == widget.item.contactUser || chatData['participants'][1] == widget.item.contactUser){
+        return Chat(participants: chatData['participants'], cloudKey: chat.reference);
+      }
+    }
+    return null;
 
 
-     var c = await isar.chats.filter().participantsElementContains(userDetails.userReference.path).participantsElementContains(widget.item.contactUser.path).findFirst();
-     return c;
+     // var c = await isar.chats.filter().participantsElementContains(userDetails.userReference.path).participantsElementContains(widget.item.contactUser.path).findFirst();
+     // return c;
 
     // List participants = await isar.chats.filter().participantsElementContains(widget.item.contactUser.id).findAll();//user is in the participants
     // if(participants.isNotEmpty){
@@ -92,7 +102,7 @@ class _ChatIconButtonState extends State<ChatIconButton> {
           tapTargetSize: MaterialTapTargetSize.shrinkWrap, // the '2023' part
         ),
         onPressed: () async {
-          Chat? chat = await getChat(isar);
+          Chat? chat = await getChat();
           Chat newChat;
           if(chat == null) {
             //create chat
@@ -106,7 +116,7 @@ class _ChatIconButtonState extends State<ChatIconButton> {
             size: 15,
             color: kWhiteColor,
           ),
-          radius: 15,
+          radius: kIconRadius,
           backgroundColor: kActiveButtonColor,
         ));
   }

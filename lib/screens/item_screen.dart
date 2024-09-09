@@ -26,99 +26,102 @@ class ItemScreen extends StatelessWidget {
           title: '',
           isBackButton: true,
         ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 20),
-          child: FutureBuilder(
-            future: getItemContactUser(item),
-            builder: (context, snapshot){
-              if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-              return Center(child: Text('Error loading seller details'));
-              } else if (snapshot.hasData) {
-              UserDetails contactUser = snapshot.data!;
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 60),
-                    // child: Image.network(item.imageRef),
-                    decoration: BoxDecoration(
-                      color: kLightYellow,
-                      borderRadius: BorderRadius.circular(20),
-                      image: DecorationImage(
-                        image: NetworkImage(item.imageRef),
-                        fit: BoxFit.fill,
-                      ),
+        body: FutureBuilder(
+          future: getItemContactUser(item),
+          builder: (context, snapshot){
+            if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+            return Center(child: Text('Error loading seller details'));
+            } else if (snapshot.hasData) {
+            UserDetails contactUser = snapshot.data!;
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: kLightYellow,
+                    // borderRadius: BorderRadius.circular(20),
+                    image: DecorationImage(
+                      image: NetworkImage(item.imageRef),
+                      fit: BoxFit.cover,
                     ),
-                    height: 300,
                   ),
+                  height: 300,
                 ),
-                SizedBox(
-                  height: 30,
-                ),
-                Text(
-                  item.title,
-                  style: kBlackHeaderTextStyle,
-                ),
-                Text(
-                  item.description,
-                  style: kSmallBlackTextStyle,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Divider(
-                  color: Colors.grey,
-                  thickness: 1,
-                ),
-                Text(localization.contactUserDetails, style: kBlackHeaderTextStyle,),
-                Text(contactUser.name, style: kBlackTextStyle,),
-                Text('0${contactUser.phoneNumber}'),
-                Text(item.location.addressDataToString(), style: kBlackTextStyle,),
-                Divider(
-                  color: Colors.grey,
-                  thickness: 1,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${item.price}₪',
-                      style: kHeadersTextStyle,
+                      item.title,
+                      style: kBlackHeaderTextStyle,
                     ),
-                    Row(
-                      children: [
-                        WishlistIconButton(item: item),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        ChatIconButton(item: item,),
-                      ],
-                    )
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
                     Text(
-                      localization.usersReviews,
+                      item.description,
                       style: kSmallBlackTextStyle,
                     ),
-                    Text('9.8'),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Divider(
+                      color: Colors.grey,
+                      thickness: 1,
+                    ),
+                    Text(localization.contactUserDetails, style: kBlackHeaderTextStyle,),
+                    Text(contactUser.name, style: kBlackTextStyle,),
+                    Text('0${contactUser.phoneNumber}'),
+                    Text(item.location.addressDataToString(), style: kBlackTextStyle,),
+                    Divider(
+                      color: Colors.grey,
+                      thickness: 1,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${item.price}₪',
+                          style: kHeadersTextStyle,
+                        ),
+                        arg.isMe ?
+                        Container() :
+                        Row(
+                          children: [
+                             WishlistIconButton(item: item),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            ChatIconButton(item: item,),
+                          ],
+                        )
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          localization.usersReviews,
+                          style: kSmallBlackTextStyle,
+                        ),
+                        Text('9.8'),
+                      ],
+                    ),
                   ],
                 ),
-                Center(
-                    child: CustomButton(
-                        title: localization.rentItem, onPress: () {})),
-              ],
-            );
-    }
-            return Container();}
+              ),
 
-          ),
+              Center(
+                  child: CustomButton(
+                      title: localization.rentItem, onPress: () {})),
+            ],
+          );
+            }
+          return Container();}
+
         ),
       ),
     );
@@ -127,5 +130,6 @@ class ItemScreen extends StatelessWidget {
 
 class ScreenArguments {
   final Item item;
-  ScreenArguments(this.item);
+  final bool isMe;
+  ScreenArguments(this.item, this.isMe);
 }
