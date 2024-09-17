@@ -60,8 +60,9 @@ class _ChatIconButtonState extends State<ChatIconButton> {
     var usersChats = await _firestore.collection('chats').where('participants', arrayContains: userDetails.userReference).get();
     for(var chat in usersChats.docs){
       Map<String, dynamic> chatData = chat.data();
-      if(chatData['participants'][0] == widget.item.contactUser || chatData['participants'][1] == widget.item.contactUser){
-        return Chat(participants: chatData['participants'], cloudKey: chat.reference);
+      List<DocumentReference> participants = (chatData['participants'] as List<dynamic>).map((e) => e as DocumentReference).toList();
+      if(participants[0] == widget.item.contactUser || participants[1] == widget.item.contactUser){
+        return Chat(participants: participants, cloudKey: chat.reference);
       }
     }
     return null;
@@ -108,6 +109,9 @@ class _ChatIconButtonState extends State<ChatIconButton> {
             //create chat
             chat = await createNewChat(isar);
           }
+          DocumentSnapshot<Object?> contactUser = await widget.item.contactUser.get();
+          Map<String, dynamic> contactUserData = contactUser.data() as Map<String, dynamic>;
+          chat.otherParticipantName = contactUserData['fullName'];
           goToChat(chat);
         },
         icon: CircleAvatar(

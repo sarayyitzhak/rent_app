@@ -32,10 +32,12 @@ class _WishlistIconButtonState extends State<WishlistIconButton> {
               isIn = false;
               userDetails.wishlist.remove(widget.item.itemReference);
               userDetails.userReference.update({'wishlist': FieldValue.arrayRemove([widget.item.itemReference])});
+              widget.item.itemReference.update({'likesCount': FieldValue.increment(-1)});
             } else {
               isIn = true;
               userDetails.wishlist.add(widget.item.itemReference);
               userDetails.userReference.update({'wishlist': FieldValue.arrayUnion([widget.item.itemReference])});
+              widget.item.itemReference.update({'likesCount': FieldValue.increment(1)});
             }
           });
 

@@ -1,4 +1,8 @@
+import 'dart:async';
 import 'dart:io';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +25,7 @@ import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 import '../main.dart';
 import '../models/item.dart';
 
+
 class AddItemScreen extends StatefulWidget {
   static String id = 'add_item_screen';
   @override
@@ -32,9 +37,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
   final _auth = FirebaseAuth.instance;
   final storageRef = FirebaseStorage.instance.ref();
   File? _image;
-
-
-
   late TextEditingController titleController;
   late TextEditingController priceController;
   late TextEditingController descriptionController;
@@ -56,7 +58,30 @@ class _AddItemScreenState extends State<AddItemScreen> {
     priceController = TextEditingController();
     descriptionController = TextEditingController();
     addressController = TextEditingController();
+    _getUserLocation();
   }
+
+
+  GoogleMapController? mapController;
+  LatLng _initialPosition = LatLng(37.7749, -122.4194); // Default position
+  String _pickedAddress = "Search for an address";
+
+  Future<void> _getUserLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      _initialPosition = LatLng(position.latitude, position.longitude);
+    });
+  }
+
+  void _onPlaceSelected(LatLng latLng, String address) {
+    setState(() {
+      _initialPosition = latLng;
+      _pickedAddress = address;
+      mapController?.animateCamera(CameraUpdate.newLatLng(latLng));
+    });
+  }
+
 
   Future<void> mapDialogBuilder(BuildContext context, var localization) {
     return showDialog<void>(
@@ -188,7 +213,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         width: double.infinity,
         margin: EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: kLightYellow,
+          color: kPastelYellowOpacity,
           borderRadius: BorderRadius.circular(5),
         ),
         child: Column(
@@ -244,7 +269,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
         description: descriptionController.text,
         condition: conditionValue,
         categories: _selectedCategories,
-        createdAt: Timestamp.now()
+        createdAt: Timestamp.now(),
+        likesCount: 0,
+        seenCount: 0
     );
     newItem.imageRef = imageDownloadUrl;
     itemDoc.set(newItem.itemAsMap());
@@ -259,6 +286,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       //problem
     }
     Navigator.pop(context);
+    // Navigator.pop(context);
     Navigator.popAndPushNamed(context, UserItemsScreen.id);
   }
 
@@ -291,7 +319,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     )),
                 MultiSelectBottomSheetField(
                   decoration: BoxDecoration(
-                    color: kLightYellow,
+                    color: kPastelYellowOpacity,
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -302,6 +330,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   initialValue: _selectedCategories,
                   onConfirm: (values) {
                     _selectedCategories = values;
+                    FocusScope.of(context).requestFocus(FocusNode());
                   },
                 ),
                 SizedBox(
@@ -316,7 +345,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     )),
                 Container(
                   decoration: BoxDecoration(
-                    color: kLightYellow,
+                    color: kPastelYellowOpacity,
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -344,8 +373,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                             label: Condition.USED_IN_MEDIUM_SHAPE.title),
                       ],
                       inputDecorationTheme: InputDecorationTheme(
-                        fillColor: kLightYellow,
-                        hoverColor: kLightYellow,
+                        fillColor: kPastelYellowOpacity,
+                        hoverColor: kPastelYellowOpacity,
                       ),
                     ),
                   ),
@@ -357,6 +386,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 TextAndTextField(
                   title: localization.description,
                   controller: descriptionController,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 3,
+                  textInputAction: TextInputAction.newline,
+                  textCapitalization: true,
                 ),
 
                 // TextAndTextField(

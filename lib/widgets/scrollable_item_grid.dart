@@ -3,7 +3,8 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ScrollableItemGrid extends StatelessWidget {
   Future<List<dynamic>>? future;
-  ScrollableItemGrid({super.key, required this.future});
+  ScrollController? controller;
+  ScrollableItemGrid({super.key, required this.future, this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +23,7 @@ class ScrollableItemGrid extends StatelessWidget {
                 crossAxisSpacing: 0,
                 childAspectRatio: 0.71,
                 children: itemCards as List<Widget>,
+                controller: controller,
               ),
             );
           } else {

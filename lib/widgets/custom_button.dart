@@ -13,12 +13,18 @@ class CustomButton extends StatelessWidget {
       width: 250,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: TextButton(
+        child: ElevatedButton(
           child: Text(
             title,
           ),
           onPressed: onPress,
-          style: buttonStyle,
+          // style: buttonStyle,
+          style: ElevatedButton.styleFrom(
+            foregroundColor: kGreyColor,
+            backgroundColor: kPastelYellow,
+            elevation: 7,
+            textStyle: kButtonTextStyle
+          ),
         ),
       ),
     );

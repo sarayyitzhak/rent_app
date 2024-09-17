@@ -26,7 +26,7 @@ class ChatsScreen extends StatelessWidget {
       child: Scaffold(
         appBar: CustomAppBar(title: localization.chats, isBackButton: false),
         body: StreamBuilder(
-            stream:  _firestore.collection('chats').where('participants', arrayContains: userDetails.userReference).snapshots(), 
+            stream:  _firestore.collection('chats').where('participants', arrayContains: userDetails.userReference).snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return Center(

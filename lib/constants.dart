@@ -3,8 +3,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-const kYellowLogoImage = 'images/handshake_yellow.png';
-const kWhiteLogoImage = 'images/handshake.png';
+const kYellowLogoImage = 'assets/images/handshake_yellow.png';
+const kWhiteLogoImage = 'assets/images/handshake.png';
 const kGoogleApiKey = 'AIzaSyDHz-rjDLdurz6ugj5oXvG4DaeRfR0QXIA';
 const kMapTilerApiKey = '90JJ6DPLZWrrH2aGs87z';
 
@@ -45,13 +45,13 @@ const kSmallBlackTextStyle = TextStyle(
 
 const kButtonTextStyle = TextStyle(
   color: kDarkYellow,
-  fontSize: 24,
+  fontSize: 20,
   fontWeight: FontWeight.bold,
 );
 
 
 const kTextFieldHintTextStyle = TextStyle(
-  color: kPastelYellow,
+  color: kGreyColor,
   fontSize: 14,
   fontWeight: FontWeight.w400,
 );
@@ -72,7 +72,28 @@ const kTextFieldDecoration = InputDecoration(
     borderRadius: BorderRadius.all(Radius.circular(32.0)),
   ),
   filled: true,
-  fillColor: kLightYellow,
+  fillColor: kPastelYellowOpacity,
+  labelStyle: TextStyle(color: kPastelYellow),
+  hintStyle: kTextFieldHintTextStyle,
+);
+
+const kTextFieldDecorationOnlyBorder = InputDecoration(
+  hintText: '',
+  contentPadding:
+  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+  border: OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+  ),
+  enabledBorder: OutlineInputBorder(
+    borderSide: BorderSide(color: kPastelYellow, width: 1.0),
+    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+  ),
+  focusedBorder: OutlineInputBorder(
+    borderSide: BorderSide(color: kPastelYellow, width: 2.0),
+    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+  ),
+  filled: true,
+  fillColor: Colors.white10,
   labelStyle: TextStyle(color: kPastelYellow),
   hintStyle: kTextFieldHintTextStyle,
 );
@@ -80,6 +101,7 @@ const kTextFieldDecoration = InputDecoration(
 const kDarkButtonStyle = ButtonStyle(
   backgroundColor: WidgetStatePropertyAll(kPastelYellow),
   textStyle: WidgetStatePropertyAll(kButtonTextStyle),
+  elevation: WidgetStatePropertyAll(8),
   padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
 );
 
@@ -92,7 +114,7 @@ const kLightButtonStyle = ButtonStyle(
 const kAddressButtonStyle = ButtonStyle(
   alignment: Alignment.topRight,
   fixedSize: WidgetStatePropertyAll(Size(400, 20)),
-  backgroundColor: WidgetStatePropertyAll(kLightYellow),
+  backgroundColor: WidgetStatePropertyAll(kPastelYellowOpacity),
   textStyle: WidgetStatePropertyAll(kSmallBlackTextStyle),
   padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
 );
@@ -105,7 +127,7 @@ const kMessageContainerDecoration = BoxDecoration(
 
 const kMessageTextFieldDecoration = InputDecoration(
   contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-  hintText: 'Type your message here...',
+  // hintText: 'Type your message here...',
   border: InputBorder.none,
 );
 
@@ -118,10 +140,12 @@ const kSendButtonTextStyle = TextStyle(
 const kDarkYellow = Color(0xFFFFC30B);
 const kLightYellow = Color(0xFFFAF0E6);
 const kPastelYellow = Color(0xFFFFDB9D);
+const kPastelYellowOpacity = Color(0x66FFDB9D);
 const kActiveButtonColor = Color(0xFFFFD181);
 const kBlackColor = Color(0xFF000000);
 const kWhiteColor = Color(0xFFFFFFFF);
 const kBlue = Colors.lightBlueAccent;
+const kGreyColor = Colors.grey;
 
 const kUserSideBubbleEn = BorderRadius.only(
     topLeft: Radius.circular(30),

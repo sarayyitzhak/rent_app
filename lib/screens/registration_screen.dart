@@ -11,7 +11,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/custom_button.dart';
 import 'main_screen.dart';
 
-
 class RegistrationScreen extends StatefulWidget {
   static String id = 'registration_screen';
   const RegistrationScreen({super.key});
@@ -30,7 +29,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   late TextEditingController passwordController;
   late TextEditingController confirmPasswordController;
   // DateTime selectedDate = DateTime.now();
-
 
   @override
   void initState() {
@@ -67,23 +65,32 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   Future<void> onRegisterButtonPressed() async {
     try {
-      if(passwordController.text != confirmPasswordController.text){
+      if (passwordController.text != confirmPasswordController.text) {
         throw 'password confirmation failed'; //TODO
       }
-      final newUser =
-          await _auth.createUserWithEmailAndPassword(
+      final newUser = await _auth.createUserWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
       if (newUser != null) {
         userUid = newUser.user?.uid;
-        DocumentReference userReference = _firestore.collection('users').doc(userUid);
-        userDetails = UserDetails(userReference: userReference, name: nameController.text, email: emailController.text, phoneNumber: int.parse(phoneNumberController.text), items: [], wishlist: [], chats: []);
+        DocumentReference userReference =
+            _firestore.collection('users').doc(userUid);
+        userDetails = UserDetails(
+            userReference: userReference,
+            name: nameController.text,
+            email: emailController.text,
+            phoneNumber: int.parse(phoneNumberController.text),
+            items: [],
+            wishlist: [],
+            seen: [],
+            chats: []);
         userReference.set(userDetails.userAsMap());
-        Navigator.of(context).pushNamedAndRemoveUntil(MainScreen.id,
-              (Route<dynamic> route) => false, // This removes all previous routes
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          MainScreen.id,
+          (Route<dynamic> route) => false, // This removes all previous routes
         );
       }
     } catch (e) {
-      print(e);//TODO
+      print(e); //TODO
     }
   }
 
@@ -101,9 +108,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TextAndTextField(title: localization.fullName, controller: nameController,),
-                TextAndTextField(title: localization.email, controller: emailController, keyboardType: TextInputType.emailAddress,),
-                TextAndTextField(title: localization.mobileNumber, controller: phoneNumberController, keyboardType: TextInputType.phone),
+                TextAndTextField(
+                  title: localization.fullName,
+                  controller: nameController,
+                ),
+                TextAndTextField(
+                  title: localization.email,
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                TextAndTextField(
+                    title: localization.mobileNumber,
+                    controller: phoneNumberController,
+                    keyboardType: TextInputType.phone),
                 // TextAndTextField(title: localization.dateOfBirth, controller: dateOfBirthController, keyboardType: TextInputType.datetime,),
                 //
                 //
@@ -111,8 +128,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 // InputDatePickerFormField(firstDate: DateTime(1930), lastDate: DateTime(2024), ),
                 //
                 // DatePickerDialog(firstDate: DateTime(1930), lastDate: DateTime(2024)),
-                TextAndTextField(title: localization.password, controller: passwordController, isObscureText: true,),
-                TextAndTextField(title: localization.confirmPassword, controller: confirmPasswordController, isObscureText: true,),
+                TextAndTextField(
+                  title: localization.password,
+                  controller: passwordController,
+                  isObscureText: true,
+                ),
+                TextAndTextField(
+                  title: localization.confirmPassword,
+                  controller: confirmPasswordController,
+                  isObscureText: true,
+                ),
                 SizedBox(
                   height: 25,
                 ),
@@ -126,7 +151,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   height: 5,
                 ),
                 Center(
-                  child: CustomButton(title: localization.signUp, buttonStyle: kDarkButtonStyle, onPress: onRegisterButtonPressed,),
+                  child: CustomButton(
+                    title: localization.signUp,
+                    buttonStyle: kDarkButtonStyle,
+                    onPress: onRegisterButtonPressed,
+                  ),
                 ),
               ],
             ),

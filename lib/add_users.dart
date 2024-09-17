@@ -212,6 +212,7 @@ Future<void> onRegisterButtonPressed(int idx) async {
       phoneNumber: int.parse('54808825$idx'),
       items: [],
       wishlist: [],
+      seen: [],
       chats: []);
   userReference.set(userDetailsRand.userAsMap());
 
@@ -240,7 +241,9 @@ Future<void> onRegisterButtonPressed(int idx) async {
         description: 'מוצר נדיר מהמם הכי טוב שיש. מומלץ לכל אחד להשכיר.',
         condition: Condition.USED_AS_NEW,
         categories: [categories[j]],
-        createdAt: Timestamp.now()
+        createdAt: Timestamp.now(),
+        likesCount: 0,
+        seenCount: 0
     );
     newItem.imageRef = imageDownloadUrl;
     itemDoc.set(newItem.itemAsMap());

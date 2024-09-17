@@ -30,6 +30,12 @@ class _UserItemsScreenState extends State<UserItemsScreen> {
   final _auth = FirebaseAuth.instance;
   final storageRef = FirebaseStorage.instance.ref();
 
+  void refreshScreen(){
+    setState(() {
+      userDetails.userReference;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var localization = AppLocalizations.of(context)!;

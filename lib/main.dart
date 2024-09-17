@@ -2,9 +2,13 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rent_app/db/isar_model.dart';
 import 'package:rent_app/screens/add_item_screen.dart';
+import 'package:rent_app/screens/category_screen.dart';
 import 'package:rent_app/screens/chat_screen.dart';
 import 'package:rent_app/screens/chats_screen.dart';
 import 'package:rent_app/screens/item_screen.dart';
+import 'package:rent_app/screens/profile_screen.dart';
+import 'package:rent_app/screens/search_result_screen.dart';
+import 'package:rent_app/screens/search_screen.dart';
 import 'package:rent_app/screens/user_items_screen.dart';
 import 'package:rent_app/screens/wishlist_screen.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
@@ -133,6 +137,11 @@ class MyApp extends StatelessWidget {
           WishlistScreen.id: (context) => WishlistScreen(),
           ChatsScreen.id: (context) => ChatsScreen(),
           ChatScreen.id: (context) => ChatScreen(),
+          SearchScreen.id: (context) => SearchScreen(),
+          SearchResultScreen.id: (context) => SearchResultScreen(),
+          CategoryScreen.id: (context) => CategoryScreen(),
+          ProfileScreen.id: (context) => ProfileScreen(),
+
         },
         localizationsDelegates: [
           AppLocalizations.delegate,

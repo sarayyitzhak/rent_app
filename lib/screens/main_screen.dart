@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:isar/isar.dart';
 import 'package:provider/provider.dart';
 import 'package:rent_app/constants.dart';
@@ -7,11 +9,15 @@ import 'package:rent_app/db/chatDB.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/models/user.dart';
 import 'package:rent_app/screens/chats_screen.dart';
+import 'package:rent_app/screens/search_screen.dart';
 import 'package:rent_app/screens/user_items_screen.dart';
 import '../db/messageDB.dart';
 import 'home_screen.dart';
 import 'user_screen.dart';
 import 'login_screen.dart';
+
+// Position? currentPosition;
+// String? cityName;
 
 class MainScreen extends StatefulWidget {
   static String id = 'main_screen';
@@ -24,8 +30,10 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedBottomBarIndex = 0;
 
+
   static List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
+    SearchScreen(),
     UserItemsScreen(),
     ChatsScreen(),
     // LoginScreen(),
@@ -42,6 +50,63 @@ class _MainScreenState extends State<MainScreen> {
     userDetails = await getUserDetailsByUid(userUid!);
     return userDetails;
   }
+
+  // Future<void> _getCurrentLocation() async {
+  //   bool serviceEnabled;
+  //   LocationPermission permission;
+  //
+  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  //   if (!serviceEnabled) {
+  //     return Future.error('Location services are disabled.');
+  //   }
+  //
+  //   permission = await Geolocator.checkPermission();
+  //   if (permission == LocationPermission.denied) {
+  //     permission = await Geolocator.requestPermission();
+  //     if (permission == LocationPermission.denied) {
+  //       return Future.error('Location permissions are denied');
+  //     }
+  //   }
+  //   if (permission == LocationPermission.deniedForever) {
+  //     return Future.error('Location permissions are permanently denied.');
+  //   }
+  //
+  //   Position position = await Geolocator.getCurrentPosition(
+  //       desiredAccuracy: LocationAccuracy.high);
+  //
+  //   setState(() {
+  //     currentPosition = position;
+  //   });
+  // }
+  //
+  // Future<void> _getAddressFromLatLng(Position position) async {
+  //   try {
+  //     List<Placemark> placemarks = await placemarkFromCoordinates(
+  //       position.latitude,
+  //       position.longitude,
+  //     );
+  //
+  //     Placemark place = placemarks[0];
+  //     cityName = await place.locality.toString();
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
+  //
+  // Future<void> getLoc() async {
+  //   await _getCurrentLocation();
+  //   if (currentPosition != null) {
+  //     await _getAddressFromLatLng(currentPosition!);
+  //     setState(() {
+  //       cityName =
+  //           cityName ?? 'מיקום לא ידוע';
+  //     });
+  //   } else {
+  //     setState(() {
+  //       cityName = 'מיקום לא ידוע';
+  //     });
+  //   }
+  // }
 
   Future<void> syncData(Isar isar) async {
     await getUser();
@@ -116,6 +181,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     getUser();
+    // getLoc();
     super.initState();
   }
 
@@ -130,6 +196,10 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.manage_search),
+            label: 'Search',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_bag),
@@ -154,41 +224,3 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
-
-
-
-/*bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Categories',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long_outlined),
-            label: 'History',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_outline),
-            label: 'messenger',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'User',
-          ),
-        ],
-
-
-        onTap: (newIndex) {
-          setState(() {
-            _selectedBottomBarIndex = newIndex;
-          });
-          if(_selectedBottomBarIndex == 4) {
-            Navigator.pushNamed(context, UserScreen.id);
-          }
-        },
-
-      ),*/
