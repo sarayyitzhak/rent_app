@@ -9,8 +9,8 @@ class DialIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-        padding: EdgeInsets.all(10),
-        constraints: BoxConstraints(),
+        padding: const EdgeInsets.all(10),
+        constraints: const BoxConstraints(),
         style: const ButtonStyle(
           tapTargetSize: MaterialTapTargetSize.shrinkWrap, // the '2023' part
         ),
@@ -25,14 +25,14 @@ class DialIconButton extends StatelessWidget {
             throw 'Could not launch $phoneNumber';
           }
         },
-        icon: CircleAvatar(
+        icon: const CircleAvatar(
+          radius: 20,
+          backgroundColor: kActiveButtonColor,
           child: Icon(
             Icons.local_phone_rounded,
             size: 30,
             color: kWhiteColor,
           ),
-          radius: 20,
-          backgroundColor: kActiveButtonColor,
         ));
   }
 }

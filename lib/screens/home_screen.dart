@@ -1,21 +1,16 @@
-import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:rent_app/models/user.dart';
 import 'package:rent_app/widgets/reusable_card.dart';
-import '../add_users.dart';
 import '../constants.dart';
 import 'package:rent_app/models/category.dart';
 import '../services/firebase_services.dart';
-import '../widgets/scrollable_item_grid.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
-import 'main_screen.dart';
 
 Position? currentPosition;
 String? cityName;
@@ -95,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
       );
 
       Placemark place = placemarks[0];
-      cityName = await place.locality.toString();
+      cityName = place.locality.toString();
     } catch (e) {
       print(e);
     }
@@ -134,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(20.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,15 +151,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    Text(
+                    const Text(
                       'מה תרצו לחפש?',
                       style: kBlackTextStyle,
                     ),
-                    Container(
+                    SizedBox(
                       height: 85,
                       child: ListView(
-                        children: buildCategoriesList(),
                         scrollDirection: Axis.horizontal,
+                        children: buildCategoriesList(),
                       ),
                     ),
                     
@@ -177,22 +172,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     // ),
 
 
-                    SizedBox(
+                    const SizedBox(
                       height: 30,
                     ),
                     Row(
                       children: [
-                        Text(
+                        const Text(
                           'סביבך',
                           style: kBlackHeaderTextStyle,
                         ),
-                        Icon(Icons.location_on_outlined),
+                        const Icon(Icons.location_on_outlined),
                         Text(cityName ?? 'בודק מיקום...'),
                       ],
                     ),
-                    Container(
+                    SizedBox(
                       height: 250,
-                      child: currentPosition == null || cityName == null ? Center(child: CircularProgressIndicator(color: kPastelYellow,)) : FutureBuilder(
+                      child: currentPosition == null || cityName == null ? const Center(child: CircularProgressIndicator(color: kPastelYellow,)) : FutureBuilder(
                           future: getHorizontalItemsFilterByLocation(
                               _firestore, currentPosition!, cityName!),
                           builder: (context, snapshot) {
@@ -209,15 +204,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             }
                           }),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 30,
                     ),
 
-                    Text(
+                    const Text(
                       'מומלצים בשבילך',
                       style: kBlackHeaderTextStyle,
                     ),
-                    Container(
+                    SizedBox(
                       height: 250,
                       child: FutureBuilder(
                           future: getHorizontalItemsFilterByCategory(
@@ -237,15 +232,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           }),
                     ),
 
-                    SizedBox(
+                    const SizedBox(
                       height: 30,
                     ),
 
-                    Text(
+                    const Text(
                       'נצפו לאחרונה',
                       style: kBlackHeaderTextStyle,
                     ),
-                    Container(
+                    SizedBox(
                       height: 250,
                       child: FutureBuilder(
                           future: getHorizontalItemsFilterByLastSeen(

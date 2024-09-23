@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rent_app/db/isar_model.dart';
@@ -11,7 +12,6 @@ import 'package:rent_app/screens/search_result_screen.dart';
 import 'package:rent_app/screens/search_screen.dart';
 import 'package:rent_app/screens/user_items_screen.dart';
 import 'package:rent_app/screens/wishlist_screen.dart';
-import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:rent_app/services/user_services.dart';
@@ -29,10 +29,6 @@ import 'screens/registration_screen.dart';
 import 'screens/main_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
-import 'firebase_options.dart';
-import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 import 'db/chatDB.dart';
 import 'db/messageDB.dart';
 // import 'db/chat.g.dart';
@@ -41,6 +37,11 @@ import 'db/messageDB.dart';
 
 String? userUid;
 late UserDetails userDetails;
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // This function handles background notifications
+  print('Handling a background message: ${message.messageId}');
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,6 +60,7 @@ void main() async {
       projectId: 'renal-app',
       storageBucket: 'renal-app.appspot.com',
     ));
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     FirebaseAppCheck firebaseAppCheck =  await FirebaseAppCheck.instance.activate(
       webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
       androidProvider: AndroidProvider.debug,
@@ -124,32 +126,32 @@ class MyApp extends StatelessWidget {
         initialRoute: checkUserConnected(),
         // initialRoute: ItemScreen.id,
         routes: {
-          LogoScreen.id: (context) => LogoScreen(),
-          MainScreen.id: (context) => MainScreen(),
-          WelcomeScreen.id: (context) => WelcomeScreen(),
-          LoginScreen.id: (context) => LoginScreen(),
-          RegistrationScreen.id: (context) => RegistrationScreen(),
-          HomeScreen.id: (context) => HomeScreen(),
-          UserScreen.id: (context) => UserScreen(),
-          UserItemsScreen.id: (context) => UserItemsScreen(),
-          AddItemScreen.id: (context) => AddItemScreen(),
-          ItemScreen.id: (context) => ItemScreen(),
-          WishlistScreen.id: (context) => WishlistScreen(),
+          LogoScreen.id: (context) => const LogoScreen(),
+          MainScreen.id: (context) => const MainScreen(),
+          WelcomeScreen.id: (context) => const WelcomeScreen(),
+          LoginScreen.id: (context) => const LoginScreen(),
+          RegistrationScreen.id: (context) => const RegistrationScreen(),
+          HomeScreen.id: (context) => const HomeScreen(),
+          UserScreen.id: (context) => const UserScreen(),
+          UserItemsScreen.id: (context) => const UserItemsScreen(),
+          AddItemScreen.id: (context) => const AddItemScreen(),
+          ItemScreen.id: (context) => const ItemScreen(),
+          WishlistScreen.id: (context) => const WishlistScreen(),
           ChatsScreen.id: (context) => ChatsScreen(),
-          ChatScreen.id: (context) => ChatScreen(),
-          SearchScreen.id: (context) => SearchScreen(),
-          SearchResultScreen.id: (context) => SearchResultScreen(),
+          ChatScreen.id: (context) => const ChatScreen(),
+          SearchScreen.id: (context) => const SearchScreen(),
+          SearchResultScreen.id: (context) => const SearchResultScreen(),
           CategoryScreen.id: (context) => CategoryScreen(),
-          ProfileScreen.id: (context) => ProfileScreen(),
+          ProfileScreen.id: (context) => const ProfileScreen(),
 
         },
-        localizationsDelegates: [
+        localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: [
+        supportedLocales: const [
           Locale('en'), // English
           Locale('he'), // Hebrew
         ],

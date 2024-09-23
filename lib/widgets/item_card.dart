@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/screens/item_screen.dart';
@@ -27,7 +26,7 @@ class ItemCard extends StatelessWidget {
       onTap: () => Navigator.pushNamed(context, ItemScreen.id,
           arguments: ScreenArguments(item, isMine)),
       child: Container(
-        padding: EdgeInsets.all(5),
+        padding: const EdgeInsets.all(5),
         // decoration: BoxDecoration(
         //   color: kLightYellow,
         //   borderRadius: BorderRadius.circular(10),
@@ -48,8 +47,8 @@ class ItemCard extends StatelessWidget {
                   ),
                   child: CachedNetworkImage(
                     imageUrl: item.imageRef,
-                    placeholder: (context, url) => CircularProgressIndicator(color: kPastelYellow,),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    placeholder: (context, url) => const CircularProgressIndicator(color: kPastelYellow,),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
                     imageBuilder: (context, imageProvider) => Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
@@ -73,7 +72,7 @@ class ItemCard extends StatelessWidget {
                   item.title,
                   style: kBlackHeaderTextStyle,
                 ),
-                Text(
+                const Text(
                   '9.8',
                   style: kSmallBlackTextStyle,
                 ),
@@ -84,7 +83,7 @@ class ItemCard extends StatelessWidget {
               style: kSmallBlackTextStyle,
             ), //place
              //place
-            Divider(
+            const Divider(
               color: kPastelYellow,
             ),
             Row(

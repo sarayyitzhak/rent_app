@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rent_app/constants.dart';
@@ -28,6 +25,8 @@ import '../models/item.dart';
 
 class AddItemScreen extends StatefulWidget {
   static String id = 'add_item_screen';
+
+  const AddItemScreen({super.key});
   @override
   _AddItemScreenState createState() => _AddItemScreenState();
 }
@@ -63,7 +62,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
 
   GoogleMapController? mapController;
-  LatLng _initialPosition = LatLng(37.7749, -122.4194); // Default position
+  LatLng _initialPosition = const LatLng(37.7749, -122.4194); // Default position
   String _pickedAddress = "Search for an address";
 
   Future<void> _getUserLocation() async {
@@ -89,9 +88,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Please choose location'),
-          insetPadding: EdgeInsets.all(0),
-          contentPadding: EdgeInsets.all(8),
-          content: Container(
+          insetPadding: const EdgeInsets.all(0),
+          contentPadding: const EdgeInsets.all(8),
+          content: SizedBox(
             height: 600,
             width: MediaQuery.of(context).size.width - 40,
             // width: double.infinity,
@@ -99,7 +98,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 searchBarHintText: localization.searchLocation,
                 urlTemplate: kMapUrl,
                 mapLanguage: localization.language,
-                initPosition: LatLong(23, 89),
+                initPosition: const LatLong(23, 89),
                 selectLocationButtonStyle: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(Colors.blue),
                 ),
@@ -157,14 +156,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Center(
+        const Center(
             child: Text(
           'Pick an image from:',
           style: TextStyle(color: Colors.grey),
         )),
-        Divider(),
+        const Divider(),
         TextButton(
-            child: Text(
+            child: const Text(
               'Camera',
               style: kButtonTextStyle,
             ),
@@ -172,9 +171,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
               _pickImage(ImageSource.camera);
               Navigator.pop(context);
             }),
-        Divider(),
+        const Divider(),
         TextButton(
-            child: Text(
+            child: const Text(
               'Gallery',
               style: kButtonTextStyle,
             ),
@@ -188,7 +187,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
   IconButton addImageButton() {
     return IconButton(
-      icon: Icon(Icons.add_a_photo_outlined),
+      icon: const Icon(Icons.add_a_photo_outlined),
       onPressed: () {
         showModalBottomSheet(
             context: context,
@@ -211,7 +210,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     return Container(
         height: 200,
         width: double.infinity,
-        margin: EdgeInsets.all(10),
+        margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: kPastelYellowOpacity,
           borderRadius: BorderRadius.circular(5),
@@ -226,7 +225,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     height: 150, // specify desired height
                     fit: BoxFit.fill,
                   )
-                : Text('No image selected.'),
+                : const Text('No image selected.'),
             addImageButton(),
           ],
         ));
@@ -246,7 +245,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       context: context,
       barrierDismissible: false, // Prevent user from closing the dialog
       builder: (context) {
-        return Center(
+        return const Center(
           child: CircularProgressIndicator(color: kPastelYellow,),
         );
       },
@@ -333,7 +332,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     FocusScope.of(context).requestFocus(FocusNode());
                   },
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
 
@@ -372,14 +371,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
                             value: Condition.USED_IN_MEDIUM_SHAPE,
                             label: Condition.USED_IN_MEDIUM_SHAPE.title),
                       ],
-                      inputDecorationTheme: InputDecorationTheme(
+                      inputDecorationTheme: const InputDecorationTheme(
                         fillColor: kPastelYellowOpacity,
                         hoverColor: kPastelYellowOpacity,
                       ),
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
 
@@ -407,14 +406,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 ),
                 TextButton(
                   onPressed: () => mapDialogBuilder(context, localization),
+                  style: kAddressButtonStyle,
                   child: Text(
                     addressValue.addressDataToString(),
                       // '${addressValue.addressData['city']}${addressValue.addressData['road'] != null ? ',  ${addressValue.addressData['road']}' : ''}',
                     style: kBlackTextStyle,),
-                  style: kAddressButtonStyle,
                 ),
 
-                SizedBox(
+                const SizedBox(
                   height: 15,
                 ),
 

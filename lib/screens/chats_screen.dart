@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:provider/provider.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/models/Message.dart';
 import 'package:rent_app/models/chat.dart';
@@ -9,7 +7,6 @@ import 'package:rent_app/screens/chat_screen.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../main.dart';
-import '../services/firebase_services.dart';
 
 class ChatsScreen extends StatelessWidget {
   static String id = 'chats_screen.dart';
@@ -26,10 +23,10 @@ class ChatsScreen extends StatelessWidget {
       child: Scaffold(
         appBar: CustomAppBar(title: localization.chats, isBackButton: false),
         body: StreamBuilder(
-            stream:  _firestore.collection('chats').where('participants', arrayContains: userDetails.userReference).snapshots(),
+            stream:  _firestore.collection('chats').where('participants', arrayContains: userDetails.userReference).orderBy('lastMessageSentAt').snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
-                return Center(
+                return const Center(
                   child: Text('אין עדיין שיחות', style: kBlackHeaderTextStyle,)
                 );
               }
@@ -40,8 +37,9 @@ class ChatsScreen extends StatelessWidget {
               }
               return ListView(
                 // reverse: true,
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                 children: chatCards,
+
               );
               }
 
@@ -105,17 +103,20 @@ class _ChatCardState extends State<ChatCard> {
     } else {
       lastMessage = Message(sender: 0, text: 'no text yet', read: false, sentAt: Timestamp.now().toDate());
     }
-    String otherUserName = await getChatUserName();
-    chatObg.otherParticipantName = otherUserName;
+    List<String> nameAndToken = await getChatUserNameAndToken();
+    chatObg.otherParticipantName = nameAndToken[0];
+    chatObg.otherParticipantToken = nameAndToken[1];
     return chatObg;
   }
 
-  Future<String> getChatUserName() async {
+  Future<List<String>> getChatUserNameAndToken() async {
+    List<String> nameAndToken = [];
     DocumentReference otherParticipantDoc = chatObg.participants[0] == userDetails.userReference ? chatObg.participants[1] : chatObg.participants[0];
     DocumentSnapshot<Object?> otherParticipant = await otherParticipantDoc.get();
     Map<String, dynamic> otherParticipantData = otherParticipant.data() as Map<String, dynamic>;
-    String name = otherParticipant['fullName'];
-    return name;//can also return the full user if needed
+    nameAndToken.add(otherParticipantData['fullName']);
+    nameAndToken.add(otherParticipantData['token']);
+    return nameAndToken;
   }
 
   @override
@@ -123,8 +124,8 @@ class _ChatCardState extends State<ChatCard> {
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, ChatScreen.id, arguments: ChatScreenArguments(chatObg)),
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-        margin: EdgeInsets.symmetric(vertical: 4, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           // color: kBlue,
@@ -134,7 +135,7 @@ class _ChatCardState extends State<ChatCard> {
             future: getChat(widget.chatDoc),
             builder: (context, snapshot){
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator(color: kPastelYellow,));
+                return const Center(child: CircularProgressIndicator(color: kPastelYellow,));
               } else if (snapshot.hasData) {
                 Chat chatData = snapshot.data!;
                 return Row(
@@ -147,11 +148,11 @@ class _ChatCardState extends State<ChatCard> {
                         Text(chatData.lastMessage?.text as String, style: kSmallBlackTextStyle,),
                       ],
                     ),
-                    Text('${chatData.lastMessage?.sentAt.hour}:${chatData.lastMessage?.sentAt.minute}'),
+                    Text(chatData.lastMessage!.sentAtAsString()),
                   ],
                 );
               }
-              return Text('no messages');
+              return const Text('no messages');
             },
         ),
       ),

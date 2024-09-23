@@ -4,7 +4,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/screens/profile_screen.dart';
 import 'package:rent_app/screens/welcome_screen.dart';
 import 'package:rent_app/screens/wishlist_screen.dart';
-import 'package:rent_app/services/user_services.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import '../constants.dart';
@@ -14,7 +13,7 @@ import '../models/user.dart';
 class UserScreen extends StatefulWidget {
   static String id = 'user_screen';
 
-  UserScreen({super.key});
+  const UserScreen({super.key});
 
   @override
   State<UserScreen> createState() => _UserScreenState();
@@ -48,21 +47,21 @@ class _UserScreenState extends State<UserScreen> {
           isBackButton: false,
         ),
         body: Container(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: EdgeInsets.all(30),
+                padding: const EdgeInsets.all(30),
                 width: double.infinity,
                 child: Column(
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
+                      backgroundColor: kLightYellow,
                       child: Icon(
                         Icons.account_circle_rounded,
                         size: 40,
                       ),
-                      backgroundColor: kLightYellow,
                       // radius: 20,
                     ),
                     Text(
@@ -81,7 +80,7 @@ class _UserScreenState extends State<UserScreen> {
                   borderRadius: BorderRadius.circular(10),
                   color: kPastelYellow,
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -104,7 +103,7 @@ class _UserScreenState extends State<UserScreen> {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               buildButton(
@@ -168,8 +167,8 @@ TextButton buildButton(
       style: kBlackTextStyle,
     ),
     icon: CircleAvatar(
-      child: Icon(icon),
       backgroundColor: kPastelYellow,
+      child: Icon(icon),
     ),
   );
 }

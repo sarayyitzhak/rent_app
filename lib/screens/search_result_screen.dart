@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:rent_app/models/category.dart';
 import 'package:flutter/material.dart';
-import 'package:rent_app/widgets/category_list_tile.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:rent_app/widgets/scrollable_item_grid.dart';
 import '../constants.dart';
@@ -64,14 +62,14 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                         controller: searchTextController,
                       ),
                     ),
-                    SizedBox.square(
+                    const SizedBox.square(
                       dimension: 5,
                     ),
                     CircleAvatar(
                       backgroundColor: kPastelYellow,
                       child: IconButton(
                         onPressed: onSearchPressed,
-                        icon: Icon(Icons.search),
+                        icon: const Icon(Icons.search),
                       ),
                     ),
                   ],
@@ -84,28 +82,28 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                     children: [
                       Expanded(
                         child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 10),
-                          child: TextButton(
-                              onPressed: () {}, child: Text('מיון')),
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
                           decoration: BoxDecoration(
                             color: kPastelYellowOpacity,
                             borderRadius: BorderRadius.circular(12),
                           ),
+                          child: TextButton(
+                              onPressed: () {}, child: const Text('מיון')),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
                       Expanded(
                         child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 10),
-
-                          child: TextButton(
-                              onPressed: () {}, child: Text('סינון')),
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
                           decoration: BoxDecoration(
                             color: kPastelYellowOpacity,
                             borderRadius: BorderRadius.circular(12),
                           ),
+
+                          child: TextButton(
+                              onPressed: () {}, child: const Text('סינון')),
                         ),
                       ),
                     ],

@@ -1,11 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/main.dart';
-import 'package:rent_app/screens/item_screen.dart';
-import 'package:rent_app/widgets/wishlist_icon_button.dart';
 import '../constants.dart';
 import '../models/item.dart';
-import 'package:rent_app/main.dart';
 
 class WishlistIconButton extends StatefulWidget {
   Item item;
@@ -20,8 +17,8 @@ class _WishlistIconButtonState extends State<WishlistIconButton> {
   Widget build(BuildContext context) {
     bool isIn = userDetails.wishlist.contains(widget.item.itemReference);
     return IconButton(
-        padding: EdgeInsets.symmetric(horizontal: 3),
-        constraints: BoxConstraints(),
+        padding: const EdgeInsets.symmetric(horizontal: 3),
+        constraints: const BoxConstraints(),
         style: const ButtonStyle(
           tapTargetSize: MaterialTapTargetSize
               .shrinkWrap, // the '2023' part
@@ -43,9 +40,9 @@ class _WishlistIconButtonState extends State<WishlistIconButton> {
 
         },
         icon: CircleAvatar(
-          child: Icon(Icons.favorite, size: 15, color: kWhiteColor,/*color: isIn ? kActiveButtonColor : kWhiteColor,*/),
           radius: kIconRadius,
           backgroundColor: isIn ? Colors.pink.shade200 : kActiveButtonColor,
+          child: const Icon(Icons.favorite, size: 15, color: kWhiteColor,/*color: isIn ? kActiveButtonColor : kWhiteColor,*/),
         ));
   }
 }

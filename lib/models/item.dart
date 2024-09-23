@@ -29,7 +29,7 @@ class Item{
       'imageRef': imageRef,
       'title': title,
       'price': price,
-      'location': {'city': location.addressData['city'], 'road': location.addressData['road'] != null ? location.addressData['road'] : ''},
+      'location': {'city': location.addressData['city'], 'road': location.addressData['road'] ?? ''},
       'description': description,
       'condition': condition.idx,
       'categories': categories.map((c) => c.idx).toList(),

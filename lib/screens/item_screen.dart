@@ -15,16 +15,18 @@ import '../widgets/dial_icon_button.dart';
 
 class ItemScreen extends StatelessWidget {
   static String id = 'item_screen.dart';
-  ItemScreen({super.key});
+  const ItemScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final arg = ModalRoute.of(context)!.settings.arguments as ScreenArguments;
     Item item = arg.item;
     var localization = AppLocalizations.of(context)!;
-    if(!userDetails.seen.contains(item.itemReference)){
+    if (userDetails.userReference != item.contactUser && !userDetails.seen.contains(item.itemReference)) {
       item.itemReference.update({'seenCount': FieldValue.increment(1)});
-      userDetails.userReference.update({'seen': FieldValue.arrayUnion([item.itemReference])});
+      userDetails.userReference.update({
+        'seen': FieldValue.arrayUnion([item.itemReference])
+      });
       userDetails.seen.add(item.itemReference);
     }
 
@@ -37,9 +39,9 @@ class ItemScreen extends StatelessWidget {
           future: getItemContactUser(item),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return Center(child: Text('Error loading seller details'));
+              return const Center(child: Text('Error loading seller details'));
             } else if (snapshot.hasData) {
               UserDetails contactUser = snapshot.data!;
               return Column(
@@ -60,10 +62,46 @@ class ItemScreen extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        arg.isMe
+                            ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Container(
+                            // padding: EdgeInsets.all(10),
+                              margin: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                  color: kPastelYellowOpacity,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: ListTile(
+                                title: Text(
+                                  '${item.likesCount} אנשים אהבו את המודעה ', style: kSmallBlackTextStyle,),
+                                leading: const Icon(Icons.favorite),
+                                iconColor: Colors.pinkAccent,
+                              ) //Text('${item.likesCount} אנשים אהבו את המודעה שלך'),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            margin: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                color: kPastelYellowOpacity,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: ListTile(
+                              title: Text(
+                                '${item.seenCount} אנשים צפו במודעה ', style: kSmallBlackTextStyle,),
+                              leading: const Icon(Icons.remove_red_eye),
+                              iconColor: Colors.blue.shade800,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                            : Container(),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           child: Text(
@@ -75,18 +113,18 @@ class ItemScreen extends StatelessWidget {
                           item.description,
                           style: kSmallBlackTextStyle,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         Container(
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: kPastelYellowOpacity,
                           ),
                           child: Text(item.condition.title),
                         ),
-                        Divider(
+                        const Divider(
                           color: Colors.grey,
                           thickness: 1,
                         ),
@@ -111,12 +149,11 @@ class ItemScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
-
-                            DialIconButton(phoneNumber: '0${contactUser.phoneNumber}'),
+                            DialIconButton(
+                                phoneNumber: '0${contactUser.phoneNumber}'),
                           ],
                         ),
-
-                        Divider(
+                        const Divider(
                           color: Colors.grey,
                           thickness: 1,
                         ),
@@ -132,13 +169,12 @@ class ItemScreen extends StatelessWidget {
                                 : Row(
                                     children: [
                                       WishlistIconButton(item: item),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 5,
                                       ),
                                       ChatIconButton(
                                         item: item,
                                       ),
-
                                     ],
                                   )
                           ],
@@ -150,7 +186,7 @@ class ItemScreen extends StatelessWidget {
                               localization.usersReviews,
                               style: kSmallBlackTextStyle,
                             ),
-                            Text('9.8'),
+                            const Text('9.8'),
                           ],
                         ),
                       ],

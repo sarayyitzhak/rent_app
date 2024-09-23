@@ -22,7 +22,7 @@ class WelcomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image.asset(kYellowLogoImage),
-              Text(
+              const Text(
                 'BORRO',
                 style: TextStyle(
                     color: kPastelYellow,

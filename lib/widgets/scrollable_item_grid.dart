@@ -22,12 +22,12 @@ class ScrollableItemGrid extends StatelessWidget {
                 shrinkWrap: true,
                 crossAxisSpacing: 0,
                 childAspectRatio: 0.71,
-                children: itemCards as List<Widget>,
                 controller: controller,
+                children: itemCards as List<Widget>,
               ),
             );
           } else {
-            return Container(
+            return SizedBox(
               height: 600,
               child: GridView.count(
                 crossAxisCount: 2,

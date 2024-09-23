@@ -1,15 +1,11 @@
-import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:provider/provider.dart';
-import 'package:rent_app/models/Message.dart';
 import 'package:rent_app/models/chat.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/screens/chat_screen.dart';
-import 'package:rent_app/screens/item_screen.dart';
-import 'package:rent_app/widgets/wishlist_icon_button.dart';
 import '../constants.dart';
 
 import '../models/item.dart';
@@ -97,31 +93,28 @@ class _ChatIconButtonState extends State<ChatIconButton> {
     final isar = Provider.of<Isar>(context);
 
     return IconButton(
-        padding: EdgeInsets.all(3),
-        constraints: BoxConstraints(),
+        padding: const EdgeInsets.all(3),
+        constraints: const BoxConstraints(),
         style: const ButtonStyle(
           tapTargetSize: MaterialTapTargetSize.shrinkWrap, // the '2023' part
         ),
         onPressed: () async {
           Chat? chat = await getChat();
           Chat newChat;
-          if(chat == null) {
-            //create chat
-            chat = await createNewChat(isar);
-          }
+          chat ??= await createNewChat(isar);
           DocumentSnapshot<Object?> contactUser = await widget.item.contactUser.get();
           Map<String, dynamic> contactUserData = contactUser.data() as Map<String, dynamic>;
           chat.otherParticipantName = contactUserData['fullName'];
           goToChat(chat);
         },
-        icon: CircleAvatar(
+        icon: const CircleAvatar(
+          radius: kIconRadius,
+          backgroundColor: kActiveButtonColor,
           child: Icon(
             Icons.chat_bubble,
             size: 15,
             color: kWhiteColor,
           ),
-          radius: kIconRadius,
-          backgroundColor: kActiveButtonColor,
         ));
   }
 }

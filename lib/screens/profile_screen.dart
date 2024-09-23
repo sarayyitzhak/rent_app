@@ -2,13 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/main.dart';
-import 'package:rent_app/models/category.dart';
 import 'package:flutter/material.dart';
-import 'package:rent_app/widgets/category_list_tile.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
-import 'package:rent_app/widgets/scrollable_item_grid.dart';
 import '../constants.dart';
-import '../services/firebase_services.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/text_and_text_field.dart';
 
@@ -63,17 +59,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Align(alignment:Alignment.center, child: CircleAvatar(child: Icon(Icons.person, size: 30,), radius: 40,)),
-              SizedBox.square(dimension: 15,),
+              const Align(alignment:Alignment.center, child: CircleAvatar(radius: 40,child: Icon(Icons.person, size: 30,),)),
+              const SizedBox.square(dimension: 15,),
               Align(alignment: Alignment.center, child: Text(userDetails.name, style: kBlackHeaderTextStyle,)),
-              SizedBox.square(dimension: 20,),
+              const SizedBox.square(dimension: 20,),
               TextAndTextField(title: localization.fullName, controller: nameController,),
               TextAndTextField(title: localization.email, controller: emailController, keyboardType: TextInputType.emailAddress,),
               TextAndTextField(title: localization.mobileNumber, controller: phoneNumberController, keyboardType: TextInputType.phone),
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               Center(

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:isar/isar.dart';
 import 'package:provider/provider.dart';
 import 'package:rent_app/constants.dart';
@@ -14,7 +13,6 @@ import 'package:rent_app/screens/user_items_screen.dart';
 import '../db/messageDB.dart';
 import 'home_screen.dart';
 import 'user_screen.dart';
-import 'login_screen.dart';
 
 // Position? currentPosition;
 // String? cityName;
@@ -29,15 +27,16 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedBottomBarIndex = 0;
+  final _messaging = FirebaseMessaging.instance;
 
 
-  static List<Widget> _widgetOptions = <Widget>[
-    HomeScreen(),
-    SearchScreen(),
-    UserItemsScreen(),
+  static final List<Widget> _widgetOptions = <Widget>[
+    const HomeScreen(),
+    const SearchScreen(),
+    const UserItemsScreen(),
     ChatsScreen(),
     // LoginScreen(),
-    UserScreen(),
+    const UserScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -178,15 +177,90 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  @override
-  void initState() {
-    getUser();
-    // getLoc();
-    super.initState();
+  void requestPermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+      print('User granted provisional permission');
+    } else {
+      print('User declined or has not accepted permission');
+    }
+  }
+
+  void _showInAppAlert(BuildContext context, String? title, String? body) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title ?? 'Notification'),
+          content: Text(body ?? 'You have received a new message.'),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
+  void initState() {
+    super.initState();
+    getUser();
+    // _messaging.getToken().then((String? token) {
+    //   if (token != null) {
+    //     userDetails.token = token;
+    //     userDetails.userReference.update({'token': token});
+    //   }
+    // });
+    // requestPermission();
+    // FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+    //   userDetails.token = newToken;
+    //   FirebaseFirestore.instance.collection('users').doc(userUid).update({
+    //     'token': newToken,
+    //   });
+    // });
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //   if (message.notification != null) {
+    //     _showInAppAlert(context, message.notification!.title, message.notification!.body);
+    //   }
+    // });
+  }
+
+
+
+  @override
   Widget build(BuildContext context) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Received a message while in the foreground!');
+      print('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('Message clicked!');
+    });
+
+
     final isar = Provider.of<Isar>(context);
     // syncData(isar);
     return Scaffold(

@@ -1,6 +1,5 @@
 
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 const kYellowLogoImage = 'assets/images/handshake_yellow.png';

@@ -6,7 +6,7 @@ class ReusableCard extends StatefulWidget {
   final Function()? onPress;
   bool isPressed = false;
 
-  ReusableCard({required this.color, required this.cardChild, required this.onPress, this.isPressed = false});
+  ReusableCard({super.key, required this.color, required this.cardChild, required this.onPress, this.isPressed = false});
 
   @override
   State<ReusableCard> createState() => _ReusableCardState();
@@ -18,13 +18,13 @@ class _ReusableCardState extends State<ReusableCard> {
     return GestureDetector(
       onTap: widget.onPress,
       child: Container(
-        padding: EdgeInsets.all(20),
-        margin: EdgeInsets.all(10),
-        child: widget.cardChild,
+        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: widget.color,
           borderRadius: BorderRadius.circular(10),
         ),
+        child: widget.cardChild,
       ),
     );
   }

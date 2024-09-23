@@ -17,7 +17,7 @@ class CategoryScreen extends StatelessWidget {
     List<Widget> subCategories = [];
     for(String title in titles){
       subCategories.add(TextButton(onPressed: () {}, child: Text(title)));
-      subCategories.add(Container(padding: EdgeInsets.symmetric(horizontal: 5), child: VerticalDivider(color: kPastelYellow, width: 3, thickness: 1,), height: 10,));
+      subCategories.add(Container(padding: const EdgeInsets.symmetric(horizontal: 5), height: 10, child: const VerticalDivider(color: kPastelYellow, width: 3, thickness: 1,),));
     }
     return subCategories;
   }
@@ -41,7 +41,7 @@ class CategoryScreen extends StatelessWidget {
           children: [
             Container(
               height: 35,
-              margin: EdgeInsets.symmetric(vertical: 10),
+              margin: const EdgeInsets.symmetric(vertical: 10),
               child: buildListView(),
             ),
             Expanded(

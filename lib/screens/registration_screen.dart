@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/main.dart';
@@ -22,6 +22,8 @@ class RegistrationScreen extends StatefulWidget {
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
+  final _messaging = FirebaseMessaging.instance;
+
 
   late TextEditingController nameController;
   late TextEditingController emailController;
@@ -70,26 +72,30 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       }
       final newUser = await _auth.createUserWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
-      if (newUser != null) {
-        userUid = newUser.user?.uid;
-        DocumentReference userReference =
-            _firestore.collection('users').doc(userUid);
-        userDetails = UserDetails(
-            userReference: userReference,
-            name: nameController.text,
-            email: emailController.text,
-            phoneNumber: int.parse(phoneNumberController.text),
-            items: [],
-            wishlist: [],
-            seen: [],
-            chats: []);
-        userReference.set(userDetails.userAsMap());
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          MainScreen.id,
-          (Route<dynamic> route) => false, // This removes all previous routes
-        );
-      }
-    } catch (e) {
+      userUid = newUser.user?.uid;
+      DocumentReference userReference =
+          _firestore.collection('users').doc(userUid);
+      userDetails = UserDetails(
+          userReference: userReference,
+          name: nameController.text,
+          email: emailController.text,
+          phoneNumber: int.parse(phoneNumberController.text),
+          items: [],
+          wishlist: [],
+          seen: [],
+          chats: []
+      );
+      _messaging.getToken().then((String? token) {
+        if (token != null) {
+          userDetails.token = token;
+        }
+      });
+      userReference.set(userDetails.userAsMap());
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        MainScreen.id,
+        (Route<dynamic> route) => false, // This removes all previous routes
+      );
+        } catch (e) {
       print(e); //TODO
     }
   }
@@ -138,7 +144,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   controller: confirmPasswordController,
                   isObscureText: true,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 25,
                 ),
                 Align(
@@ -147,7 +153,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       localization.byContinuingYouAgreeToTerms,
                       style: kSmallBlackTextStyle,
                     )), //TODO
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 Center(

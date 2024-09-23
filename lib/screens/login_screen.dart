@@ -51,25 +51,23 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               Text(localization.welcome, style: kBlackHeaderTextStyle,),
               Text(localization.pleaseEnterYourDetailsToProceed, style: kSmallBlackTextStyle,),
-              SizedBox(
+              const SizedBox(
                 height: 50,
               ),
               TextAndTextField(title: localization.usernameOrEmail, controller: emailController, keyboardType: TextInputType.emailAddress,),
               TextAndTextField(title: localization.password, controller: passwordController, isObscureText: true,),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Center(
                 child: CustomButton(title: localization.login, buttonStyle: kDarkButtonStyle, onPress: () async {
                   try{
                     final user = await _auth.signInWithEmailAndPassword(email: emailController.text, password: passwordController.text);
-                    if(user != null){
-                      userUid = user.user?.uid;
-                      Navigator.of(context).pushNamedAndRemoveUntil(MainScreen.id,
-                            (Route<dynamic> route) => false, // This removes all previous routes
-                      );
-                    }
-                  } catch (e) {
+                    userUid = user.user?.uid;
+                    Navigator.of(context).pushNamedAndRemoveUntil(MainScreen.id,
+                          (Route<dynamic> route) => false, // This removes all previous routes
+                    );
+                                    } catch (e) {
                     print(e);
                   }
                 }, ),
@@ -77,13 +75,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
               Center(
                 child: TextButton(
-                  child: Text(localization.forgotPassword),
                   style: TextButton.styleFrom(
                     foregroundColor: kBlackColor,
                   ),
                   onPressed: () {
                     //TODO
                   },
+                  child: Text(localization.forgotPassword),
                 ),
               ),
               //TODO: continue

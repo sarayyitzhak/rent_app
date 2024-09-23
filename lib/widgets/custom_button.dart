@@ -9,14 +9,11 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 250,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton(
-          child: Text(
-            title,
-          ),
           onPressed: onPress,
           // style: buttonStyle,
           style: ElevatedButton.styleFrom(
@@ -24,6 +21,9 @@ class CustomButton extends StatelessWidget {
             backgroundColor: kPastelYellow,
             elevation: 7,
             textStyle: kButtonTextStyle
+          ),
+          child: Text(
+            title,
           ),
         ),
       ),

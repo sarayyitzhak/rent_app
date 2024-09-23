@@ -87,7 +87,7 @@ Future<List<Item>> _getItemsByCategory(FirebaseFirestore firestore, ItemCategory
   if (itemsDoc.isNotEmpty) {
     for (var itemDoc in itemsDoc) {
       Map<String, dynamic>? itemData = itemDoc.data();
-      var item = await mapAsItem(itemData, itemDoc.reference);
+      var item = mapAsItem(itemData, itemDoc.reference);
       if(item.contactUser != userDetails.userReference/* && !items.contains(item)*/){
         items.add(item);
       }
@@ -105,7 +105,7 @@ Future<List<Item>> _getItemsLastSeen(FirebaseFirestore firestore) async {
     for (var lastSeenItem in lastSeen) {
       var itemDoc = await lastSeenItem.get();
       Map<String, dynamic> itemData = itemDoc.data();
-      var item = await mapAsItem(itemData, itemDoc.reference);
+      var item = mapAsItem(itemData, itemDoc.reference);
       if (item.contactUser !=
           userDetails.userReference /* && !items.contains(item)*/) {
         items.add(item);
@@ -123,7 +123,7 @@ Future<List<Item>> _getItemsByLocation(FirebaseFirestore firestore, Position pos
   if (itemsDoc.isNotEmpty) {
     for (var itemDoc in itemsDoc) {
       Map<String, dynamic>? itemData = itemDoc.data();
-      var item = await mapAsItem(itemData, itemDoc.reference);
+      var item = mapAsItem(itemData, itemDoc.reference);
       if(item.contactUser != userDetails.userReference/* && !items.contains(item)*/){
         items.add(item);
       }
@@ -140,7 +140,7 @@ Future<List<Item>> _getItemsByContactUser(FirebaseFirestore firestore, DocumentR
   if (itemsDoc.isNotEmpty) {
     for (var itemDoc in itemsDoc) {
       Map<String, dynamic>? itemData = itemDoc.data();
-      var item = await mapAsItem(itemData, itemDoc.reference);
+      var item = mapAsItem(itemData, itemDoc.reference);
       items.add(item);
     }
   }

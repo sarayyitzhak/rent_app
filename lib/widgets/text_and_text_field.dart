@@ -10,7 +10,7 @@ class TextAndTextField extends StatelessWidget {
   int? maxLines;
   TextInputAction textInputAction;
   bool textCapitalization;
-  TextAndTextField({super.key, required this.title, required this.controller, this.keyboardType = TextInputType.text, this.isObscureText = false, this.onTapped = null, this.maxLines = 1, this.textInputAction = TextInputAction.next, this.textCapitalization = false});
+  TextAndTextField({super.key, required this.title, required this.controller, this.keyboardType = TextInputType.text, this.isObscureText = false, this.onTapped, this.maxLines = 1, this.textInputAction = TextInputAction.next, this.textCapitalization = false});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class TextAndTextField extends StatelessWidget {
           textInputAction: textInputAction,
           obscureText: isObscureText,
         ),
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
       ],

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,8 +14,6 @@ import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/services/address_services.dart';
 import 'dart:async';
 
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:path_provider/path_provider.dart';
 import '../models/item.dart';
 
 final _firestore = FirebaseFirestore.instance;
@@ -176,6 +175,8 @@ List<AddressInfo> addressValues = [
 ];
 List categories = ItemCategory.values;
 List images = [];
+final _messaging = FirebaseMessaging.instance;
+
 
 Future<File> getImageFileFromAssets(String path) async {
   var image = Image.asset(path);
@@ -201,9 +202,7 @@ Future<void> onRegisterButtonPressed(int idx) async {
   String email = 'mail${idx.toString()}@gmail.com';
 
   final user = await _auth.signInWithEmailAndPassword(email: email, password: '123456');
-  if(user != null) {
-    userUidRand = user.user?.uid;
-  }
+  userUidRand = user.user?.uid;
   userReference = _firestore.collection('users').doc(userUidRand);
   userDetailsRand = UserDetails(
       userReference: userReference,
@@ -213,7 +212,13 @@ Future<void> onRegisterButtonPressed(int idx) async {
       items: [],
       wishlist: [],
       seen: [],
-      chats: []);
+      chats: [],
+  );
+  _messaging.getToken().then((String? token) {
+    if (token != null) {
+      userDetailsRand.token = token;
+    }
+  });
   userReference.set(userDetailsRand.userAsMap());
 
   sleep(Durations.long4);
