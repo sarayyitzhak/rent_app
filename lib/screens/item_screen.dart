@@ -41,7 +41,7 @@ class ItemScreen extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return const Center(child: Text('Error loading seller details'));
+              return Center(child: Text(localization.errorLoadingSellerDetails));
             } else if (snapshot.hasData) {
               UserDetails contactUser = snapshot.data!;
               return Column(
@@ -194,7 +194,7 @@ class ItemScreen extends StatelessWidget {
                   ),
                   Center(
                       child: CustomButton(
-                          title: arg.isMe ? 'ערוך' : localization.rentItem,
+                          title: arg.isMe ? localization.edit : localization.rentItem,
                           onPress: () {})),
                 ],
               );

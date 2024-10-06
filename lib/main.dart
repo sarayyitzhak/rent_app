@@ -60,6 +60,28 @@ void main() async {
       projectId: 'renal-app',
       storageBucket: 'renal-app.appspot.com',
     ));
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //   print('New message notification!');
+    //   print('Message data: ${message.data}');
+    //
+    //   if (message.notification != null) {
+    //     print('Notification title: ${message.notification?.title}');
+    //     print('Notification body: ${message.notification?.body}');
+    //     // Display notification or update chat UI
+    //   }
+    // });
+    //
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('Notification clicked!');
+      // Navigate to the chat screen using the chatId passed in the data payload
+      // Navigator.of(context).pushNamed('/chat', arguments: message.data['chatId']);
+    });
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     FirebaseAppCheck firebaseAppCheck =  await FirebaseAppCheck.instance.activate(
       webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
@@ -138,7 +160,7 @@ class MyApp extends StatelessWidget {
           ItemScreen.id: (context) => const ItemScreen(),
           WishlistScreen.id: (context) => const WishlistScreen(),
           ChatsScreen.id: (context) => ChatsScreen(),
-          ChatScreen.id: (context) => const ChatScreen(),
+          ChatScreen.id: (context) => ChatScreen(),
           SearchScreen.id: (context) => const SearchScreen(),
           SearchResultScreen.id: (context) => const SearchResultScreen(),
           CategoryScreen.id: (context) => CategoryScreen(),

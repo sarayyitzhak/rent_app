@@ -63,6 +63,16 @@
   "rentItem": "Rent",
   "item": "Item",
   "contactUserDetails": "Contact User Details",
-  "chats": "Chats"
+  "chats": "Chats",
+  "pleaseChooseLocation": "Please choose location",
+  "set": "Set",
+  "noImageSelected": "No image selected",
+  "noMessages": "No messages",
+  "noChatsYet": "No chats yet",
+  "errorLoadingSellerDetails": "Error loading seller details",
+  "edit": "Edit",
+  "sort": "Sort",
+  "filter": "Filter"
+
 
 }

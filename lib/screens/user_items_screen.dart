@@ -9,6 +9,7 @@ import 'package:rent_app/widgets/custom_button.dart';
 import 'package:rent_app/widgets/scrollable_item_grid.dart';
 import '../main.dart';
 import '../services/firebase_services.dart';
+import '../widgets/dynamic_scrollable_item_grid.dart';
 
 class UserItemsScreen extends StatefulWidget {
   static String id = 'user_items_screen';
@@ -38,7 +39,9 @@ class _UserItemsScreenState extends State<UserItemsScreen> {
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Expanded(child: ScrollableItemGrid(future: getItemsFilterByContactUser(_firestore, userDetails.userReference))),
+          Expanded(child: DynamicScrollableItemGrid(stream: _firestore.collection('items').where(
+              'contactUser', isEqualTo: userDetails.userReference).orderBy('createdAt', descending: true).snapshots(),)),
+          // Expanded(child: ScrollableItemGrid(future: getItemsFilterByContactUser(_firestore, userDetails.userReference))),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: CustomButton(

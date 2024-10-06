@@ -66,6 +66,10 @@ dependencies:
   firebase_messaging: ^15.1.0
 
   http: any
+  awesome_notifications: ^0.9.3+1
+  flutter_sound: ^9.6.0
+  permission_handler: ^11.3.1
+  audioplayers: ^6.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

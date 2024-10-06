@@ -33,10 +33,20 @@ Future<List> getItemsFilterByTitle(FirebaseFirestore firestore, String title) as
   List<Item> items = await _getItemsByTitle(firestore, title);
   return _getItemCards(items);
 }
+//TODO: check if needed
+// Future<List> getItemsFilterByContactUser(FirebaseFirestore firestore, DocumentReference contactUser) async {
+//   List<Item> items = await _getItemsByContactUser(firestore, contactUser);
+//   return _getItemCards(items);
+// }
 
-Future<List> getItemsFilterByContactUser(FirebaseFirestore firestore, DocumentReference contactUser) async {
-  List<Item> items = await _getItemsByContactUser(firestore, contactUser);
-  return _getItemCards(items);
+List<ItemCard> getItemsByStream(dynamic items){
+  List<Item> itemsList = [];
+  for (var itemDoc in items) {
+    Map<String, dynamic>? itemData = itemDoc.data();
+    var item = mapAsItem(itemData!, itemDoc.reference);
+    itemsList.add(item);
+  }
+  return _getItemCards(itemsList);
 }
 
 

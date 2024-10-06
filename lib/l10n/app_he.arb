@@ -63,7 +63,16 @@
   "rentItem": "השכר",
   "item": "מוצר",
   "contactUserDetails": "פרטי איש קשר",
-  "chats": "צ'אטים"
+  "chats": "צ'אטים",
+  "pleaseChooseLocation": "אנא בחר מיקום",
+  "set": "בחר",
+  "noImageSelected": "לא נבחרו תמונות",
+  "noMessages": "אין הודעות",
+  "noChatsYet": "אין עדיין שיחות",
+  "errorLoadingSellerDetails": "תקלה בטעינת פרטי המוכר",
+  "edit": "ערוך",
+  "sort": "מיון",
+  "filter": "סינון"
 
 
 }

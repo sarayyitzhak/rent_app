@@ -53,27 +53,5 @@ ItemCategory getCategoryByTitle(String title) {
 }
 
 ItemCategory getCategoryByIdx(int idx) {
-  switch (idx) {
-    case 0:
-      return ItemCategory.TOOLS;
-    case 1:
-      return ItemCategory.SPORT;
-    case 2:
-      return ItemCategory.CAMPING;
-    case 3:
-      return ItemCategory.KITCHEN;
-    case 4:
-      return ItemCategory.SCHOOL;
-    case 5:
-      return ItemCategory.EVENTS;
-    case 6:
-      return ItemCategory.TRAVEL;
-    case 7:
-      return ItemCategory.BOATS;
-    case 8:
-      return ItemCategory.GAMES;
-    case 9:
-      return ItemCategory.PETS;
-  }
-  return ItemCategory.PETS;
+  return ItemCategory.values[idx];
 }

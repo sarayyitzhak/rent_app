@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/db/chatDB.dart';
@@ -199,21 +202,41 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
+
+  Future<void> requestMicrophonePermission() async {
+    await Permission.microphone.request();
+  }
+
   void _showInAppAlert(BuildContext context, String? title, String? body) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title ?? 'Notification'),
-          content: Text(body ?? 'You have received a new message.'),
-          actions: [
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
+        return Container(
+          width: double.infinity,
+          // margin: EdgeInsets.all(5),
+          child: AlertDialog(
+            // icon: Icon(Icons.chat),
+            title: Text(title ?? 'Notification'),
+            content: Text(body ?? 'You have received a new message.'),
+            alignment: Alignment.topCenter,
+            titleTextStyle: kBlackTextStyle,
+            contentTextStyle: kSmallBlackTextStyle,
+            titlePadding: EdgeInsets.all(4),
+            contentPadding: EdgeInsets.all(4),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
-          ],
+            insetPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+
+            // actions: [
+            //   TextButton(
+            //     child: const Text('OK'),
+            //     onPressed: () {
+            //       Navigator.of(context).pop(); // Close the dialog
+            //     },
+            //   ),
+            // ],
+          ),
         );
       },
     );
@@ -223,44 +246,34 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     getUser();
+    // sleep(Duration(seconds: 5));
     // _messaging.getToken().then((String? token) {
     //   if (token != null) {
     //     userDetails.token = token;
-    //     userDetails.userReference.update({'token': token});
+    //     // userDetails.userReference.update({'token': token});
     //   }
     // });
-    // requestPermission();
+    requestMicrophonePermission();
+    requestPermission();
     // FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
     //   userDetails.token = newToken;
     //   FirebaseFirestore.instance.collection('users').doc(userUid).update({
     //     'token': newToken,
     //   });
     // });
-    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    //   if (message.notification != null) {
-    //     _showInAppAlert(context, message.notification!.title, message.notification!.body);
-    //   }
-    // });
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        print('Notification title: ${message.notification?.title}');
+        print('Notification body: ${message.notification?.body}');
+        _showInAppAlert(context, message.notification!.title, message.notification!.body);
+      }
+    });
   }
 
 
 
   @override
   Widget build(BuildContext context) {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Received a message while in the foreground!');
-      print('Message data: ${message.data}');
-
-      if (message.notification != null) {
-        print('Message also contained a notification: ${message.notification}');
-      }
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('Message clicked!');
-    });
-
-
     final isar = Provider.of<Isar>(context);
     // syncData(isar);
     return Scaffold(

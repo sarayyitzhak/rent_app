@@ -10,7 +10,7 @@ import 'package:rent_app/models/category.dart';
 import '../services/firebase_services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
-
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 Position? currentPosition;
 String? cityName;
@@ -112,6 +112,41 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _showInAppAlert(BuildContext context, String? title, String? body) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          width: double.infinity,
+          // margin: EdgeInsets.all(5),
+          child: AlertDialog(
+            // icon: Icon(Icons.chat),
+            title: Text(title ?? 'Notification'),
+            content: Text(body ?? 'You have received a new message.'),
+            alignment: Alignment.topCenter,
+            titleTextStyle: kBlackTextStyle,
+            contentTextStyle: kSmallBlackTextStyle,
+            titlePadding: EdgeInsets.all(4),
+            contentPadding: EdgeInsets.all(4),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            insetPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+
+            // actions: [
+            //   TextButton(
+            //     child: const Text('OK'),
+            //     onPressed: () {
+            //       Navigator.of(context).pop(); // Close the dialog
+            //     },
+            //   ),
+            // ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -128,6 +163,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+        //       TextButton(onPressed: (){
+        // _showInAppAlert(context, 'הודעה חדשה מחיים משה', 'מה קורה?');
+        //
+        // }, child: Text('press')),
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(

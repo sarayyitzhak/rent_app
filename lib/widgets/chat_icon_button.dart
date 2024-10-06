@@ -39,12 +39,12 @@ class _ChatIconButtonState extends State<ChatIconButton> {
     chatDoc.set({
       'participants': [userDetails.userReference, widget.item.contactUser],
     });
-    chatDoc.collection('messages').add({//do it after first message is sent
-      'sender': 1,
-      'text': 'hi how are you',
-      'sentAt': Timestamp.now(),
-      'read': true,
-    });
+    // chatDoc.collection('messages').add({//do it after first message is sent
+    //   'sender': 1,
+    //   'text': 'hi how are you',
+    //   'sentAt': Timestamp.now(),
+    //   'read': true,
+    // });
     // Chat chat = Chat()..participants = participants.map((p) => p.path).toList()..cloudKey = chatDoc.id;
     // await isar.writeTxn(() async {
     //   await isar.chats.put(chat);

@@ -88,7 +88,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: TextButton(
-                              onPressed: () {}, child: const Text('מיון')),
+                              onPressed: () {}, child: Text(localization.sort)),
                         ),
                       ),
                       const SizedBox(
@@ -101,9 +101,8 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                             color: kPastelYellowOpacity,
                             borderRadius: BorderRadius.circular(12),
                           ),
-
                           child: TextButton(
-                              onPressed: () {}, child: const Text('סינון')),
+                              onPressed: () {}, child: Text(localization.filter)),
                         ),
                       ),
                     ],

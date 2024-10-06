@@ -87,7 +87,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Please choose location'),
+          title: Text(localization.pleaseChooseLocation),
           insetPadding: const EdgeInsets.all(0),
           contentPadding: const EdgeInsets.all(8),
           content: SizedBox(
@@ -130,7 +130,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
               ),
-              child: const Text('Set'),
+              child: Text(localization.set),
               onPressed: () {
                 Navigator.of(context).pop();
                 FocusScope.of(context).unfocus();
@@ -206,7 +206,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     );
   }
 
-  Container buildImageContainer() {
+  Container buildImageContainer(var localization) {
     return Container(
         height: 200,
         width: double.infinity,
@@ -225,7 +225,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     height: 150, // specify desired height
                     fit: BoxFit.fill,
                   )
-                : const Text('No image selected.'),
+                : Text(localization.noImageSelected),
             addImageButton(),
           ],
         ));
@@ -285,8 +285,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
       //problem
     }
     Navigator.pop(context);
-    // Navigator.pop(context);
-    Navigator.popAndPushNamed(context, UserItemsScreen.id);
+    Navigator.pop(context);
+    // Navigator.popAndPushNamed(context, UserItemsScreen.id);
   }
 
   @override
@@ -301,7 +301,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                buildImageContainer(),
+                buildImageContainer(localization),
                 TextAndTextField(
                     title: localization.title, controller: titleController),
                 TextAndTextField(

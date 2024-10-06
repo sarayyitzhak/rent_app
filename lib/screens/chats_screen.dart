@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
-import 'package:rent_app/models/Message.dart';
 import 'package:rent_app/models/chat.dart';
 import 'package:rent_app/screens/chat_screen.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../main.dart';
+import '../models/message.dart';
 
 class ChatsScreen extends StatelessWidget {
   static String id = 'chats_screen.dart';
@@ -26,8 +26,8 @@ class ChatsScreen extends StatelessWidget {
             stream:  _firestore.collection('chats').where('participants', arrayContains: userDetails.userReference).orderBy('lastMessageSentAt').snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
-                return const Center(
-                  child: Text('אין עדיין שיחות', style: kBlackHeaderTextStyle,)
+                return Center(
+                  child: Text(localization.noChatsYet, style: kBlackHeaderTextStyle,)
                 );
               }
               final chats = snapshot.data?.docs.reversed;
@@ -42,28 +42,7 @@ class ChatsScreen extends StatelessWidget {
 
               );
               }
-
         )
-        // FutureBuilder<int>(
-        //   future: getChatsCount(isar),
-        //   builder: (context, snapshot) {
-        //     if (snapshot.connectionState == ConnectionState.waiting) {
-        //       return Center(child: CircularProgressIndicator());
-        //     } else if (snapshot.hasError) {
-        //       return Center(child: Text('Error loading chats count'));
-        //     } else if (snapshot.hasData) {
-        //       int chatsCount = snapshot.data!;
-        //       return ListView.builder(
-        //         itemCount: chatsCount,
-        //         itemBuilder: (context, index) {
-        //           return ChatCard(index: index, isar: isar);
-        //         },
-        //       );
-        //     } else {
-        //       return Center(child: Text('No chats available'));
-        //     }
-        //   },
-        // ),
       ),
     );
   }
@@ -98,10 +77,10 @@ class _ChatCardState extends State<ChatCard> {
     if(lastMessageSnapshot.docs.isNotEmpty){
       var lastMessageDoc = lastMessageSnapshot.docs.first;
       lastMessageData = lastMessageDoc.data();
-      lastMessage = Message(sender: lastMessageData['sender'], text: lastMessageData['text'], read: lastMessageData['read'], sentAt: lastMessageData['sentAt'].toDate());
+      lastMessage = mapAsMessage(lastMessageData);
       chatObg = Chat(participants: participants, cloudKey: chat.reference, lastMessage: lastMessage);
     } else {
-      lastMessage = Message(sender: 0, text: 'no text yet', read: false, sentAt: Timestamp.now().toDate());
+      lastMessage = mapAsMessage({'sender': 0, 'text': 'no text yet', 'read': false, 'sentAt': Timestamp.now().toDate()});
     }
     List<String> nameAndToken = await getChatUserNameAndToken();
     chatObg.otherParticipantName = nameAndToken[0];
@@ -121,6 +100,7 @@ class _ChatCardState extends State<ChatCard> {
 
   @override
   Widget build(BuildContext context) {
+    var localization = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, ChatScreen.id, arguments: ChatScreenArguments(chatObg)),
       child: Container(
@@ -152,7 +132,7 @@ class _ChatCardState extends State<ChatCard> {
                   ],
                 );
               }
-              return const Text('no messages');
+              return Text(localization.noMessages);
             },
         ),
       ),

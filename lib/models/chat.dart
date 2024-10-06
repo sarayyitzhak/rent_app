@@ -1,6 +1,6 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:rent_app/models/Message.dart';
+import 'package:rent_app/models/message.dart';
 
 class Chat{
   DocumentReference cloudKey;

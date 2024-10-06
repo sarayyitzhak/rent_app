@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rent_app/widgets/dynamic_scrollable_item_grid.dart';
 import 'package:rent_app/widgets/scrollable_item_grid.dart';
 import '../main.dart';
 import '../services/firebase_services.dart';
@@ -20,6 +21,7 @@ class WishlistScreen extends StatelessWidget {
         children: [
           Expanded(
             child: ScrollableItemGrid(future: getUserItemsByField(userDetails, 'wishlist')),
+              // DynamicScrollableItemGrid(stream: stream)
           ),
         ],
       ),
