@@ -7,16 +7,18 @@ import 'package:rent_app/screens/category_screen.dart';
 import 'package:rent_app/screens/chat_screen.dart';
 import 'package:rent_app/screens/chats_screen.dart';
 import 'package:rent_app/screens/item_screen.dart';
+import 'package:rent_app/screens/pending_requests_screen.dart';
 import 'package:rent_app/screens/profile_screen.dart';
+import 'package:rent_app/screens/rental_screen.dart';
+import 'package:rent_app/screens/request_submitted_screen.dart';
 import 'package:rent_app/screens/search_result_screen.dart';
 import 'package:rent_app/screens/search_screen.dart';
 import 'package:rent_app/screens/user_items_screen.dart';
 import 'package:rent_app/screens/wishlist_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:rent_app/services/user_services.dart';
+import 'package:rent_app/services/cloud_services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/screens/login_screen.dart';
@@ -31,9 +33,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'db/chatDB.dart';
 import 'db/messageDB.dart';
-// import 'db/chat.g.dart';
-// import 'message.g.dart';
-
 
 String? userUid;
 late UserDetails userDetails;
@@ -66,17 +65,6 @@ void main() async {
       badge: true,
       sound: true,
     );
-    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    //   print('New message notification!');
-    //   print('Message data: ${message.data}');
-    //
-    //   if (message.notification != null) {
-    //     print('Notification title: ${message.notification?.title}');
-    //     print('Notification body: ${message.notification?.body}');
-    //     // Display notification or update chat UI
-    //   }
-    // });
-    //
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('Notification clicked!');
       // Navigate to the chat screen using the chatId passed in the data payload
@@ -115,14 +103,12 @@ void main() async {
 class MyApp extends StatelessWidget {
   final Isar isar;
   MyApp({super.key, required this.isar});
-  final _auth = FirebaseAuth.instance;
   String initRoute = WelcomeScreen.id;
-  UserServices userServices = UserServices(FirebaseAuth.instance, null); // ????
 
-  String checkUserConnected() {
+  String getInitialScreen() {
     try {
-      final user = _auth.currentUser;
-      userUid = userServices.getCurrentUser()?.uid;
+      final user = getCurrentUser();
+      userUid = user?.uid;
       if (user != null) {
         return MainScreen.id;
       }
@@ -145,7 +131,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        initialRoute: checkUserConnected(),
+        initialRoute: getInitialScreen(),
         // initialRoute: ItemScreen.id,
         routes: {
           LogoScreen.id: (context) => const LogoScreen(),
@@ -158,6 +144,9 @@ class MyApp extends StatelessWidget {
           UserItemsScreen.id: (context) => const UserItemsScreen(),
           AddItemScreen.id: (context) => const AddItemScreen(),
           ItemScreen.id: (context) => const ItemScreen(),
+          RentalScreen.id: (context) => RentalScreen(),
+          RequestSubmittedScreen.id: (context) => const RequestSubmittedScreen(),
+          PendingRequestsScreen.id: (context) => PendingRequestsScreen(),
           WishlistScreen.id: (context) => const WishlistScreen(),
           ChatsScreen.id: (context) => ChatsScreen(),
           ChatScreen.id: (context) => ChatScreen(),

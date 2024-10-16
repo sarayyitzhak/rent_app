@@ -35,6 +35,16 @@ class _MessageBubbleState extends State<MessageBubble> {
       );
     } else if(MessageType.VOICE_RECORD.index == widget.message.type.index){
       return RecordMessageBubble(message: widget.message, isMe: widget.isMe, tail: widget.tail);
+    } else if(MessageType.IMAGE.index == widget.message.type.index){
+      return BubbleNormalImage(
+        id: widget.message.fileRef!.toString(),
+        image: Image.network(widget.message.fileRef!),
+        color: widget.isMe ? Colors.blue : Colors.grey[300]!,
+        tail: widget.tail,
+        sent: widget.isMe ? !widget.message.read : false,
+        seen: widget.isMe ? widget.message.read : false,
+        // delivered: true,
+      );
     }
     else{
       return Container();

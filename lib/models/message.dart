@@ -3,36 +3,62 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rent_app/models/messageType.dart';
 
-class Message{
-  late DocumentReference cloudKey;
-  late int sender;
-  late String text;
-  late String? fileRef;
-  late DateTime sentAt;
-  late bool read;
-  late String senderName;
-  late MessageType type;
-  DocumentReference? senderRef;
-  Message({required this.sender, required this.text, this.fileRef, required this.read, required this.sentAt, required this.type, this.senderRef});
+class Message {
+  late DocumentReference _cloudKey;
+  late int _sender;
+  late String _text;
+  late String? _fileRef;
+  late DateTime _sentAt;
+  late bool _read;
+  late String _senderName;
+  late MessageType _type;
+  DocumentReference? _senderRef;
 
-  String sentAtAsString(){
-    String minute = sentAt.minute.toString();
-    if(sentAt.minute < 10){
-      minute = '0$minute';
-    }
-    return '${sentAt.hour}:$minute';
+  Message({
+    required int sender,
+    required String text,
+    String? fileRef,
+    required bool read,
+    required DateTime sentAt,
+    required MessageType type,
+    DocumentReference? senderRef,
+  })  : _sender = sender,
+        _text = text,
+        _fileRef = fileRef,
+        _read = read,
+        _sentAt = sentAt,
+        _type = type,
+        _senderRef = senderRef;
+
+  DocumentReference get cloudKey => _cloudKey;
+  int get sender => _sender;
+  String get text => _text;
+  String? get fileRef => _fileRef;
+  DateTime get sentAt => _sentAt;
+  bool get read => _read;
+  String get senderName => _senderName;
+  MessageType get type => _type;
+  DocumentReference? get senderRef => _senderRef;
+
+  set fileRef(String? value) => _fileRef = value;
+  set read(bool value) => _read = value;
+  set senderRef(DocumentReference? value) => _senderRef = value;
+
+  String sentAtAsString() {
+    String minute = _sentAt.minute.toString().padLeft(2, '0');
+    return '${_sentAt.hour}:$minute';
   }
 
-  Map<String, dynamic> toMap(){
+  Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
-      'sender': sender,
-      'text': text,
-      'sentAt': sentAt,
-      'read': read,
-      'type': type.index
+      'sender': _sender,
+      'text': _text,
+      'sentAt': _sentAt,
+      'read': _read,
+      'type': _type.index,
     };
-    if(fileRef != null){
-      map['fileRef'] = fileRef;
+    if (_fileRef != null) {
+      map['fileRef'] = _fileRef;
     }
     return map;
   }

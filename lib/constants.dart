@@ -48,6 +48,11 @@ const kButtonTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
 );
 
+const kWhiteTextStyle = TextStyle(
+  color: kWhiteColor,
+  fontSize: 14,
+  fontWeight: FontWeight.bold,
+);
 
 const kTextFieldHintTextStyle = TextStyle(
   color: kGreyColor,
@@ -108,6 +113,24 @@ const kLightButtonStyle = ButtonStyle(
   backgroundColor: WidgetStatePropertyAll(kLightYellow),
   textStyle: WidgetStatePropertyAll(kButtonTextStyle),
   padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
+);
+
+const kSmallButtonStyle = ButtonStyle(
+backgroundColor: WidgetStatePropertyAll(kPastelYellowOpacity),
+textStyle: WidgetStatePropertyAll(kBlackTextStyle),
+padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
+);
+
+const kAcceptButtonStyle = ButtonStyle(
+  backgroundColor: WidgetStatePropertyAll(Colors.green),
+  textStyle: WidgetStatePropertyAll(kBlackTextStyle),
+  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
+);
+
+const kRejectButtonStyle = ButtonStyle(
+  backgroundColor: WidgetStatePropertyAll(Colors.red),
+  textStyle: WidgetStatePropertyAll(kBlackTextStyle),
+  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
 );
 
 const kAddressButtonStyle = ButtonStyle(

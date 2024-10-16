@@ -12,25 +12,22 @@ class IsInWishlist{
   IsInWishlist(this.value);
 }
 
-
 class ItemCard extends StatelessWidget {
   final Item item;
-  ItemCard({super.key, required this.item});
+  bool isHorizontal;
+  ItemCard({super.key, required this.item, this.isHorizontal = false});
   late bool isMine;
 
   @override
   Widget build(BuildContext context) {
-    IsInWishlist isInWishlist = IsInWishlist(userDetails.wishlist.contains(item.itemReference));
     isMine = item.contactUser == userDetails.userReference;
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, ItemScreen.id,
           arguments: ScreenArguments(item, isMine)),
       child: Container(
+        width: isHorizontal ? 200 : null,
+        margin: isHorizontal ? const EdgeInsets.all(5) : null,
         padding: const EdgeInsets.all(5),
-        // decoration: BoxDecoration(
-        //   color: kLightYellow,
-        //   borderRadius: BorderRadius.circular(10),
-        // ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -39,11 +36,6 @@ class ItemCard extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
-                    // image: DecorationImage(
-                    //     image: NetworkImage(
-                    //       item.imageRef,
-                    //     ),
-                    //     fit: BoxFit.cover),
                   ),
                   child: CachedNetworkImage(
                     imageUrl: item.imageRef,
@@ -56,6 +48,7 @@ class ItemCard extends StatelessWidget {
                             image: NetworkImage(
                               item.imageRef,
                             ),
+                            scale: isHorizontal ? 0.5 : 1.0,
                             fit: BoxFit.cover),
                       ),
 
@@ -82,7 +75,6 @@ class ItemCard extends StatelessWidget {
               item.location.addressDataToString(),
               style: kSmallBlackTextStyle,
             ), //place
-             //place
             const Divider(
               color: kPastelYellow,
             ),

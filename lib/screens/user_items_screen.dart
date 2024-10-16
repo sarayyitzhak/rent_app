@@ -1,14 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rent_app/constants.dart';
 import 'package:rent_app/screens/add_item_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:rent_app/widgets/custom_button.dart';
-import 'package:rent_app/widgets/scrollable_item_grid.dart';
-import '../main.dart';
-import '../services/firebase_services.dart';
+import 'package:rent_app/widgets/scrollable_request_list.dart';
+import '../services/cloud_services.dart';
 import '../widgets/dynamic_scrollable_item_grid.dart';
 
 class UserItemsScreen extends StatefulWidget {
@@ -20,13 +18,17 @@ class UserItemsScreen extends StatefulWidget {
 }
 
 class _UserItemsScreenState extends State<UserItemsScreen> {
-  final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
-  final storageRef = FirebaseStorage.instance.ref();
+  bool showAllItems = true;
 
-  void refreshScreen(){
+  void onAllItemsPressed() {
     setState(() {
-      userDetails.userReference;
+      showAllItems = true;
+    });
+  }
+
+  void onOnlyRequestsPressed(){
+    setState(() {
+      showAllItems = false;
     });
   }
 
@@ -39,9 +41,25 @@ class _UserItemsScreenState extends State<UserItemsScreen> {
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Expanded(child: DynamicScrollableItemGrid(stream: _firestore.collection('items').where(
-              'contactUser', isEqualTo: userDetails.userReference).orderBy('createdAt', descending: true).snapshots(),)),
-          // Expanded(child: ScrollableItemGrid(future: getItemsFilterByContactUser(_firestore, userDetails.userReference))),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              TextButton(
+                  onPressed: onAllItemsPressed,
+                  style: kSmallButtonStyle,
+                  child: Text(localization.allItems)),
+              TextButton(
+                  onPressed: onOnlyRequestsPressed,
+                  style: kSmallButtonStyle,
+                  child: Text(localization.pendingRequests)),
+            ],
+          ),
+          showAllItems 
+              ? Expanded(
+              child: DynamicScrollableItemGrid(
+            stream: getUserItemsStream(),
+          ))
+          : Expanded(child: ScrollableRequestList(future: getUserRequestsStream(), localization: localization, isMyRequest: false,),),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: CustomButton(

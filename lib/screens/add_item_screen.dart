@@ -6,12 +6,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/models/category.dart';
 import 'package:rent_app/models/condition.dart';
-import 'package:rent_app/screens/user_items_screen.dart';
-import 'package:rent_app/services/address_services.dart';
+import 'package:rent_app/models/address_info.dart';
+import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/custom_button.dart';
@@ -21,6 +20,7 @@ import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 
 import '../main.dart';
 import '../models/item.dart';
+import '../widgets/pick_image_button.dart';
 
 
 class AddItemScreen extends StatefulWidget {
@@ -32,10 +32,7 @@ class AddItemScreen extends StatefulWidget {
 }
 
 class _AddItemScreenState extends State<AddItemScreen> {
-  final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
-  final storageRef = FirebaseStorage.instance.ref();
-  File? _image;
+  File? image;
   late TextEditingController titleController;
   late TextEditingController priceController;
   late TextEditingController descriptionController;
@@ -44,7 +41,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
   late AddressInfo addressValue =
       AddressInfo(latitude: 0, longitude: 0, addressData: {'city': '', 'road': ''});
   var _selectedCategories = [];
-  // late List<dynamic> categories;
   final List<MultiSelectItem<ItemCategory>> _categoryItems = ItemCategory.values
       .map((category) => MultiSelectItem<ItemCategory>(category, category.toString().split('.').last))
       .toList();
@@ -103,7 +99,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   backgroundColor: WidgetStateProperty.all(Colors.blue),
                 ),
                 selectedLocationButtonTextStyle: const TextStyle(fontSize: 18),
-                selectLocationButtonText: 'Set Location',
+                selectLocationButtonText: 'מרכוז',
                 selectLocationButtonLeadingIcon: const Icon(Icons.check),
                 initZoom: 11,
                 minZoomLevel: 5,
@@ -126,9 +122,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 }),
           ),
           actions: <Widget>[
-            TextButton(
+            ElevatedButton(
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
+                backgroundColor: kPastelYellow
               ),
               child: Text(localization.set),
               onPressed: () {
@@ -142,69 +139,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     );
   }
 
-  Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await ImagePicker().pickImage(source: source, imageQuality: 15);
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    }
-  }
 
-  Column pickImageMenu() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const Center(
-            child: Text(
-          'Pick an image from:',
-          style: TextStyle(color: Colors.grey),
-        )),
-        const Divider(),
-        TextButton(
-            child: const Text(
-              'Camera',
-              style: kButtonTextStyle,
-            ),
-            onPressed: () {
-              _pickImage(ImageSource.camera);
-              Navigator.pop(context);
-            }),
-        const Divider(),
-        TextButton(
-            child: const Text(
-              'Gallery',
-              style: kButtonTextStyle,
-            ),
-            onPressed: () {
-              _pickImage(ImageSource.gallery);
-              Navigator.pop(context);
-            }),
-      ],
-    );
-  }
-
-  IconButton addImageButton() {
-    return IconButton(
-      icon: const Icon(Icons.add_a_photo_outlined),
-      onPressed: () {
-        showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            builder: (context) => SingleChildScrollView(
-                  child: Container(
-                    padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: pickImageMenu(),
-                    ),
-                  ),
-                ));
-      },
-    );
-  }
 
   Container buildImageContainer(var localization) {
     return Container(
@@ -218,15 +153,19 @@ class _AddItemScreenState extends State<AddItemScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _image != null
+            image != null
                 ? Image.file(
-                    _image!,
+                    image!,
                     width: 150, // specify desired width
                     height: 150, // specify desired height
                     fit: BoxFit.fill,
                   )
                 : Text(localization.noImageSelected),
-            addImageButton(),
+            PickImageButton(onImagePicked: (newImage){
+              setState(() {
+                image = newImage;
+              });
+            },),
           ],
         ));
   }
@@ -250,43 +189,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
         );
       },
     );
-
-
-    var itemDoc = _firestore.collection('items').doc();
-    final itemRef = storageRef.child(itemDoc.id);
-    UploadTask uploadTask = itemRef.putFile(_image!);
-    TaskSnapshot taskSnapshot = await uploadTask;
-    var imageDownloadUrl = await taskSnapshot.ref.getDownloadURL();
-
-    Item newItem = Item(
-        itemReference: itemDoc,
-        contactUser: userDetails.userReference,
-        imageRef: '',
-        title: titleController.text,
-        price: int.parse(priceController.text),
-        location: addressValue,
-        description: descriptionController.text,
-        condition: conditionValue,
-        categories: _selectedCategories,
-        createdAt: Timestamp.now(),
-        likesCount: 0,
-        seenCount: 0
-    );
-    newItem.imageRef = imageDownloadUrl;
-    itemDoc.set(newItem.itemAsMap());
-
-    // var userDoc = _firestore.collection('users').doc(userUid);
-    var userGet = await userDetails.userReference.get();
-    if (userGet.exists) {
-      Map<String, dynamic> userData = userGet.data()! as Map<String, dynamic>;
-      var userItems = userData['items'];
-      userDetails.userReference.update({'items': FieldValue.arrayUnion([itemDoc])});
-    } else {
-      //problem
-    }
+    createNewItem(image, titleController.text, priceController.text, addressValue, descriptionController.text, conditionValue, _selectedCategories);
     Navigator.pop(context);
     Navigator.pop(context);
-    // Navigator.popAndPushNamed(context, UserItemsScreen.id);
   }
 
   @override
@@ -323,7 +228,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   items: ItemCategory.values
-                      .map((e) => MultiSelectItem(e, e.title))
+                      .map((e) => MultiSelectItem(e, e.getTitle(localization)))
                       .toList(),
                   initialChildSize: 0.6,
                   initialValue: _selectedCategories,
@@ -360,16 +265,16 @@ class _AddItemScreenState extends State<AddItemScreen> {
                       dropdownMenuEntries: [
                         DropdownMenuEntry<Condition>(
                             value: Condition.NEW,
-                            label: Condition.NEW.title),
+                            label: Condition.NEW.getTitle(localization)),
                         DropdownMenuEntry<Condition>(
                             value: Condition.USED_AS_NEW,
-                            label: Condition.USED_AS_NEW.title),
+                            label: Condition.USED_AS_NEW.getTitle(localization)),
                         DropdownMenuEntry<Condition>(
                             value: Condition.USED_IN_GOOD_SHAPE,
-                            label: Condition.USED_IN_GOOD_SHAPE.title),
+                            label: Condition.USED_IN_GOOD_SHAPE.getTitle(localization)),
                         DropdownMenuEntry<Condition>(
                             value: Condition.USED_IN_MEDIUM_SHAPE,
-                            label: Condition.USED_IN_MEDIUM_SHAPE.title),
+                            label: Condition.USED_IN_MEDIUM_SHAPE.getTitle(localization)),
                       ],
                       inputDecorationTheme: const InputDecorationTheme(
                         fillColor: kPastelYellowOpacity,

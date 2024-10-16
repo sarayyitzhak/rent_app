@@ -1,3 +1,4 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 enum Condition{
   NEW('New', 0),
@@ -11,15 +12,20 @@ enum Condition{
 }
 
 Condition getCondFromIdx(int idx){
-  switch(idx){
-    case 0:
-      return Condition.NEW;
-    case 1:
-      return Condition.USED_AS_NEW;
-    case 2:
-      return Condition.USED_IN_GOOD_SHAPE;
-    case 3:
-      return Condition.USED_IN_MEDIUM_SHAPE;
+  return Condition.values[idx];
+}
+
+extension ConditionExtension on Condition {
+  String getTitle(AppLocalizations localization) {
+    switch (this) {
+      case Condition.NEW:
+        return localization.conditionNew;
+      case Condition.USED_AS_NEW:
+        return localization.conditionUsedAsNew;
+      case Condition.USED_IN_GOOD_SHAPE:
+        return localization.conditionUsedInGoodShape;
+      case Condition.USED_IN_MEDIUM_SHAPE:
+        return localization.conditionUsed;
+    }
   }
-  return Condition.USED_IN_MEDIUM_SHAPE;
 }

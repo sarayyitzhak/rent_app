@@ -1,10 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:rent_app/widgets/scrollable_item_grid.dart';
 import '../constants.dart';
-import '../services/firebase_services.dart';
+import '../services/card_utils.dart';
 
 class SearchResultScreen extends StatefulWidget {
   static String id = 'search_result_screen';
@@ -15,7 +14,6 @@ class SearchResultScreen extends StatefulWidget {
 }
 
 class _SearchResultScreenState extends State<SearchResultScreen> {
-  final _firestore = FirebaseFirestore.instance;
   late TextEditingController searchTextController;
   bool showGrid = false;
 
@@ -41,7 +39,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
     final arg = ModalRoute.of(context)!.settings.arguments as SearchResultScreenArguments;
     searchTextController = TextEditingController(text: arg.text);
     return Scaffold(
-      appBar: CustomAppBar(title: 'חיפוש', isBackButton: false),
+      appBar: CustomAppBar(title: localization.search, isBackButton: false),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -56,7 +54,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                     Expanded(
                       child: TextField(
                         decoration: kTextFieldDecorationOnlyBorder.copyWith(
-                            hintText: 'חיפוש'),
+                            hintText: localization.search),
                         textInputAction: TextInputAction.search,
                         onEditingComplete: onSearchPressed,
                         controller: searchTextController,
@@ -108,8 +106,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                     ],
                   ),
                   ScrollableItemGrid(
-                      future: getItemsFilterByTitle(
-                          _firestore, searchTextController.text)),
+                      future: getItemsFilterByTitle(searchTextController.text, false)),
                 ],
               )
                 ],

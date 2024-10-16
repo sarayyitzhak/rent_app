@@ -1,0 +1,39 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "renal-app",
+          "appId": "1:115036149089:android:82d681f3cff220f54aa120",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "renal-app",
+          "configurations": {
+            "android": "1:115036149089:android:82d681f3cff220f54aa120",
+            "ios": "1:115036149089:ios:8a25cbb6b31fef954aa120",
+            "web": "1:115036149089:web:e814663b581bd3494aa120"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint"
+      ]
+    }
+  ]
+}

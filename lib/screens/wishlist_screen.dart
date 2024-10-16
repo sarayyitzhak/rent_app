@@ -4,7 +4,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/dynamic_scrollable_item_grid.dart';
 import 'package:rent_app/widgets/scrollable_item_grid.dart';
 import '../main.dart';
-import '../services/firebase_services.dart';
+import '../services/card_utils.dart';
+import '../services/cloud_services.dart';
 
 class WishlistScreen extends StatelessWidget {
   static String id = 'wishlist_screen.dart';
@@ -20,8 +21,7 @@ class WishlistScreen extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Expanded(
-            child: ScrollableItemGrid(future: getUserItemsByField(userDetails, 'wishlist')),
-              // DynamicScrollableItemGrid(stream: stream)
+            child: ScrollableItemGrid(future: getUserItemsWishlist(userDetails, false, false)),
           ),
         ],
       ),

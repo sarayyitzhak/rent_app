@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/main.dart';
 import 'package:flutter/material.dart';
@@ -17,31 +15,25 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
   late TextEditingController nameController;
-  late TextEditingController emailController;
   late TextEditingController phoneNumberController;
   // DateTime selectedDate = DateTime.now();
   @override
   void initState() {
     super.initState();
     nameController = TextEditingController(text: userDetails.name);
-    emailController = TextEditingController(text: userDetails.email);
     phoneNumberController = TextEditingController(text: '0${userDetails.phoneNumber}');
   }
 
   @override
   void dispose() {
     nameController.dispose();
-    emailController.dispose();
     phoneNumberController.dispose();
     super.dispose();
   }
 
   void onEditButtonPressed(){
     userDetails.name = nameController.text;
-    userDetails.email = emailController.text;//TODO:how?
     userDetails.phoneNumber = int.parse(phoneNumberController.text);
     var data = userDetails.userAsMap();
     userDetails.userReference.update(data);
@@ -64,7 +56,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Align(alignment: Alignment.center, child: Text(userDetails.name, style: kBlackHeaderTextStyle,)),
               const SizedBox.square(dimension: 20,),
               TextAndTextField(title: localization.fullName, controller: nameController,),
-              TextAndTextField(title: localization.email, controller: emailController, keyboardType: TextInputType.emailAddress,),
               TextAndTextField(title: localization.mobileNumber, controller: phoneNumberController, keyboardType: TextInputType.phone),
               const SizedBox(
                 height: 25,
@@ -73,7 +64,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 height: 5,
               ),
               Center(
-                child: CustomButton(title: 'ערוך', buttonStyle: kDarkButtonStyle, onPress: onEditButtonPressed,),
+                child: CustomButton(title: localization.edit, buttonStyle: kDarkButtonStyle, onPress: onEditButtonPressed,),
               ),
             ],
           ),

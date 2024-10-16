@@ -1,21 +1,32 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:rent_app/add_users.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/main.dart';
+import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/models/user.dart';
+import 'package:rent_app/screens/rental_screen.dart';
 import 'package:rent_app/widgets/chat_icon_button.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/custom_button.dart';
 import 'package:rent_app/widgets/wishlist_icon_button.dart';
 
-import '../services/firebase_services.dart';
+import '../services/cloud_services.dart';
 import '../widgets/dial_icon_button.dart';
 
 class ItemScreen extends StatelessWidget {
   static String id = 'item_screen.dart';
   const ItemScreen({super.key});
+
+  void onEditPressed(BuildContext context){
+
+  }
+
+  void onRentItemPressed(BuildContext context, Item item){
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,18 +59,15 @@ class ItemScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: kLightYellow,
-                        // borderRadius: BorderRadius.circular(20),
-                        image: DecorationImage(
-                          image: NetworkImage(item.imageRef),
-                          fit: BoxFit.cover,
-                        ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: kLightYellow,
+                      image: DecorationImage(
+                        image: NetworkImage(item.imageRef),
+                        fit: BoxFit.cover,
                       ),
-                      height: 300,
                     ),
+                    height: 300,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -82,7 +90,7 @@ class ItemScreen extends StatelessWidget {
                                   '${item.likesCount} אנשים אהבו את המודעה ', style: kSmallBlackTextStyle,),
                                 leading: const Icon(Icons.favorite),
                                 iconColor: Colors.pinkAccent,
-                              ) //Text('${item.likesCount} אנשים אהבו את המודעה שלך'),
+                              )
                           ),
                         ),
                         Expanded(
@@ -122,7 +130,7 @@ class ItemScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                             color: kPastelYellowOpacity,
                           ),
-                          child: Text(item.condition.title),
+                          child: Text(item.condition.getTitle(localization)),
                         ),
                         const Divider(
                           color: Colors.grey,
@@ -195,7 +203,7 @@ class ItemScreen extends StatelessWidget {
                   Center(
                       child: CustomButton(
                           title: arg.isMe ? localization.edit : localization.rentItem,
-                          onPress: () {})),
+                          onPress: arg.isMe ? () {} : () {Navigator.pushNamed(context, RentalScreen.id, arguments: RentalScreenArgument(item: item));})),
                 ],
               );
             }

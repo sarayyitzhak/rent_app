@@ -34,10 +34,10 @@ class _SearchScreenState extends State<SearchScreen> {
     return null;
   }
 
-  Column buildCategoryListTiles() {
+  Column buildCategoryListTiles(AppLocalizations localization) {
     List<CategoryListTile> tiles = [];
     for (var category in ItemCategory.values) {
-      tiles.add(CategoryListTile(category: category));
+      tiles.add(CategoryListTile(category: category, localization: localization,));
     }
     return Column(
       children: tiles,
@@ -49,7 +49,7 @@ class _SearchScreenState extends State<SearchScreen> {
     var localization = AppLocalizations.of(context)!;
     return SafeArea(
         child: Scaffold(
-      appBar: CustomAppBar(title: 'חיפוש', isBackButton: false),
+      appBar: CustomAppBar(title: localization.search, isBackButton: false),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(30.0),
@@ -64,7 +64,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     Expanded(
                       child: TextField(
                         decoration: kTextFieldDecorationOnlyBorder.copyWith(
-                            hintText: 'חיפוש'),
+                            hintText: localization.search),
                         textInputAction: TextInputAction.search,
                         onEditingComplete: onSearchPressed,
                         controller: searchTextController,
@@ -89,14 +89,14 @@ class _SearchScreenState extends State<SearchScreen> {
                         const SizedBox(
                           height: 20,
                         ),
-                        const Text(
-                          'או חפש לפי קטגוריות',
+                        Text(
+                          localization.orSearchByCategory,
                           style: kBlackHeaderTextStyle,
                         ),
                         const SizedBox(
                           height: 20,
                         ),
-                        buildCategoryListTiles(),
+                        buildCategoryListTiles(localization),
                       ],
                     ),
             ],

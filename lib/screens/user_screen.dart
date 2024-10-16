@@ -8,7 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import '../constants.dart';
 import '../main.dart';
-import '../models/user.dart';
+import '../services/cloud_services.dart';
+import '../widgets/icon_above_text.dart';
 
 class UserScreen extends StatefulWidget {
   static String id = 'user_screen';
@@ -20,25 +21,11 @@ class UserScreen extends StatefulWidget {
 }
 
 class _UserScreenState extends State<UserScreen> {
-  final _auth = FirebaseAuth.instance;
-  //????
-  final _firestore = FirebaseFirestore.instance;
-
-  // late final userUid;
   late Future<dynamic> userData;
   var localization;
 
-  // late Future<Map<String, dynamic>> userData = userServices.getUserData(userUid!);
-  // UserServices userServices = UserServices(FirebaseAuth.instance, FirebaseFirestore.instance);
-
-  void getUser() async {
-    userDetails = await getUserDetailsByUid(userUid!);
-  }
-
   @override
   Widget build(BuildContext context) {
-    // getUser();
-
     var localization = AppLocalizations.of(context)!;
     return SafeArea(
       child: Scaffold(
@@ -85,21 +72,17 @@ class _UserScreenState extends State<UserScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, ProfileScreen.id);
-                        },
-                        child: iconAboveText(
-                            Icons.person_outline, localization.profile)),
+                        onPressed: () => Navigator.pushNamed(context, ProfileScreen.id),
+                        child: IconAboveText(icon:
+                            Icons.person_outline, label: localization.profile, size: 40)),
                     TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, WishlistScreen.id);
-                        },
-                        child: iconAboveText(Icons.receipt_long_outlined,
-                            localization.wishlist)),
+                        onPressed: () => Navigator.pushNamed(context, WishlistScreen.id),
+                        child: IconAboveText(icon: Icons.receipt_long_outlined,
+                            label: localization.wishlist, size: 40)),
                     TextButton(
                         onPressed: () {},
-                        child: iconAboveText(Icons.shopping_cart_outlined,
-                            localization.myItems)),
+                        child: IconAboveText(icon: Icons.shopping_cart_outlined,
+                            label: localization.myItems, size: 40)),
                   ],
                 ),
               ),
@@ -130,7 +113,7 @@ class _UserScreenState extends State<UserScreen> {
                   label: localization.logout,
                   icon: Icons.logout,
                   onPress: () {
-                    _auth.signOut();
+                    signOut();
                     userUid = '';
                     Navigator.of(context).pushNamedAndRemoveUntil(
                       WelcomeScreen.id,
@@ -173,18 +156,4 @@ TextButton buildButton(
   );
 }
 
-Column iconAboveText(IconData icon, String label) {
-  return Column(
-    children: [
-      Icon(
-        icon,
-        color: Colors.black54,
-        size: 40,
-      ),
-      Text(
-        label,
-        style: kSmallBlackTextStyle,
-      ),
-    ],
-  );
-}
+

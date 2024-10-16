@@ -1,8 +1,12 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rent_app/models/chat.dart';
 import 'package:rent_app/models/messageType.dart';
-import 'package:rent_app/services/voice_recorder.dart';
+import 'package:rent_app/widgets/voice_recorder_button.dart';
+import 'package:rent_app/widgets/pick_image_button.dart';
 import '../constants.dart';
 import '../models/message.dart';
 
@@ -17,8 +21,10 @@ class ChatBottomSendBar extends StatefulWidget {
 }
 
 class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
+  final storageRef = FirebaseStorage.instance.ref();
   final messageTextController = TextEditingController();
   String messageText = '';
+  File? image;
   bool showMic = true;
 
   void onSendPressed(){
@@ -32,6 +38,27 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
         showMic = true;
       });
     }
+  }
+
+  void uploadImage() async {
+    DateTime sentAt = Timestamp.now().toDate();
+    final itemRef = storageRef.child('${widget.chat.cloudKey}/$sentAt');
+    UploadTask uploadTask = itemRef.putFile(image!);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    var imageUrl = await taskSnapshot.ref.getDownloadURL();
+    Message message = Message(sender: widget.userIdx, text: 'תמונה', read: false, sentAt: sentAt, type: MessageType.IMAGE, fileRef: imageUrl);
+    widget.chat.cloudKey.collection('messages').add(message.toMap());
+    widget.chat.cloudKey.update({'lastMessageSentAt': sentAt});
+  }
+
+  void onImagePressed(File? newImage){
+      setState(() {
+        image = newImage;
+      });
+      uploadImage();
+      setState(() {
+        showMic = true;
+      });
   }
 
   @override
@@ -69,16 +96,10 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
                   ),
                 ),
                 showMic
-                    ? VoiceRecorder(chat: widget.chat, userIdx: widget.userIdx,)
+                    ? VoiceRecorderButton(chat: widget.chat, userIdx: widget.userIdx,)
                     : const SizedBox(),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.camera_alt_outlined,
-                    color: kBlackColor,
-                  ),
-                  padding: EdgeInsets.zero,
-                ),
+
+                PickImageButton(icon: Icons.camera_alt_outlined, onImagePicked: onImagePressed),
               ],
             ),
           ),

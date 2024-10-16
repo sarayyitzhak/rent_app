@@ -11,7 +11,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/models/category.dart';
 import 'package:rent_app/models/condition.dart';
-import 'package:rent_app/services/address_services.dart';
+import 'package:rent_app/models/address_info.dart';
 import 'dart:async';
 
 import '../models/item.dart';
@@ -251,7 +251,7 @@ Future<void> onRegisterButtonPressed(int idx) async {
         seenCount: 0
     );
     newItem.imageRef = imageDownloadUrl;
-    itemDoc.set(newItem.itemAsMap());
+    itemDoc.set(newItem.itemToMap());
 
     var userGet = await userDetailsRand.userReference.get();
     if (userGet.exists) {

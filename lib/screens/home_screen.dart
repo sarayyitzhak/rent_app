@@ -1,16 +1,14 @@
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rent_app/screens/pending_requests_screen.dart';
 import 'package:rent_app/widgets/reusable_card.dart';
 import '../constants.dart';
 import 'package:rent_app/models/category.dart';
-import '../services/firebase_services.dart';
+import '../main.dart';
+import '../services/card_utils.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
 
 Position? currentPosition;
 String? cityName;
@@ -25,9 +23,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   ItemCategory _selectedCategory = ItemCategory.values[0];
-  final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
-  final storageRef = FirebaseStorage.instance.ref();
   final ScrollController _categoryScrollController = ScrollController();
 
 
@@ -163,10 +158,6 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-        //       TextButton(onPressed: (){
-        // _showInAppAlert(context, 'הודעה חדשה מחיים משה', 'מה קורה?');
-        //
-        // }, child: Text('press')),
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -176,6 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 18.0),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,6 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             ],
                           ),
+                          IconButton(onPressed: () => Navigator.pushNamed(context, PendingRequestsScreen.id), icon: Icon(Icons.pending_outlined, color: kDarkYellow,)),
                         ],
                       ),
                     ),
@@ -214,21 +207,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(
                       height: 30,
                     ),
-                    Row(
-                      children: [
-                        const Text(
-                          'סביבך',
-                          style: kBlackHeaderTextStyle,
-                        ),
-                        const Icon(Icons.location_on_outlined),
-                        Text(cityName ?? 'בודק מיקום...'),
-                      ],
+
+                    const Text(
+                      'מומלצים בשבילך',
+                      style: kBlackHeaderTextStyle,
                     ),
                     SizedBox(
                       height: 250,
-                      child: currentPosition == null || cityName == null ? const Center(child: CircularProgressIndicator(color: kPastelYellow,)) : FutureBuilder(
-                          future: getHorizontalItemsFilterByLocation(
-                              _firestore, currentPosition!, cityName!),
+                      child: FutureBuilder(
+                          future: getItemsFilterByCategory(_selectedCategory, true),
                           builder: (context, snapshot) {
                             if (snapshot.hasData &&
                                 snapshot.data != null &&
@@ -243,19 +230,25 @@ class _HomeScreenState extends State<HomeScreen> {
                             }
                           }),
                     ),
+
                     const SizedBox(
                       height: 30,
                     ),
 
-                    const Text(
-                      'מומלצים בשבילך',
-                      style: kBlackHeaderTextStyle,
+                    Row(
+                      children: [
+                        const Text(
+                          'סביבך',
+                          style: kBlackHeaderTextStyle,
+                        ),
+                        const Icon(Icons.location_on_outlined),
+                        Text(cityName ?? 'בודק מיקום...'),
+                      ],
                     ),
                     SizedBox(
                       height: 250,
-                      child: FutureBuilder(
-                          future: getHorizontalItemsFilterByCategory(
-                              _firestore, _selectedCategory),
+                      child: currentPosition == null || cityName == null ? const Center(child: CircularProgressIndicator(color: kPastelYellow,)) : FutureBuilder(
+                          future: getItemsFilterByLocation(currentPosition!, cityName!, true),
                           builder: (context, snapshot) {
                             if (snapshot.hasData &&
                                 snapshot.data != null &&
@@ -282,8 +275,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(
                       height: 250,
                       child: FutureBuilder(
-                          future: getHorizontalItemsFilterByLastSeen(
-                              _firestore),
+                          future: getUserItemsLastSeen(userDetails, true, true),
                           builder: (context, snapshot) {
                             if (snapshot.hasData &&
                                 snapshot.data != null &&
@@ -298,34 +290,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             }
                           }),
                     ),
-
-
-
-                    // Text(
-                    //   AppLocalizations.of(context)!.categories,
-                    //   style: kHeadersTextStyle,
-                    // ),
-                    // Container(
-                    //   height: 85,
-                    //   child: ListView(
-                    //     children: buildCategoriesList(),
-                    //     scrollDirection: Axis.horizontal,
-                    //   ),
-                    // ),
-                    // Text(
-                    //   // 'Best Sellers of ${categories[_selectedCategoryIdx].title}',
-                    //   AppLocalizations.of(context)!.bestSellersOf(_selectedCategory
-                    //       .title), //TODO: check how to do it with dynamic string
-                    //   style: kHeadersTextStyle,
-                    // ),
                   ],
                 ),
               ),
-              // Expanded(
-              //     child: ScrollableItemGrid(
-              //         future:
-              //             getItemsFilterByCategory(_firestore, _selectedCategory),
-              //         controller: _categoryScrollController)),
             ],
           ),
         ),

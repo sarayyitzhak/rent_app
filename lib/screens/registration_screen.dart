@@ -1,12 +1,8 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
-import 'package:rent_app/main.dart';
-import 'package:rent_app/models/user.dart';
+import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/text_and_text_field.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/custom_button.dart';
 import 'main_screen.dart';
@@ -20,11 +16,6 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
-  final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
-  final _messaging = FirebaseMessaging.instance;
-
-
   late TextEditingController nameController;
   late TextEditingController emailController;
   late TextEditingController phoneNumberController;
@@ -70,27 +61,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       if (passwordController.text != confirmPasswordController.text) {
         throw 'password confirmation failed'; //TODO
       }
-      final newUser = await _auth.createUserWithEmailAndPassword(
-          email: emailController.text, password: passwordController.text);
-      userUid = newUser.user?.uid;
-      DocumentReference userReference =
-          _firestore.collection('users').doc(userUid);
-      userDetails = UserDetails(
-          userReference: userReference,
-          name: nameController.text,
-          email: emailController.text,
-          phoneNumber: int.parse(phoneNumberController.text),
-          items: [],
-          wishlist: [],
-          seen: [],
-          chats: []
-      );
-      _messaging.getToken().then((String? token) {
-        if (token != null) {
-          userDetails.token = token;
-        }
-      });
-      userReference.set(userDetails.userAsMap());
+      createNewUser(emailController.text, passwordController.text, nameController.text, phoneNumberController.text);
       Navigator.of(context).pushNamedAndRemoveUntil(
         MainScreen.id,
         (Route<dynamic> route) => false, // This removes all previous routes
@@ -103,7 +74,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     var localization = AppLocalizations.of(context)!;
-
     return SafeArea(
       child: Scaffold(
         appBar: CustomAppBar(title: localization.createAccount),

@@ -7,13 +7,12 @@ import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../main.dart';
 import '../models/message.dart';
+import '../services/cloud_services.dart';
 
 class ChatsScreen extends StatelessWidget {
   static String id = 'chats_screen.dart';
   ChatsScreen({super.key});
   late int chatsCount;
-  final _firestore = FirebaseFirestore.instance;
-
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +22,7 @@ class ChatsScreen extends StatelessWidget {
       child: Scaffold(
         appBar: CustomAppBar(title: localization.chats, isBackButton: false),
         body: StreamBuilder(
-            stream:  _firestore.collection('chats').where('participants', arrayContains: userDetails.userReference).orderBy('lastMessageSentAt').snapshots(),
+            stream:  getUserChatsStream(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return Center(

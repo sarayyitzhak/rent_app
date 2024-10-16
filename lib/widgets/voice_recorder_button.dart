@@ -10,16 +10,16 @@ import 'package:rent_app/models/message.dart';
 import 'package:rent_app/models/messageType.dart';
 import '../models/chat.dart';
 
-class VoiceRecorder extends StatefulWidget {
+class VoiceRecorderButton extends StatefulWidget {
   Chat chat;
   int userIdx;
-  VoiceRecorder({required this.chat, required this.userIdx, super.key});
+  VoiceRecorderButton({required this.chat, required this.userIdx, super.key});
 
   @override
-  _VoiceRecorderState createState() => _VoiceRecorderState();
+  _VoiceRecorderButtonState createState() => _VoiceRecorderButtonState();
 }
 
-class _VoiceRecorderState extends State<VoiceRecorder> {
+class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
   final FlutterSoundRecorder _recorder = FlutterSoundRecorder();
   bool isRecording = false;
   final storageRef = FirebaseStorage.instance.ref();

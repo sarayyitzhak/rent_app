@@ -66,13 +66,45 @@
   "chats": "Chats",
   "pleaseChooseLocation": "Please choose location",
   "set": "Set",
-  "noImageSelected": "No image selected",
   "noMessages": "No messages",
   "noChatsYet": "No chats yet",
   "errorLoadingSellerDetails": "Error loading seller details",
   "edit": "Edit",
   "sort": "Sort",
-  "filter": "Filter"
+  "filter": "Filter",
+  "select": "Select",
+  "search": "Search",
+  "orSearchByCategory": "Or search by category",
+  "theRequestSentSuccessfully": "The request sent successfully",
+  "myOrder": "My order",
+  "goBackToMainScreen": "Go back to the main screen",
+  "trackYourRequest": "Track your request",
+  "pendingRequests": "Pending requests",
+  "allItems": "All the items",
+  "accept": "Accept",
+  "reject": "Reject",
+  "noItemsToShow": "No items to show",
+
+
+  "waiting": "Waiting",
+  "rejected": "Rejected",
+  "approved": "Approved",
+
+  "conditionNew": "New",
+  "conditionUsedAsNew": "Used as new",
+  "conditionUsedInGoodShape": "Used in good shape",
+  "conditionUsed": "Used",
+
+  "categoryTools": "Tools",
+  "categorySport": "Sport",
+  "categoryCamping": "Camping",
+  "categoryKitchen": "Kitchen",
+  "categorySchool": "School",
+  "categoryEvents": "Events",
+  "categoryTravel": "Travel",
+  "categoryElectronics": "Electronics",
+  "categoryGames": "Games",
+  "categoryPets": "Pets"
 
 
 }

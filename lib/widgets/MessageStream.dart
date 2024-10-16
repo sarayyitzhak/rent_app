@@ -16,6 +16,45 @@ class MessagesStream extends StatelessWidget {
         required this.userIdx,
         required this.chatDoc});
 
+  List<Widget> getMessagesBubbles(List<QueryDocumentSnapshot<Map<String, dynamic>>> messages){
+    var prevMessageSender;
+    DateTime prevMessageTime = DateTime.now();
+    List<Widget> messageBubbles = [];
+    bool first = true;
+    for (var message in messages!) {
+      var messageData = message.data();
+      Message newMessage = mapAsMessage(messageData);
+      if (first) {
+        messageBubbles.add(DateChip(date: newMessage.sentAt));
+        first = false;
+      } else {
+        if (newMessage.sentAt.day != prevMessageTime.day) {
+          messageBubbles.add(DateChip(date: newMessage.sentAt));
+        }
+      }
+      if (prevMessageSender == newMessage.sender) {
+        var last = (messageBubbles.last.runtimeType == MessageBubble
+            ? messageBubbles.last
+            : messageBubbles.elementAt(messageBubbles.length - 2))
+        as MessageBubble;
+        if (prevMessageTime.day == newMessage.sentAt.day) {
+          last.tail = false;
+          if (prevMessageTime.hour == newMessage.sentAt.hour &&
+              prevMessageTime.minute == newMessage.sentAt.minute) {
+            last.showTime = false;
+          }
+        }
+      }
+      messageBubbles.add(MessageBubble(
+        message: newMessage,
+        isMe: userIdx == newMessage.sender,
+      ));
+      prevMessageSender = newMessage.sender;
+      prevMessageTime = newMessage.sentAt;
+    }
+    return messageBubbles;
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -29,41 +68,7 @@ class MessagesStream extends StatelessWidget {
             );
           }
           final messages = snapshot.data?.docs;
-          var prevMessageSender;
-          DateTime prevMessageTime = DateTime.now();
-          List<Widget> messageBubbles = [];
-          bool first = true;
-          for (var message in messages!) {
-            var messageData = message.data();
-            Message newMessage = mapAsMessage(messageData);
-            if (first) {
-              messageBubbles.add(DateChip(date: newMessage.sentAt));
-              first = false;
-            } else {
-              if (newMessage.sentAt.day != prevMessageTime.day) {
-                messageBubbles.add(DateChip(date: newMessage.sentAt));
-              }
-            }
-            if (prevMessageSender == newMessage.sender) {
-              var last = (messageBubbles.last.runtimeType == MessageBubble
-                  ? messageBubbles.last
-                  : messageBubbles.elementAt(messageBubbles.length - 2))
-              as MessageBubble;
-              if (prevMessageTime.day == newMessage.sentAt.day) {
-                last.tail = false;
-                if (prevMessageTime.hour == newMessage.sentAt.hour &&
-                    prevMessageTime.minute == newMessage.sentAt.minute) {
-                  last.showTime = false;
-                }
-              }
-            }
-            messageBubbles.add(MessageBubble(
-              message: newMessage,
-              isMe: userIdx == newMessage.sender,
-            ));
-            prevMessageSender = newMessage.sender;
-            prevMessageTime = newMessage.sentAt;
-          }
+          var messageBubbles = getMessagesBubbles(messages!);
           return Expanded(
             child: ListView(
               reverse: true,

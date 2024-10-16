@@ -6,7 +6,8 @@ import '../models/category.dart';
 
 class CategoryListTile extends StatelessWidget {
   ItemCategory category;
-  CategoryListTile({super.key, required this.category});
+  var localization;
+  CategoryListTile({super.key, required this.category, required this.localization});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class CategoryListTile extends StatelessWidget {
       child: ListTile(
         leading: CircleAvatar(backgroundColor: kActiveButtonColor, child: Icon(category.icon, color: Colors.black54,)),
         title: Text(
-          category.title,
+          category.getTitle(localization),
         ),
         tileColor: kPastelYellowOpacity,
         shape: RoundedRectangleBorder(

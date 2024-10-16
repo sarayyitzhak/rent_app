@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 enum ItemCategory {
   TOOLS('Tools', Icons.build, 0),
@@ -8,7 +9,7 @@ enum ItemCategory {
   SCHOOL('School', Icons.school, 4),
   EVENTS('Events', Icons.groups, 5),
   TRAVEL('Travel', Icons.airplanemode_active, 6),
-  BOATS('Electronics', Icons.electric_bolt_rounded, 7),
+  ELECTRONICS('Electronics', Icons.electric_bolt_rounded, 7),
   GAMES('Games', Icons.extension, 8),
   PETS('Pets', Icons.pets, 9);
 
@@ -16,10 +17,6 @@ enum ItemCategory {
   final IconData icon;
   final int idx;
   const ItemCategory(this.title, this.icon, this.idx);
-
-  String getTitle() {
-    return title;
-  }
 
   IconData getIcon() {
     return icon;
@@ -42,8 +39,8 @@ ItemCategory getCategoryByTitle(String title) {
       return ItemCategory.EVENTS;
     case 'Travel':
       return ItemCategory.TRAVEL;
-    case 'Boats':
-      return ItemCategory.BOATS;
+    case 'Electronics':
+      return ItemCategory.ELECTRONICS;
     case 'Games':
       return ItemCategory.GAMES;
     case 'Pets':
@@ -54,4 +51,31 @@ ItemCategory getCategoryByTitle(String title) {
 
 ItemCategory getCategoryByIdx(int idx) {
   return ItemCategory.values[idx];
+}
+
+extension ItemCategoryExtension on ItemCategory {
+  String getTitle(AppLocalizations localization) {
+    switch (this) {
+      case ItemCategory.TOOLS:
+        return localization.categoryTools;
+      case ItemCategory.SPORT:
+        return localization.categorySport;
+      case ItemCategory.CAMPING:
+        return localization.categoryCamping;
+      case ItemCategory.KITCHEN:
+        return localization.categoryKitchen;
+      case ItemCategory.SCHOOL:
+        return localization.categorySchool;
+      case ItemCategory.EVENTS:
+        return localization.categoryEvents;
+      case ItemCategory.TRAVEL:
+        return localization.categoryTravel;
+      case ItemCategory.ELECTRONICS:
+        return localization.categoryElectronics;
+      case ItemCategory.GAMES:
+        return localization.categoryGames;
+      case ItemCategory.PETS:
+        return localization.categoryPets;
+    }
+  }
 }

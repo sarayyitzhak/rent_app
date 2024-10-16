@@ -4,15 +4,14 @@ import 'package:rent_app/constants.dart';
 import 'package:rent_app/models/category.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:rent_app/widgets/scrollable_item_grid.dart';
-
-import '../services/firebase_services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../services/card_utils.dart';
 
 class CategoryScreen extends StatelessWidget {
   static String id = 'category_screen';
   CategoryScreen({super.key});
   late ItemCategory category;
-  final _firestore = FirebaseFirestore.instance;
-  
+
   List<Widget> createListOfSubCategories(List titles){
     List<Widget> subCategories = [];
     for(String title in titles){
@@ -32,11 +31,12 @@ class CategoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var localization = AppLocalizations.of(context)!;
     final arg =
         ModalRoute.of(context)!.settings.arguments as CategoryScreenArguments;
     category = arg.category;
     return Scaffold(
-        appBar: CustomAppBar(title: category.title),
+        appBar: CustomAppBar(title: category.getTitle(localization)),
         body: Column(
           children: [
             Container(
@@ -46,7 +46,7 @@ class CategoryScreen extends StatelessWidget {
             ),
             Expanded(
               child: ScrollableItemGrid(
-                  future: getItemsFilterByCategory(_firestore, category)),
+                  future: getItemsFilterByCategory(category, false)),
             ),
           ],
         ));
