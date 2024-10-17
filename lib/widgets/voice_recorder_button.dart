@@ -7,7 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:rent_app/constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rent_app/models/message.dart';
-import 'package:rent_app/models/messageType.dart';
+import 'package:rent_app/models/message_type.dart';
 import '../models/chat.dart';
 
 class VoiceRecorderButton extends StatefulWidget {

@@ -4,7 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rent_app/models/chat.dart';
-import 'package:rent_app/models/messageType.dart';
+import 'package:rent_app/models/message_type.dart';
 import 'package:rent_app/widgets/voice_recorder_button.dart';
 import 'package:rent_app/widgets/pick_image_button.dart';
 import '../constants.dart';

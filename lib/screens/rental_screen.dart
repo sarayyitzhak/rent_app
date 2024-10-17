@@ -10,7 +10,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:date_picker_plus/date_picker_plus.dart';
 import 'package:rent_app/widgets/custom_button.dart';
 
-import '../models/requestStatus.dart';
+import '../models/request_status.dart';
 import '../services/cloud_services.dart';
 
 class RentalScreen extends StatefulWidget {

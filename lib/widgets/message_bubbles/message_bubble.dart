@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
-import 'package:rent_app/models/MessageType.dart';
+import 'package:rent_app/models/message_type.dart';
 import 'package:rent_app/models/message.dart';
-import '../constants.dart';
-import '../widgets/RecordMessageBubble.dart';
+import '../../constants.dart';
+import 'record_message_bubble.dart';
 
 
 class MessageBubble extends StatefulWidget {

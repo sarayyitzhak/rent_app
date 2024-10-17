@@ -1,7 +1,7 @@
 
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:rent_app/models/messageType.dart';
+import 'package:rent_app/models/message_type.dart';
 
 class Message {
   late DocumentReference _cloudKey;

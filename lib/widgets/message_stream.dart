@@ -4,7 +4,7 @@ import 'package:rent_app/models/chat.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:rent_app/models/message.dart';
 import '../constants.dart';
-import '../widgets/MessageBubble.dart';
+import 'message_bubbles/message_bubble.dart';
 
 class MessagesStream extends StatelessWidget {
   Chat chat;
