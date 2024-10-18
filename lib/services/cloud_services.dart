@@ -113,7 +113,7 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getUserItemsStream() {
 
 //REQUESTS
 Future<QuerySnapshot<Map<String, dynamic>>> getUserRequestsStream() {
-  return _firestore.collection('requests').where('ownerID', isEqualTo: userDetails.userReference.id).get();
+  return _firestore.collection('requests').where('ownerID', isEqualTo: userDetails.userReference.id).orderBy('requestTime').get();
 }
 
 void addRequest(ItemRequest request){
