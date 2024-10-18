@@ -69,6 +69,7 @@
   "noMessages": "No messages",
   "noChatsYet": "No chats yet",
   "errorLoadingSellerDetails": "Error loading seller details",
+  "errorLoadingItem": "Error loading item",
   "edit": "Edit",
   "sort": "Sort",
   "filter": "Filter",

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:rent_app/models/message_type.dart';
 import 'package:rent_app/models/message.dart';
+import 'package:rent_app/widgets/message_bubbles/item_message_bubble.dart';
 import '../../constants.dart';
 import 'record_message_bubble.dart';
 
@@ -45,6 +46,8 @@ class _MessageBubbleState extends State<MessageBubble> {
         seen: widget.isMe ? widget.message.read : false,
         // delivered: true,
       );
+    } else if(MessageType.ITEM.index == widget.message.type.index){
+      return ItemMessageBubble(message: widget.message, isMe: widget.isMe);
     }
     else{
       return Container();

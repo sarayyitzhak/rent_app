@@ -67,6 +67,12 @@ Future<List<Item>> getItemsByTitle(String title) async {
   return _getItemsByQuery(_firestore.collection('items').where('title', isEqualTo: title).get(), false);
 }
 
+Future<Item?> getItemById(String id) async {
+  DocumentSnapshot<Map<String, dynamic>> itemSnapshot = await _firestore.collection('items').doc(id).get();
+  Map<String, dynamic>? data = itemSnapshot.data();
+  return data != null ? mapAsItem(data, itemSnapshot.reference) : null;
+}
+
 Future<List<Item>> getItemsListByField(UserDetails user, String dataField, bool reversed) async {
   List<Item> items = [];
   DocumentSnapshot<Object?> userGetData = await user.userReference.get();

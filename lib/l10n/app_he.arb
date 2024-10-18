@@ -69,6 +69,7 @@
   "noMessages": "אין הודעות",
   "noChatsYet": "אין עדיין שיחות",
   "errorLoadingSellerDetails": "תקלה בטעינת פרטי המוכר",
+  "errorLoadingItem": "תקלה בטעינת פריט",
   "edit": "ערוך",
   "sort": "מיון",
   "filter": "סינון",
