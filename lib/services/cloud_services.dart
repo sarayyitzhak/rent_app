@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/models/condition.dart';
@@ -93,14 +92,13 @@ Future<List<Item>> getItemsListByField(UserDetails user, String dataField, bool 
   DocumentSnapshot<Object?> userGetData = await user.userReference.get();
   Map<String, dynamic>? userData = userGetData.data() as Map<String, dynamic>?;
   List itemsRefs = userData?[dataField];
-  for (DocumentReference itemRef in itemsRefs) {
-    var itemGetData = await itemRef.get();
-    if (itemGetData.exists) {
-      Map<String, dynamic>? itemData = itemGetData.data()! as Map<String, dynamic>?;
-      Item item = mapAsItem(itemData!, itemRef);
-      if (item.contactUser != userDetails.userReference ) {
-        items.add(item);
-      }
+  List lastSeenItems = itemsRefs.length > 20 ? itemsRefs.sublist(itemsRefs.length - 20) : itemsRefs;
+  QuerySnapshot<Map<String, dynamic>> itemsRefs2 = await _firestore.collection('items').where(FieldPath.documentId, whereIn: lastSeenItems.map((e) => e.id).toList()).get();
+  for(var itemDoc in itemsRefs2.docs){
+    Map<String, dynamic>? itemData = itemDoc.data();
+    Item item = mapAsItem(itemData, itemDoc.reference);
+    if (item.contactUser != userDetails.userReference) {
+      items.add(item);
     }
   }
   return reversed ? items.reversed.toList() : items;
@@ -113,7 +111,7 @@ Future<List<Item>> _getItemsByQuery(Future<QuerySnapshot<Map<String, dynamic>>> 
   if (itemsDoc.isNotEmpty) {
     for (var itemDoc in itemsDoc) {
       Map<String, dynamic>? itemData = itemDoc.data();
-      var item = mapAsItem(itemData, itemDoc.reference);
+      Item item = mapAsItem(itemData, itemDoc.reference);
       if (!onlyOthersItems || item.contactUser != userDetails.userReference) {
         items.add(item);
       }

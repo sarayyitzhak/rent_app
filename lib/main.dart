@@ -22,7 +22,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/screens/login_screen.dart';
-import 'package:rent_app/screens/logo_screen.dart';
+import 'package:rent_app/screens/initial_screen.dart';
 import 'package:rent_app/screens/welcome_screen.dart';
 import 'models/user.dart';
 import 'screens/home_screen.dart';
@@ -105,19 +105,6 @@ class MyApp extends StatelessWidget {
   MyApp({super.key, required this.isar});
   String initRoute = WelcomeScreen.id;
 
-  String getInitialScreen() {
-    try {
-      final user = getCurrentUser();
-      userUid = user?.uid;
-      if (user != null) {
-        return MainScreen.id;
-      }
-    } catch (e) {
-      print(e);
-    }
-    return WelcomeScreen.id;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Provider.value(
@@ -131,10 +118,10 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        initialRoute: getInitialScreen(),
+        initialRoute: InitialScreen.id,
         // initialRoute: ItemScreen.id,
         routes: {
-          LogoScreen.id: (context) => const LogoScreen(),
+          InitialScreen.id: (context) => const InitialScreen(),
           MainScreen.id: (context) => const MainScreen(),
           WelcomeScreen.id: (context) => const WelcomeScreen(),
           LoginScreen.id: (context) => const LoginScreen(),
