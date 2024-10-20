@@ -1,16 +1,18 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:rent_app/models/message.dart';
 
-
+import '../../constants.dart';
 
 class RecordMessageBubble extends StatefulWidget {
-  Message message;
+  final Message message;
   final bool isMe;
-  bool tail;
+  final bool tail;
 
-  RecordMessageBubble({super.key, required this.message, required this.isMe, required this.tail});
+  const RecordMessageBubble({super.key, required this.message, required this.isMe, required this.tail});
 
   @override
   State<RecordMessageBubble> createState() => _RecordMessageBubbleState();
@@ -18,30 +20,29 @@ class RecordMessageBubble extends StatefulWidget {
 
 class _RecordMessageBubbleState extends State<RecordMessageBubble> {
   final player = AudioPlayer();
-  Duration? _duration;
-  Duration _position = Duration.zero;
+  double _duration = 0;
+  double _position = 0;
   bool isPlaying = false;
-  bool isLoading = false;
-  bool isPause = false;
+  bool isPauseAuto = false;
 
   Future<void> _playPauseAudio() async {
     if (isPlaying) {
       await player.pause();
       setState(() {
         isPlaying = false;
-        isPause = true;
       });
     } else {
-      await player.play(UrlSource(widget.message.fileRef!));
+      await player.play(UrlSource(widget.message.fileRef!), position: Duration(seconds: _position.toInt()));
       setState(() {
         isPlaying = true;
-        isPause = false;
       });
     }
   }
 
-  void _changeSeek(double value) async {
-    await player.seek(Duration(seconds: value.toInt()));
+  String _formatDuration(double seconds) {
+    int minutes = seconds ~/ 60;
+    int remainingSeconds = (seconds % 60).toInt();
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -52,18 +53,18 @@ class _RecordMessageBubbleState extends State<RecordMessageBubble> {
     }
     player.onDurationChanged.listen((duration) {
       setState(() {
-        _duration = duration;
+        _duration = duration.inSeconds.toDouble();
       });
     });
     player.onPositionChanged.listen((position) {
       setState(() {
-        _position = position;
+        _position = position.inSeconds.toDouble();
       });
     });
     player.onPlayerComplete.listen((event) {
       setState(() {
         isPlaying = false;
-        _position = Duration.zero; // Reset position to the start
+        _position = 0; // Reset position to the start
       });
     });
   }
@@ -76,19 +77,97 @@ class _RecordMessageBubbleState extends State<RecordMessageBubble> {
 
   @override
   Widget build(BuildContext context) {
-    return BubbleNormalAudio(
-      color: widget.isMe ? Colors.blue : Colors.grey[300]!,
-      isSender: widget.isMe,
-      duration: _duration?.inSeconds.toDouble(),
-      position: _position?.inSeconds.toDouble(),
-      isPlaying: isPlaying,
-      isLoading: isLoading,
-      isPause: isPause,
-      tail: widget.tail,
-      sent: widget.isMe ? !widget.message.read : false,
-      seen: widget.isMe ? widget.message.read : false,
-      onSeekChanged:  (value) => _changeSeek(value),
-      onPlayPauseButtonClick: () => _playPauseAudio(),
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: () {
+            _playPauseAudio();
+          },
+          child: CircleAvatar(
+            radius: 20,
+            backgroundColor: kWhiteColor,
+            child: Icon(
+              isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+              size: 26,
+              color: kBlackColor,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 16),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.5,
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 20,
+                  child: Slider(
+                    value: _position,
+                    min: 0.0,
+                    max: _duration,
+                    label: _formatDuration(_position),
+                    onChangeStart: (double newValue) {
+                      if (isPlaying) {
+                        isPauseAuto = true;
+                        _playPauseAudio();
+                      }
+                    },
+                    onChanged: (double newValue) {
+                      setState(() {
+                        _position = newValue;
+                      });
+                    },
+                    onChangeEnd: (double newValue) {
+                      if (isPauseAuto) {
+                        _playPauseAudio();
+                        isPauseAuto = false;
+                      }
+                    },
+                    thumbColor: Colors.black,
+                    activeColor: Colors.grey[700],
+                    inactiveColor: Colors.grey,
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        _formatDuration(_position > 0 ? _position : _duration),
+                        style: TextStyle(
+                          color: Colors.grey[widget.isMe ? 300 : 700],
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        widget.isMe
+                            ? Icon(widget.message.read ? Icons.done_all : Icons.done,
+                            color: widget.message.read
+                                ? Colors.cyan[300]
+                                : Colors.grey[300],
+                            size: 18)
+                            : Container(),
+                        const SizedBox(width: 4),
+                        Text(
+                          widget.message.sentAtAsString(),
+                          style: TextStyle(
+                            color: Colors.grey[widget.isMe ? 300 : 700]!,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

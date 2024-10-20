@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:rent_app/models/message_type.dart';
 import 'package:rent_app/models/message.dart';
+import 'package:rent_app/widgets/message_bubbles/image_message_bubble.dart';
 import 'package:rent_app/widgets/message_bubbles/item_message_bubble.dart';
+import 'package:rent_app/widgets/message_bubbles/text_message_bubble.dart';
 import '../../constants.dart';
 import 'record_message_bubble.dart';
 
@@ -22,32 +24,13 @@ class _MessageBubbleState extends State<MessageBubble> {
 
   Widget createBubbleByType(){
     if(widget.message.type.index == MessageType.TEXT.index){
-      return BubbleSpecialThree(
-        text: widget.message.text!,
-        isSender: widget.isMe,
-        color: widget.isMe ? Colors.blue : Colors.grey[300]!,
-        tail: widget.tail,
-        sent: widget.isMe ? !widget.message.read : false,
-        seen: widget.isMe ? widget.message.read : false,
-        textStyle: TextStyle(
-          color: widget.isMe ? Colors.white : Colors.black,
-          fontSize: 16,
-        ),
-      );
+      return TextMessageBubble(message: widget.message, isMe: widget.isMe, tail: widget.tail);
     } else if(MessageType.VOICE_RECORD.index == widget.message.type.index){
       return RecordMessageBubble(message: widget.message, isMe: widget.isMe, tail: widget.tail);
     } else if(MessageType.IMAGE.index == widget.message.type.index){
-      return BubbleNormalImage(
-        id: widget.message.fileRef!.toString(),
-        image: Image.network(widget.message.fileRef!),
-        color: widget.isMe ? Colors.blue : Colors.grey[300]!,
-        tail: widget.tail,
-        sent: widget.isMe ? !widget.message.read : false,
-        seen: widget.isMe ? widget.message.read : false,
-        // delivered: true,
-      );
+      return ImageMessageBubble(message: widget.message, isMe: widget.isMe, tail: widget.tail);
     } else if(MessageType.ITEM.index == widget.message.type.index){
-      return ItemMessageBubble(message: widget.message, isMe: widget.isMe);
+      return ItemMessageBubble(message: widget.message, isMe: widget.isMe, tail: widget.tail);
     }
     else{
       return Container();
@@ -56,17 +39,22 @@ class _MessageBubbleState extends State<MessageBubble> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: widget.isMe ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+    return Row(
+      mainAxisAlignment: widget.isMe ? MainAxisAlignment.start : MainAxisAlignment.end,
       children: [
-        createBubbleByType(),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: widget.showTime
-              ? Text(
-            widget.message.sentAtAsString(),
-            style: kSmallBlackTextStyle,
-          ) : Container()
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 1),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: widget.isMe ? Colors.blue : Colors.grey[300],
+            borderRadius: BorderRadiusDirectional.only(
+                topStart: const Radius.circular(20),
+                topEnd: const Radius.circular(20),
+                bottomEnd: !widget.isMe && widget.tail ? Radius.zero : const Radius.circular(20),
+                bottomStart: widget.isMe && widget.tail ? Radius.zero : const Radius.circular(20)
+            ),
+          ),
+          child: createBubbleByType()
         ),
       ],
     );

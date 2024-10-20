@@ -12,44 +12,38 @@ import '../../screens/item_screen.dart';
 class ItemMessageBubble extends StatelessWidget {
   final Message message;
   final bool isMe;
+  final bool tail;
 
-  const ItemMessageBubble({super.key, required this.message, required this.isMe});
+  const ItemMessageBubble({super.key, required this.message, required this.isMe, required this.tail});
 
   @override
   Widget build(BuildContext context) {
     AppLocalizations localization = AppLocalizations.of(context)!;
-    return FutureBuilder(
-      future: getItemById(message.fileRef!),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          Item item = snapshot.data!;
-          return GestureDetector(
-            onTap: () => Navigator.pushNamed(context, ItemScreen.id,
-                arguments: ScreenArguments(item, item.contactUser == userDetails.userReference)),
-            child: Row(
-              mainAxisAlignment: isMe ? MainAxisAlignment.start : MainAxisAlignment.end,
-              children: [
-                Container(
-                  width: 300,
-                  margin: const EdgeInsets.symmetric(horizontal: 10),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: isMe ? Colors.blue : Colors.grey[300]!,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CachedNetworkImage(
-                        width: 100,
-                        height: 100,
-                        imageUrl: item.imageRef,
-                        placeholder: (context, url) => Container(
-                          padding: const EdgeInsets.all(30),
-                          child: const CircularProgressIndicator(color: kPastelYellow,)
-                        ),
-                        errorWidget: (context, url, error) => const Icon(Icons.error),
-                        imageBuilder: (context, imageProvider) => Container(
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.7,
+      child: Column(
+        children: [
+          FutureBuilder(
+              future: getItemById(message.fileRef!),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  Item item = snapshot.data!;
+                  return GestureDetector(
+                    onTap: () => Navigator.pushNamed(context, ItemScreen.id,
+                        arguments: ScreenArguments(item, item.contactUser == userDetails.userReference)),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CachedNetworkImage(
+                          width: 100,
+                          height: 100,
+                          imageUrl: item.imageRef,
+                          placeholder: (context, url) => Container(
+                              padding: const EdgeInsets.all(30),
+                              child: const CircularProgressIndicator(color: kPastelYellow,)
+                          ),
+                          errorWidget: (context, url, error) => const Icon(Icons.error),
+                          imageBuilder: (context, imageProvider) => Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
                               image: DecorationImage(
@@ -57,81 +51,86 @@ class ItemMessageBubble extends StatelessWidget {
                                 fit: BoxFit.cover,
                               ),
                             ),
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.title,
+                                style: TextStyle(
+                                  color: isMe ? Colors.white : Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                '${item.price}₪',
+                                style: kHeadersTextStyle,
+                              ),
+                              Text(
+                                item.description,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: isMe ? Colors.white : Colors.black,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(
+                          width: 100,
+                          height: 100,
+                          child: Icon(Icons.error)),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.title,
-                              style: TextStyle(
-                                color: isMe ? Colors.white : Colors.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              '${item.price}₪',
-                              style: kHeadersTextStyle,
-                            ),
-                            Text(
-                              item.description,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: isMe ? Colors.white : Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          localization.errorLoadingItem,
+                          style: TextStyle(
+                            color: isMe ? Colors.white : Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        } else {
-          return Row(
-            mainAxisAlignment: isMe ? MainAxisAlignment.start : MainAxisAlignment.end,
+                  );
+                }
+              }
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Container(
-                width: 300,
-                margin: const EdgeInsets.symmetric(horizontal: 10),
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: isMe ? Colors.blue : Colors.grey[300]!,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(
-                      width: 100,
-                      height: 100,
-                      child: Icon(Icons.error)),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        localization.errorLoadingSellerDetails,
-                        style: TextStyle(
-                          color: isMe ? Colors.white : Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
+              isMe ? Icon(
+                  message.read ? Icons.done_all : Icons.done,
+                  color: message.read ? Colors.cyan[300] : Colors.grey[300],
+                  size: 18
+              ) : Container(),
+              const SizedBox(width: 4),
+              Text(
+                message.sentAtAsString(),
+                style: TextStyle(
+                  color: Colors.grey[isMe ? 300 : 700]!,
+                  fontSize: 12,
                 ),
               ),
             ],
-          );
-        }
-      }
+          ),
+        ],
+      ),
     );
   }
 
