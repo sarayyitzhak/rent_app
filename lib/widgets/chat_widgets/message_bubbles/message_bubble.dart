@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:rent_app/models/message_type.dart';
 import 'package:rent_app/models/message.dart';
-import 'package:rent_app/widgets/message_bubbles/image_message_bubble.dart';
-import 'package:rent_app/widgets/message_bubbles/item_message_bubble.dart';
-import 'package:rent_app/widgets/message_bubbles/text_message_bubble.dart';
-import '../../constants.dart';
+import 'image_message_bubble.dart';
+import 'item_message_bubble.dart';
 import 'record_message_bubble.dart';
+import 'text_message_bubble.dart';
 
 
 class MessageBubble extends StatefulWidget {
-  Message message;
+  final Message message;
   final bool isMe;
-  bool showTime;
   bool tail;
-  MessageBubble({super.key, required this.message, required this.isMe, this.tail = true, this.showTime = true});
+  double bottomMargin;
+
+  MessageBubble({super.key, required this.message, required this.isMe, this.tail = true, this.bottomMargin = 2});
 
   @override
   State<MessageBubble> createState() => _MessageBubbleState();
@@ -43,15 +43,16 @@ class _MessageBubbleState extends State<MessageBubble> {
       mainAxisAlignment: widget.isMe ? MainAxisAlignment.start : MainAxisAlignment.end,
       children: [
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 1),
+          margin: EdgeInsets.only(left: 10, right: 10, bottom: widget.bottomMargin),
+          // margin: EdgeInsets.symmetric(horizontal: 10, vertical: widget.verticalMargin),
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: widget.isMe ? Colors.blue : Colors.grey[300],
             borderRadius: BorderRadiusDirectional.only(
                 topStart: const Radius.circular(20),
                 topEnd: const Radius.circular(20),
-                bottomEnd: !widget.isMe && widget.tail ? Radius.zero : const Radius.circular(20),
-                bottomStart: widget.isMe && widget.tail ? Radius.zero : const Radius.circular(20)
+                bottomEnd: Radius.circular(!widget.isMe && widget.tail ? 0 : 20),
+                bottomStart: Radius.circular(widget.isMe && widget.tail ? 0 : 20)
             ),
           ),
           child: createBubbleByType()

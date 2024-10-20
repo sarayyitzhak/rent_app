@@ -3,12 +3,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../constants.dart';
-import '../../main.dart';
-import '../../models/item.dart';
-import '../../models/message.dart';
-import '../../screens/item_screen.dart';
-import '../custom_app_bar.dart';
+import 'package:rent_app/widgets/chat_widgets/message_time.dart';
+import '../../../constants.dart';
+import '../../../main.dart';
+import '../../../models/item.dart';
+import '../../../models/message.dart';
+import '../../../screens/item_screen.dart';
+import '../../custom_app_bar.dart';
 
 class ImageMessageBubble extends StatelessWidget {
   final Message message;
@@ -34,10 +35,6 @@ class ImageMessageBubble extends StatelessWidget {
             width: MediaQuery.of(context).size.width * 0.6,
             height: MediaQuery.of(context).size.width * 0.9,
             imageUrl: message.fileRef!,
-            placeholder: (context, url) => Container(
-                padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.3, vertical: MediaQuery.of(context).size.width * 0.3),
-                child: const CircularProgressIndicator(color: kPastelYellow,)
-            ),
             errorWidget: (context, url, error) => const Icon(Icons.error),
             imageBuilder: (context, imageProvider) => Container(
               decoration: BoxDecoration(
@@ -51,24 +48,7 @@ class ImageMessageBubble extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            isMe ? Icon(
-                message.read ? Icons.done_all : Icons.done,
-                color: message.read ? Colors.cyan[300] : Colors.grey[300],
-                size: 18
-            ) : Container(),
-            const SizedBox(width: 4),
-            Text(
-              message.sentAtAsString(),
-              style: TextStyle(
-                color: Colors.grey[isMe ? 300 : 700]!,
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
+        MessageTime(message: message, isMe: isMe)
       ],
     );
   }

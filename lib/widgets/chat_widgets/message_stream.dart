@@ -3,7 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rent_app/models/chat.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:rent_app/models/message.dart';
-import '../constants.dart';
+import 'package:rent_app/widgets/chat_widgets/date_bubble.dart';
+import '../../constants.dart';
 import 'message_bubbles/message_bubble.dart';
 
 class MessagesStream extends StatelessWidget {
@@ -16,43 +17,31 @@ class MessagesStream extends StatelessWidget {
         required this.userIdx,
         required this.chatDoc});
 
-  List<Widget> getMessagesBubbles(List<QueryDocumentSnapshot<Map<String, dynamic>>> messages){
-    var prevMessageSender;
-    DateTime prevMessageTime = DateTime.now();
-    List<Widget> messageBubbles = [];
-    bool first = true;
-    for (var message in messages!) {
+  List<Widget> getBubbles(List<QueryDocumentSnapshot<Map<String, dynamic>>> messages){
+    Message? lastMessage;
+    MessageBubble? lastMessageBubble;
+    List<Widget> bubbles = [];
+    for (var message in messages) {
       var messageData = message.data();
       Message newMessage = mapAsMessage(messageData);
-      if (first) {
-        messageBubbles.add(DateChip(date: newMessage.sentAt));
-        first = false;
-      } else {
-        if (newMessage.sentAt.day != prevMessageTime.day) {
-          messageBubbles.add(DateChip(date: newMessage.sentAt));
-        }
+      int daysDifference = lastMessage != null ? newMessage.sentAt.difference(lastMessage.sentAt).inDays : -1;
+      if (daysDifference != 0) {
+        bubbles.add(DateBubble(dateTime: newMessage.sentAt));
       }
-      if (prevMessageSender == newMessage.sender) {
-        var last = (messageBubbles.last.runtimeType == MessageBubble
-            ? messageBubbles.last
-            : messageBubbles.elementAt(messageBubbles.length - 2))
-        as MessageBubble;
-        if (prevMessageTime.day == newMessage.sentAt.day) {
-          last.tail = false;
-          if (prevMessageTime.hour == newMessage.sentAt.hour &&
-              prevMessageTime.minute == newMessage.sentAt.minute) {
-            last.showTime = false;
-          }
-        }
+      if (lastMessage?.sender == newMessage.sender && daysDifference <= 0) {
+        lastMessageBubble?.tail = false;
       }
-      messageBubbles.add(MessageBubble(
+      if (lastMessage?.sender != newMessage.sender && daysDifference <= 0) {
+        lastMessageBubble?.bottomMargin = 10;
+      }
+      lastMessageBubble = MessageBubble(
         message: newMessage,
         isMe: userIdx == newMessage.sender,
-      ));
-      prevMessageSender = newMessage.sender;
-      prevMessageTime = newMessage.sentAt;
+      );
+      bubbles.add(lastMessageBubble);
+      lastMessage = newMessage;
     }
-    return messageBubbles;
+    return bubbles;
   }
 
   @override
@@ -68,7 +57,7 @@ class MessagesStream extends StatelessWidget {
             );
           }
           final messages = snapshot.data?.docs;
-          var messageBubbles = getMessagesBubbles(messages!);
+          var messageBubbles = getBubbles(messages!);
           return Expanded(
             child: ListView(
               reverse: true,

@@ -5,7 +5,8 @@ import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:rent_app/models/message.dart';
 
-import '../../constants.dart';
+import '../../../constants.dart';
+import '../message_time.dart';
 
 class RecordMessageBubble extends StatefulWidget {
   final Message message;
@@ -141,26 +142,7 @@ class _RecordMessageBubbleState extends State<RecordMessageBubble> {
                         ),
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        widget.isMe
-                            ? Icon(widget.message.read ? Icons.done_all : Icons.done,
-                            color: widget.message.read
-                                ? Colors.cyan[300]
-                                : Colors.grey[300],
-                            size: 18)
-                            : Container(),
-                        const SizedBox(width: 4),
-                        Text(
-                          widget.message.sentAtAsString(),
-                          style: TextStyle(
-                            color: Colors.grey[widget.isMe ? 300 : 700]!,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
+                    MessageTime(message: widget.message, isMe: widget.isMe)
                   ],
                 ),
               ],
