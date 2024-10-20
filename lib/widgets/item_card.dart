@@ -46,9 +46,7 @@ class ItemCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
                         image: DecorationImage(
-                            image: NetworkImage(
-                              item.imageRef,
-                            ),
+                            image: imageProvider,
                             scale: isHorizontal ? 0.5 : 1.0,
                             fit: BoxFit.cover),
                       ),
