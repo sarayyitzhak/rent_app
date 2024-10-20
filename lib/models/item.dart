@@ -5,18 +5,18 @@ import 'category.dart';
 import 'condition.dart';
 
 class Item {
-  late DocumentReference _itemReference;
-  late DocumentReference _contactUser;
-  late String _imageRef;
-  late String _title;
-  late int _price;
-  late AddressInfo _location;
-  late String _description;
-  late Condition _condition;
-  late List<dynamic> _categories;
-  late Timestamp _createdAt;
-  late int _likesCount;
-  late int _seenCount;
+  final DocumentReference _itemReference;
+  final DocumentReference _contactUser;
+  String _imageRef;
+  String _title;
+  int _price;
+  AddressInfo _location;
+  String _description;
+  Condition _condition;
+  List<dynamic> _categories;
+  final Timestamp _createdAt;
+  int _likesCount;
+  int _seenCount;
 
   // Constructor
   Item({
@@ -61,6 +61,12 @@ class Item {
   set imageRef(String value) => _imageRef = value;
   set likesCount(int value) => _likesCount = value;
   set seenCount(int value) => _seenCount = value;
+  set price(int value) => _price = value;
+  set location(AddressInfo value) => _location = value;
+  set description(String value) => _description = value;
+  set title(String value) => _title = value;
+  set condition(Condition value) => _condition = value;
+  set categories(List<dynamic> value) => _categories = value;
 
   Map<String, dynamic> itemToMap() {
     return {

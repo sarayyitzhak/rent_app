@@ -85,6 +85,18 @@
   "accept": "אישור",
   "reject": "סירוב",
   "noItemsToShow": "אין פריטים להציג",
+  "whatWouldYouLikeToSearch": "מה תרצו לחפש?",
+  "recommendedForYou": "מומלצים בשבילך",
+  "aroundYou": "סביבך",
+  "gettingLocation": "בודק מיקום",
+  "lastSeen": "נצפו לאחרונה",
+  "unknownLocation": "מיקום לא ידוע",
+  "peopleLikedTheItem": "אנשים אהבו את המודעה",
+  "peopleSeenTheItem": "אנשים צפו במודעה",
+
+
+
+
 
 
   "waiting": "בהמתנה",

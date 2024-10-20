@@ -1,11 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:rent_app/main.dart';
-import 'package:rent_app/widgets/request_card.dart';
-
-import '../models/item.dart';
-import '../models/request.dart';
 import '../services/card_utils.dart';
 
 class ScrollableRequestList extends StatelessWidget {

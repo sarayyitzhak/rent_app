@@ -31,7 +31,7 @@ Future<void> createNewItem(File? image, String title, String price, AddressInfo 
   Item newItem = Item(
       itemReference: itemDoc,
       contactUser: userDetails.userReference,
-      imageRef: '',
+      imageRef: imageDownloadUrl,
       title: title,
       price: int.parse(price),
       location: addressValue,
@@ -42,10 +42,25 @@ Future<void> createNewItem(File? image, String title, String price, AddressInfo 
       likesCount: 0,
       seenCount: 0
   );
-  newItem.imageRef = imageDownloadUrl;
   itemDoc.set(newItem.itemToMap());
 
   userDetails.userReference.update({'items': FieldValue.arrayUnion([itemDoc])});
+}
+
+Future<void> editItem(Item item, bool isImageChanged, File? image, String title, String price, AddressInfo addressValue, String description, Condition condition, List<dynamic> categories) async {
+  if(isImageChanged){
+    final itemRef = storageRef.child('${item.itemReference.id}/${Timestamp.now()}');
+    UploadTask uploadTask = itemRef.putFile(image!);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    item.imageRef = await taskSnapshot.ref.getDownloadURL();
+  }
+  item.title = title;
+  item.price = int.parse(price);
+  item.location = addressValue;
+  item.description = description;
+  item.condition = condition;
+  item.categories = categories;
+  _firestore.collection('items').doc(item.itemReference.id).update(item.itemToMap());
 }
 
 Future<List<Item>> getItemsByCategory(ItemCategory category) async {
@@ -113,7 +128,7 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getUserItemsStream() {
 
 //REQUESTS
 Future<QuerySnapshot<Map<String, dynamic>>> getUserRequestsStream() {
-  return _firestore.collection('requests').where('ownerID', isEqualTo: userDetails.userReference.id).orderBy('requestTime').get();
+  return _firestore.collection('requests').where('ownerID', isEqualTo: userDetails.userReference.id).orderBy('requestTime', descending: true).get();
 }
 
 void addRequest(ItemRequest request){
@@ -247,4 +262,27 @@ Future<UserDetails> getItemContactUser(Item item) async {
   var contactUserDoc = await item.contactUser.get();
   Map<String, dynamic>? contactUserData = contactUserDoc.data() as Map<String, dynamic>?;
   return mapAsUser(contactUserData!);
+}
+
+//Messaging
+void requestNotificationsPermission() async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+
+  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    print('User granted permission');
+  } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+    print('User granted provisional permission');
+  } else {
+    print('User declined or has not accepted permission');
+  }
 }

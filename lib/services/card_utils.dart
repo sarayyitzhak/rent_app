@@ -41,7 +41,7 @@ Future<List<ItemCard>> getItemsFilterByContactUser(DocumentReference contactUser
 }
 
 Future<List<ItemCard>> getUserItemsLastSeen(UserDetails user, bool isHorizontal, bool reversed) async {
-  return getUserItemsByField(userDetails, 'lastSeen', isHorizontal, reversed);
+  return getUserItemsByField(userDetails, 'seen', isHorizontal, reversed);
 }
 
 Future<List<ItemCard>> getUserItemsWishlist(UserDetails user, bool isHorizontal, bool reversed) async {

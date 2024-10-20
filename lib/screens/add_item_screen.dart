@@ -1,15 +1,12 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/models/category.dart';
 import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/models/address_info.dart';
+import 'package:rent_app/screens/item_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -17,9 +14,8 @@ import 'package:rent_app/widgets/custom_button.dart';
 import 'package:rent_app/widgets/text_and_text_field.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
-
-import '../main.dart';
 import '../models/item.dart';
+import '../widgets/map_dialog.dart';
 import '../widgets/pick_image_button.dart';
 
 
@@ -32,19 +28,18 @@ class AddItemScreen extends StatefulWidget {
 }
 
 class _AddItemScreenState extends State<AddItemScreen> {
+  late bool isOnEditMode;
+  Item? item;
   File? image;
+  String? imageURLOnEditMode;
+  bool isImageChangedOnEditMode = false;
   late TextEditingController titleController;
   late TextEditingController priceController;
   late TextEditingController descriptionController;
-  late TextEditingController addressController;
-  late Condition conditionValue;
+  Condition? conditionValue;
   late AddressInfo addressValue =
       AddressInfo(latitude: 0, longitude: 0, addressData: {'city': '', 'road': ''});
   var _selectedCategories = [];
-  final List<MultiSelectItem<ItemCategory>> _categoryItems = ItemCategory.values
-      .map((category) => MultiSelectItem<ItemCategory>(category, category.toString().split('.').last))
-      .toList();
-
 
   @override
   void initState() {
@@ -52,96 +47,37 @@ class _AddItemScreenState extends State<AddItemScreen> {
     titleController = TextEditingController();
     priceController = TextEditingController();
     descriptionController = TextEditingController();
-    addressController = TextEditingController();
-    _getUserLocation();
   }
 
-
-  GoogleMapController? mapController;
-  LatLng _initialPosition = const LatLng(37.7749, -122.4194); // Default position
-  String _pickedAddress = "Search for an address";
-
-  Future<void> _getUserLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+  void initOnEditMode(Item? item){
     setState(() {
-      _initialPosition = LatLng(position.latitude, position.longitude);
+      imageURLOnEditMode = item!.imageRef;
+      titleController.text = item.title;
+      priceController.text = item.price.toString();
+      descriptionController.text = item.description;
+      conditionValue = item.condition;
+      _selectedCategories = item.categories;
+      addressValue = item.location;
     });
   }
-
-  void _onPlaceSelected(LatLng latLng, String address) {
-    setState(() {
-      _initialPosition = latLng;
-      _pickedAddress = address;
-      mapController?.animateCamera(CameraUpdate.newLatLng(latLng));
-    });
-  }
-
 
   Future<void> mapDialogBuilder(BuildContext context, var localization) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(localization.pleaseChooseLocation),
-          insetPadding: const EdgeInsets.all(0),
-          contentPadding: const EdgeInsets.all(8),
-          content: SizedBox(
-            height: 600,
-            width: MediaQuery.of(context).size.width - 40,
-            // width: double.infinity,
-            child: FlutterLocationPicker(
-                searchBarHintText: localization.searchLocation,
-                urlTemplate: kMapUrl,
-                mapLanguage: localization.language,
-                initPosition: const LatLong(23, 89),
-                selectLocationButtonStyle: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all(Colors.blue),
-                ),
-                selectedLocationButtonTextStyle: const TextStyle(fontSize: 18),
-                selectLocationButtonText: 'מרכוז',
-                selectLocationButtonLeadingIcon: const Icon(Icons.check),
-                initZoom: 11,
-                minZoomLevel: 5,
-                maxZoomLevel: 16,
-                trackMyPosition: true,
-                onError: (e) => print(e),
-                onPicked: (pickedData) {
-                  setState(() {
-                    addressValue.latitude = pickedData.latLong.latitude;
-                    addressValue.longitude = pickedData.latLong.longitude;
-                    addressValue.addressData = pickedData.addressData;
-                  });
-                },
-                onChanged: (pickedData) {
-                  setState(() {
-                    addressValue.latitude = pickedData.latLong.latitude;
-                    addressValue.longitude = pickedData.latLong.longitude;
-                    addressValue.addressData = pickedData.addressData;
-                  });
-                }),
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-                backgroundColor: kPastelYellow
-              ),
-              child: Text(localization.set),
-              onPressed: () {
-                Navigator.of(context).pop();
-                FocusScope.of(context).unfocus();
-              },
-            ),
-          ],
-        );
+        return MapDialog(localization: localization, context: context,
+          onPicked: (PickedData pickedData) {
+            setState(() {
+              addressValue.latitude = pickedData.latLong.latitude;
+              addressValue.longitude = pickedData.latLong.longitude;
+              addressValue.addressData = pickedData.addressData;
+            });
+          });
       },
     );
   }
 
-
-
-  Container buildImageContainer(var localization) {
+  Container imageContainer(var localization, bool isEditMode) {
     return Container(
         height: 200,
         width: double.infinity,
@@ -153,21 +89,89 @@ class _AddItemScreenState extends State<AddItemScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            isEditMode && !isImageChangedOnEditMode ? CachedNetworkImage(imageUrl: imageURLOnEditMode.toString(), width: 150, height: 150,
+              fit: BoxFit.fill,) :
             image != null
                 ? Image.file(
                     image!,
-                    width: 150, // specify desired width
-                    height: 150, // specify desired height
+                    width: 150, 
+                    height: 150,
                     fit: BoxFit.fill,
                   )
                 : Text(localization.noImageSelected),
+
             PickImageButton(onImagePicked: (newImage){
               setState(() {
                 image = newImage;
               });
+              if(isEditMode){
+                isImageChangedOnEditMode = true;
+              }
             },),
           ],
         ));
+  }
+
+  MultiSelectBottomSheetField categorySelection(AppLocalizations localization){
+    return MultiSelectBottomSheetField(
+      decoration: BoxDecoration(
+        color: kPastelYellowOpacity,
+        shape: BoxShape.rectangle,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      items: ItemCategory.values
+          .map((c) => MultiSelectItem(c, c.getTitle(localization)))
+          .toList(),
+      initialChildSize: 0.6,
+      initialValue: _selectedCategories,
+      onConfirm: (values) {
+        _selectedCategories = values;
+        FocusScope.of(context).requestFocus(FocusNode());
+      },
+    );
+  }
+
+  DropdownMenu<Condition> conditionSelection(AppLocalizations localization){
+    return DropdownMenu(
+      width: double.infinity,
+      onSelected: (value) {
+        setState(() {
+          conditionValue = value!;
+        });
+      },
+      initialSelection: conditionValue,
+      dropdownMenuEntries: Condition.values
+          .map((c) =>  DropdownMenuEntry<Condition>(value: c, label: c.getTitle(localization)))
+          .toList(),
+      inputDecorationTheme: const InputDecorationTheme(
+        fillColor: kPastelYellowOpacity,
+        hoverColor: kPastelYellowOpacity,
+      ),
+    );
+  }
+
+  Future<void> onAddItemButtonPressed() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent user from closing the dialog
+      builder: (context) => const Center(child: CircularProgressIndicator(color: kPastelYellow,)),
+    );
+    createNewItem(image, titleController.text, priceController.text, addressValue, descriptionController.text, conditionValue!, _selectedCategories);
+    Navigator.pop(context);
+    Navigator.pop(context);
+  }
+
+  Future<void> onEditItemButtonPressed() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent user from closing the dialog
+      builder: (context) => const Center(child: CircularProgressIndicator(color: kPastelYellow,)),
+    );
+
+    await editItem(item!, isImageChangedOnEditMode, image, titleController.text, priceController.text, addressValue, descriptionController.text, conditionValue!, _selectedCategories);
+    Navigator.pop(context);
+    Navigator.pop(context);
+    Navigator.popAndPushNamed(context, ItemScreen.id, arguments: ItemScreenArguments(item!, true));
   }
 
   @override
@@ -175,30 +179,20 @@ class _AddItemScreenState extends State<AddItemScreen> {
     titleController.dispose();
     priceController.dispose();
     descriptionController.dispose();
-    addressController.dispose();
     super.dispose();
-  }
-
-  Future<void> onAddItemButtonPressed() async {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Prevent user from closing the dialog
-      builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(color: kPastelYellow,),
-        );
-      },
-    );
-    createNewItem(image, titleController.text, priceController.text, addressValue, descriptionController.text, conditionValue, _selectedCategories);
-    Navigator.pop(context);
-    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     var localization = AppLocalizations.of(context)!;
+    final arg = ModalRoute.of(context)!.settings.arguments as AddItemScreenArguments;
+    isOnEditMode = arg.isEditMode;
+    if(isOnEditMode && item == null){
+      item = arg.item;
+      initOnEditMode(item);
+    }
     return Scaffold(
-      appBar: CustomAppBar(title: localization.addItem),
+      appBar: CustomAppBar(title: isOnEditMode ? localization.edit : localization.addItem),
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
@@ -206,7 +200,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                buildImageContainer(localization),
+                imageContainer(localization, isOnEditMode),
                 TextAndTextField(
                     title: localization.title, controller: titleController),
                 TextAndTextField(
@@ -221,22 +215,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                       localization.category,
                       style: kBlackTextStyle,
                     )),
-                MultiSelectBottomSheetField(
-                  decoration: BoxDecoration(
-                    color: kPastelYellowOpacity,
-                    shape: BoxShape.rectangle,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  items: ItemCategory.values
-                      .map((e) => MultiSelectItem(e, e.getTitle(localization)))
-                      .toList(),
-                  initialChildSize: 0.6,
-                  initialValue: _selectedCategories,
-                  onConfirm: (values) {
-                    _selectedCategories = values;
-                    FocusScope.of(context).requestFocus(FocusNode());
-                  },
-                ),
+                categorySelection(localization),
                 const SizedBox(
                   height: 20,
                 ),
@@ -255,32 +234,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: DropdownMenu(
-                      width: double.infinity,
-                      onSelected: (value) {
-                        setState(() {
-                          conditionValue = value!;
-                        });
-                      },
-                      dropdownMenuEntries: [
-                        DropdownMenuEntry<Condition>(
-                            value: Condition.NEW,
-                            label: Condition.NEW.getTitle(localization)),
-                        DropdownMenuEntry<Condition>(
-                            value: Condition.USED_AS_NEW,
-                            label: Condition.USED_AS_NEW.getTitle(localization)),
-                        DropdownMenuEntry<Condition>(
-                            value: Condition.USED_IN_GOOD_SHAPE,
-                            label: Condition.USED_IN_GOOD_SHAPE.getTitle(localization)),
-                        DropdownMenuEntry<Condition>(
-                            value: Condition.USED_IN_MEDIUM_SHAPE,
-                            label: Condition.USED_IN_MEDIUM_SHAPE.getTitle(localization)),
-                      ],
-                      inputDecorationTheme: const InputDecorationTheme(
-                        fillColor: kPastelYellowOpacity,
-                        hoverColor: kPastelYellowOpacity,
-                      ),
-                    ),
+                    child: conditionSelection(localization),
                   ),
                 ),
                 const SizedBox(
@@ -296,12 +250,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   textCapitalization: true,
                 ),
 
-                // TextAndTextField(
-                //   title: localization.address,
-                //   controller: addressController,
-                //   onTapped: () => mapDialogBuilder(context, localization),
-                // ),
-
                 Align(
                   alignment: Alignment.bottomRight,
                   child: Text(
@@ -314,15 +262,15 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   style: kAddressButtonStyle,
                   child: Text(
                     addressValue.addressDataToString(),
-                      // '${addressValue.addressData['city']}${addressValue.addressData['road'] != null ? ',  ${addressValue.addressData['road']}' : ''}',
                     style: kBlackTextStyle,),
                 ),
 
                 const SizedBox(
                   height: 15,
                 ),
-
-                CustomButton(title: localization.addItem, onPress: onAddItemButtonPressed),
+                isOnEditMode
+                    ?  CustomButton(title: localization.edit, onPress: onEditItemButtonPressed)
+                    :  CustomButton(title: localization.addItem, onPress: onAddItemButtonPressed),
               ],
             ),
           ),
@@ -330,4 +278,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
       ),
     );
   }
+}
+
+class AddItemScreenArguments{
+  Item? item;
+  bool isEditMode;
+  AddItemScreenArguments({this.item, required this.isEditMode});
 }

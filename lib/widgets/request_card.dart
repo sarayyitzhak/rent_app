@@ -7,16 +7,33 @@ import '../models/request_status.dart';
 import '../utils.dart';
 
 class RequestCard extends StatefulWidget {
-  AppLocalizations localization;
-  bool isMyRequest;
-  ItemRequest request;
-  RequestCard({super.key, required this.localization, required this.isMyRequest, required this.request});
+  final AppLocalizations localization;
+  final bool isMyRequest;
+  final ItemRequest request;
+  const RequestCard({super.key, required this.localization, required this.isMyRequest, required this.request});
 
   @override
   State<RequestCard> createState() => _RequestCardState();
 }
 
 class _RequestCardState extends State<RequestCard> {
+
+  ElevatedButton createStatusButton(String title, RequestStatus status, Color color){
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          widget.request.status = status;
+          updateRequestStatus(widget.request);
+        });
+      },
+      child: Text(title),
+      style: ElevatedButton.styleFrom(
+          foregroundColor: kWhiteColor,
+          backgroundColor: color,
+          elevation: 3,
+          textStyle: kWhiteTextStyle),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,37 +78,9 @@ class _RequestCardState extends State<RequestCard> {
                   ? Text(widget.request.status.getTitle(widget.localization))
                   : Row(
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        widget.request.status = RequestStatus.REJECTED;
-                        updateRequestStatus(widget.request);
-                      });
-                    },
-                    child: Text(widget.localization.reject),
-                    style: ElevatedButton.styleFrom(
-                        foregroundColor: kWhiteColor,
-                        backgroundColor: Colors.red,
-                        elevation: 3,
-                        textStyle: kWhiteTextStyle),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        widget.request.status = RequestStatus.APPROVED;
-                        updateRequestStatus(widget.request);
-                      });
-                    },
-                    child: Text(widget.localization.accept),
-                    style: ElevatedButton.styleFrom(
-                        foregroundColor: kWhiteColor,
-                        backgroundColor: Colors.green,
-                        elevation: 3,
-                        textStyle: kWhiteTextStyle),
-                  )
+                  createStatusButton(widget.localization.accept, RequestStatus.APPROVED, Colors.green),
+                  const SizedBox(width: 5),
+                  createStatusButton(widget.localization.reject, RequestStatus.REJECTED, Colors.red)
                 ],
               ),
           ),

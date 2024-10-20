@@ -152,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     // create10Users();
     // return Text('finished');
-
+    var localization = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -183,8 +183,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    const Text(
-                      'מה תרצו לחפש?',
+                    Text(
+                      localization.whatWouldYouLikeToSearch,
                       style: kBlackTextStyle,
                     ),
                     SizedBox(
@@ -208,8 +208,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 30,
                     ),
 
-                    const Text(
-                      'מומלצים בשבילך',
+                    Text(
+                      localization.recommendedForYou,
                       style: kBlackHeaderTextStyle,
                     ),
                     SizedBox(
@@ -237,12 +237,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     Row(
                       children: [
-                        const Text(
-                          'סביבך',
+                        Text(
+                          localization.aroundYou,
                           style: kBlackHeaderTextStyle,
                         ),
                         const Icon(Icons.location_on_outlined),
-                        Text(cityName ?? 'בודק מיקום...'),
+                        Text(cityName ?? localization.gettingLocation),
                       ],
                     ),
                     SizedBox(
@@ -268,8 +268,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 30,
                     ),
 
-                    const Text(
-                      'נצפו לאחרונה',
+                    Text(
+                      localization.lastSeen,
                       style: kBlackHeaderTextStyle,
                     ),
                     SizedBox(

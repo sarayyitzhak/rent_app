@@ -85,6 +85,14 @@
   "accept": "Accept",
   "reject": "Reject",
   "noItemsToShow": "No items to show",
+  "whatWouldYouLikeToSearch": "What would you like to search?",
+  "recommendedForYou": "Recommended for you",
+  "aroundYou": "Around you",
+  "gettingLocation": "Getting your location",
+  "lastSeen": "Last seen",
+  "unknownLocation": "Unknown location",
+  "peopleLikedTheItem": "people liked the item",
+  "peopleSeenTheItem": "peopleSeenThisItem",
 
 
   "waiting": "Waiting",

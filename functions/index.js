@@ -13,6 +13,71 @@ admin.initializeApp();
 const firestore = admin.firestore();
 const messaging = admin.messaging();
 
+exports.newRequestNotification = functions.firestore
+    .document("requests/{requestId}")
+    .onCreate(async (snapshot, context) => {
+      const requestID = context.params.requestId;
+      const requestData = snapshot.data();
+      if (!requestData) {
+        console.log("No request data found");
+        return null;
+      }
+      const ownerID = requestData.ownerID;
+      const ownerDoc = await firestore.doc(`users/${ownerID}`).get();
+
+      const applicantID = requestData.applicantID;
+      const applicantDoc = await firestore.doc(`users/${applicantID}`).get();
+
+      if (!ownerDoc.exists || !applicantDoc.exists) {
+        console.log("Owner or applicant does not exist");
+        return null;
+      }
+
+      const ownerData = ownerDoc.data();
+      const applicantData = applicantDoc.data();
+
+      if (!ownerData || !applicantData) {
+        console.log("No owner or applicant data");
+        return null;
+      }
+
+      const ownerToken = ownerData.token;
+      const applicantName = applicantData.fullName;
+
+      const itemID = requestData.itemID;
+      const itemDoc = await firestore.doc(`items/${itemID}`).get();
+      if (!itemDoc.exists) {
+        console.log("Item does not exist");
+        return null;
+      }
+      const itemData = itemDoc.data();
+      if (!itemData) {
+        console.log("No item data");
+        return null;
+      }
+      const itemTitle = itemData.title;
+
+      const payload = {
+        notification: {
+          title: `התקבלה בקשה חדשה`,
+          body: `${applicantName} רוצה להשכיר את ה${itemTitle} שלך`,
+        },
+        data: {
+          chatId: requestID,
+        },
+        token: ownerToken,
+      };
+
+      try {
+        const response = await messaging.send(payload);
+        console.log("Successfully sent notification:", response);
+      } catch (error) {
+        console.error("Error sending notification:", error);
+      }
+      return null;
+    });
+
+
 exports.sendChatNotification = functions.firestore
     .document("chats/{chatId}/messages/{messageId}")
     .onCreate(async (snapshot, context) => {

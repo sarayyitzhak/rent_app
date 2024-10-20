@@ -1,13 +1,7 @@
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:rent_app/constants.dart';
 import 'package:rent_app/models/request_status.dart';
 import 'package:rent_app/models/user.dart';
-import 'package:rent_app/utils.dart';
-
 import 'address_info.dart';
 import 'item.dart';
 
@@ -82,81 +76,6 @@ class ItemRequest {
       'requestTime': _requestTime
     };
   }
-
-  // Widget requestCard(AppLocalizations localization, bool isMyRequest) {
-  //   // return item != null
-  //   //     ? Container(
-  //   //         height: 100,
-  //   //         child: Row(
-  //   //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //   //           crossAxisAlignment: CrossAxisAlignment.start,
-  //   //           children: [
-  //   //             Row(
-  //   //               children: [
-  //   //                 Container(
-  //   //                   height: 70,
-  //   //                   width: 70,
-  //   //                   margin: const EdgeInsets.symmetric(horizontal: 5),
-  //   //                   child: ClipRRect(
-  //   //                     borderRadius: BorderRadius.circular(10),
-  //   //                     child: Image.network(
-  //   //                       item!.imageRef,
-  //   //                       fit: BoxFit.cover,
-  //   //                     ),
-  //   //                   ),
-  //   //                 ),
-  //   //                 Column(
-  //   //                   children: [
-  //   //                     Text(
-  //   //                       item!.title,
-  //   //                       style: kBlackHeaderTextStyle,
-  //   //                     ),
-  //   //                     Text(
-  //   //                       '${dateToString(time.start)}-${dateToString(time.end)}',
-  //   //                       style: kSmallBlackTextStyle,
-  //   //                     ),
-  //   //                   ],
-  //   //                 ),
-  //   //               ],
-  //   //             ),
-  //   //             Padding(
-  //   //                 padding: const EdgeInsets.all(10),
-  //   //                 child: isMyRequest || _status != RequestStatus.WAITING
-  //   //                     ? Text(_status.getTitle(localization))
-  //   //                     : Row(
-  //   //                         children: [
-  //   //                           ElevatedButton(
-  //   //                             onPressed: () {
-  //   //                               _status = RequestStatus.REJECTED;
-  //   //                             },
-  //   //                             child: Text(localization.reject),
-  //   //                             style: ElevatedButton.styleFrom(
-  //   //                                 foregroundColor: kWhiteColor,
-  //   //                                 backgroundColor: Colors.red,
-  //   //                                 elevation: 7,
-  //   //                                 textStyle: kWhiteTextStyle),
-  //   //                           ),
-  //   //                           SizedBox(
-  //   //                             width: 5,
-  //   //                           ),
-  //   //                           ElevatedButton(
-  //   //                             onPressed: () {
-  //   //                               _status = RequestStatus.APPROVED;
-  //   //                             },
-  //   //                             child: Text(localization.accept),
-  //   //                             style: ElevatedButton.styleFrom(
-  //   //                                 foregroundColor: kWhiteColor,
-  //   //                                 backgroundColor: Colors.green,
-  //   //                                 elevation: 3,
-  //   //                                 textStyle: kWhiteTextStyle),
-  //   //                           )
-  //   //                         ],
-  //   //                       )),
-  //   //           ],
-  //   //         ),
-  //   //       )
-  //   //     : Container();
-  // }
 }
 
 ItemRequest mapToItemRequest(Map<String, dynamic> map, String cloudKey) {

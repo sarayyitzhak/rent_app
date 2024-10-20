@@ -6,7 +6,9 @@ import 'package:rent_app/main.dart';
 import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/models/user.dart';
+import 'package:rent_app/screens/add_item_screen.dart';
 import 'package:rent_app/screens/rental_screen.dart';
+import 'package:rent_app/utils.dart';
 import 'package:rent_app/widgets/chat_icon_button.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -20,17 +22,9 @@ class ItemScreen extends StatelessWidget {
   static String id = 'item_screen.dart';
   const ItemScreen({super.key});
 
-  void onEditPressed(BuildContext context){
-
-  }
-
-  void onRentItemPressed(BuildContext context, Item item){
-
-  }
-
   @override
   Widget build(BuildContext context) {
-    final arg = ModalRoute.of(context)!.settings.arguments as ScreenArguments;
+    final arg = ModalRoute.of(context)!.settings.arguments as ItemScreenArguments;
     Item item = arg.item;
     var localization = AppLocalizations.of(context)!;
     if (userDetails.userReference != item.contactUser && !userDetails.seen.contains(item.itemReference)) {
@@ -87,7 +81,7 @@ class ItemScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(10)),
                               child: ListTile(
                                 title: Text(
-                                  '${item.likesCount} אנשים אהבו את המודעה ', style: kSmallBlackTextStyle,),
+                                  '${item.likesCount} ${localization.peopleLikedTheItem} ', style: kSmallBlackTextStyle,),
                                 leading: const Icon(Icons.favorite),
                                 iconColor: Colors.pinkAccent,
                               )
@@ -101,7 +95,7 @@ class ItemScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10)),
                             child: ListTile(
                               title: Text(
-                                '${item.seenCount} אנשים צפו במודעה ', style: kSmallBlackTextStyle,),
+                                '${item.seenCount} ${localization.peopleSeenTheItem} ', style: kSmallBlackTextStyle),
                               leading: const Icon(Icons.remove_red_eye),
                               iconColor: Colors.blue.shade800,
                             ),
@@ -157,8 +151,7 @@ class ItemScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            DialIconButton(
-                                phoneNumber: '0${contactUser.phoneNumber}'),
+                            DialIconButton(phoneNumber: phoneNumberToString(contactUser.phoneNumber)),
                           ],
                         ),
                         const Divider(
@@ -169,7 +162,7 @@ class ItemScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '${item.price}₪',
+                              priceToString(item.price),
                               style: kHeadersTextStyle,
                             ),
                             arg.isMe
@@ -177,12 +170,8 @@ class ItemScreen extends StatelessWidget {
                                 : Row(
                                     children: [
                                       WishlistIconButton(item: item),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                      ChatIconButton(
-                                        item: item,
-                                      ),
+                                      const SizedBox(width: 5),
+                                      ChatIconButton(item: item),
                                     ],
                                   )
                           ],
@@ -203,7 +192,11 @@ class ItemScreen extends StatelessWidget {
                   Center(
                       child: CustomButton(
                           title: arg.isMe ? localization.edit : localization.rentItem,
-                          onPress: arg.isMe ? () {} : () {Navigator.pushNamed(context, RentalScreen.id, arguments: RentalScreenArgument(item: item));})),
+                          onPress: arg.isMe
+                              ? () => Navigator.pushNamed(context, AddItemScreen.id, arguments: AddItemScreenArguments(item: item, isEditMode: true))
+                              : () => Navigator.pushNamed(context, RentalScreen.id, arguments: RentalScreenArgument(item: item)),
+                      )
+                  ),
                 ],
               );
             }
@@ -213,8 +206,8 @@ class ItemScreen extends StatelessWidget {
   }
 }
 
-class ScreenArguments {
+class ItemScreenArguments {
   final Item item;
   final bool isMe;
-  ScreenArguments(this.item, this.isMe);
+  ItemScreenArguments(this.item, this.isMe);
 }

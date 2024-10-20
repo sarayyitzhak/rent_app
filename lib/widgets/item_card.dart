@@ -23,7 +23,7 @@ class ItemCard extends StatelessWidget {
     isMine = item.contactUser == userDetails.userReference;
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, ItemScreen.id,
-          arguments: ScreenArguments(item, isMine)),
+          arguments: ItemScreenArguments(item, isMine)),
       child: Container(
         width: isHorizontal ? 200 : null,
         margin: isHorizontal ? const EdgeInsets.all(5) : null,

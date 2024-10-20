@@ -31,15 +31,12 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedBottomBarIndex = 0;
-  final _messaging = FirebaseMessaging.instance;
-
 
   static final List<Widget> _widgetOptions = <Widget>[
     const HomeScreen(),
     const SearchScreen(),
     const UserItemsScreen(),
     ChatsScreen(),
-    // LoginScreen(),
     const UserScreen(),
   ];
 
@@ -181,29 +178,6 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  void requestPermission() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('User granted permission');
-    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-      print('User granted provisional permission');
-    } else {
-      print('User declined or has not accepted permission');
-    }
-  }
-
-
   Future<void> requestMicrophonePermission() async {
     await Permission.microphone.request();
   }
@@ -255,7 +229,7 @@ class _MainScreenState extends State<MainScreen> {
     //   }
     // });
     requestMicrophonePermission();
-    requestPermission();
+    requestNotificationsPermission();
     // FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
     //   userDetails.token = newToken;
     //   FirebaseFirestore.instance.collection('users').doc(userUid).update({

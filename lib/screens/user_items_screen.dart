@@ -65,7 +65,7 @@ class _UserItemsScreenState extends State<UserItemsScreen> {
             child: CustomButton(
                 title: localization.addItem,
                 onPress: () {
-                  Navigator.pushNamed(context, AddItemScreen.id);
+                  Navigator.pushNamed(context, AddItemScreen.id, arguments: AddItemScreenArguments(isEditMode: false));
                 }),
           )
         ],

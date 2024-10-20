@@ -1,6 +1,4 @@
 
-
-
 class AddressInfo{
   double latitude;
   double longitude;

@@ -28,6 +28,7 @@ class TextAndTextField extends StatelessWidget {
           keyboardType: keyboardType,
           textCapitalization: textCapitalization ? TextCapitalization.sentences : TextCapitalization.none,
           minLines: 1,
+          maxLines: maxLines,
           textInputAction: textInputAction,
           obscureText: isObscureText,
         ),
