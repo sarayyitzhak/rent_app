@@ -8,6 +8,7 @@ import '../../main.dart';
 import '../../models/item.dart';
 import '../../models/message.dart';
 import '../../screens/item_screen.dart';
+import '../../utils.dart';
 
 class ItemMessageBubble extends StatelessWidget {
   final Message message;
@@ -68,7 +69,7 @@ class ItemMessageBubble extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '${item.price}₪',
+                                getFormattedPrice(item.price),
                                 style: kHeadersTextStyle,
                               ),
                               Text(

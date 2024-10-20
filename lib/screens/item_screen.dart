@@ -162,7 +162,7 @@ class ItemScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              priceToString(item.price),
+                              getFormattedPrice(item.price),
                               style: kHeadersTextStyle,
                             ),
                             arg.isMe

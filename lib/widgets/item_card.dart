@@ -6,6 +6,7 @@ import 'package:rent_app/widgets/chat_icon_button.dart';
 import 'package:rent_app/widgets/wishlist_icon_button.dart';
 import '../constants.dart';
 import '../models/item.dart';
+import '../utils.dart';
 
 class IsInWishlist{
   bool value;
@@ -82,7 +83,7 @@ class ItemCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${item.price}₪',
+                  getFormattedPrice(item.price),
                   style: kHeadersTextStyle,
                 ), //price
                 Container(

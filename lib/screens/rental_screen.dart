@@ -12,6 +12,7 @@ import 'package:rent_app/widgets/custom_button.dart';
 
 import '../models/request_status.dart';
 import '../services/cloud_services.dart';
+import '../utils.dart';
 
 class RentalScreen extends StatefulWidget {
   static String id = 'rental_screen';
@@ -141,7 +142,7 @@ class _RentalScreenState extends State<RentalScreen> {
                         style: kHeadersTextStyle,
                       ),
                       Text(
-                        '${item.price}₪',
+                        getFormattedPrice(item.price),
                       ),
                     ],
                   )
