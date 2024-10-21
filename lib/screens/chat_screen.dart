@@ -54,7 +54,7 @@ class ChatScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            MessagesStream(
+            MessageStream(
                 chat: chat, userIdx: userIndex, chatDoc: chat.cloudKey),
             Container(
               // decoration: kMessageContainerDecoration,

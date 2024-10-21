@@ -49,10 +49,10 @@ class _MessageBubbleState extends State<MessageBubble> {
           decoration: BoxDecoration(
             color: widget.isMe ? Colors.blue : Colors.grey[300],
             borderRadius: BorderRadiusDirectional.only(
-                topStart: const Radius.circular(20),
-                topEnd: const Radius.circular(20),
-                bottomEnd: Radius.circular(!widget.isMe && widget.tail ? 0 : 20),
-                bottomStart: Radius.circular(widget.isMe && widget.tail ? 0 : 20)
+                topStart: const Radius.circular(15),
+                topEnd: const Radius.circular(15),
+                bottomEnd: Radius.circular(!widget.isMe && widget.tail ? 0 : 15),
+                bottomStart: Radius.circular(widget.isMe && widget.tail ? 0 : 15)
             ),
           ),
           child: createBubbleByType()

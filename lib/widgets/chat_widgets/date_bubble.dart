@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rent_app/utils.dart';
 
 class DateBubble extends StatelessWidget {
   final DateTime dateTime;
@@ -11,7 +12,7 @@ class DateBubble extends StatelessWidget {
     final now = DateTime.now();
     AppLocalizations localization = AppLocalizations.of(context)!;
     if (now.year == dateTime.year && now.month == dateTime.month) {
-      int daysDifference = now.difference(dateTime).inDays;
+      int daysDifference = getDaysDifference(dateTime, now);
       if (daysDifference == 0) {
         return localization.today;
       }

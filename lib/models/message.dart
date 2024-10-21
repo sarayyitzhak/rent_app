@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rent_app/models/message_type.dart';
 
 class Message {
-  late DocumentReference _cloudKey;
+  DocumentReference? _cloudKey;
   late int _sender;
   late String _text;
   late String? _fileRef;
@@ -15,6 +15,7 @@ class Message {
   DocumentReference? _senderRef;
 
   Message({
+    DocumentReference? cloudKey,
     required int sender,
     required String text,
     String? fileRef,
@@ -22,7 +23,8 @@ class Message {
     required DateTime sentAt,
     required MessageType type,
     DocumentReference? senderRef,
-  })  : _sender = sender,
+  })  : _cloudKey = cloudKey,
+        _sender = sender,
         _text = text,
         _fileRef = fileRef,
         _read = read,
@@ -30,7 +32,7 @@ class Message {
         _type = type,
         _senderRef = senderRef;
 
-  DocumentReference get cloudKey => _cloudKey;
+  DocumentReference? get cloudKey => _cloudKey;
   int get sender => _sender;
   String get text => _text;
   String? get fileRef => _fileRef;
@@ -64,8 +66,8 @@ class Message {
   }
 }
 
-Message mapAsMessage(Map<String, dynamic> map){
-  Message message = Message(read: map['read'], sender: map['sender'], sentAt: map['sentAt'].toDate(), text: map['text'], type: numToMessageType(map['type']));
+Message mapAsMessage(Map<String, dynamic> map, DocumentReference? reference){
+  Message message = Message(cloudKey: reference, read: map['read'], sender: map['sender'], sentAt: map['sentAt'].toDate(), text: map['text'], type: numToMessageType(map['type']));
   if(map.containsKey('fileRef')){
     message.fileRef = map['fileRef'];
   }

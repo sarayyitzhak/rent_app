@@ -76,10 +76,8 @@ class _ChatCardState extends State<ChatCard> {
     if(lastMessageSnapshot.docs.isNotEmpty){
       var lastMessageDoc = lastMessageSnapshot.docs.first;
       lastMessageData = lastMessageDoc.data();
-      lastMessage = mapAsMessage(lastMessageData);
+      lastMessage = mapAsMessage(lastMessageData, lastMessageDoc.reference);
       chatObg = Chat(participants: participants, cloudKey: chat.reference, lastMessage: lastMessage);
-    } else {
-      lastMessage = mapAsMessage({'sender': 0, 'text': 'no text yet', 'read': false, 'sentAt': Timestamp.now().toDate()});
     }
     List<String> nameAndToken = await getChatUserNameAndToken();
     chatObg.otherParticipantName = nameAndToken[0];

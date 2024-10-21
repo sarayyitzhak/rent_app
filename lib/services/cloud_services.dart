@@ -213,6 +213,22 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getUserChatsStream(){
   return _firestore.collection('chats').where('participants', arrayContains: userDetails.userReference).orderBy('lastMessageSentAt').snapshots();
 }
 
+//MESSAGES
+
+Future<QuerySnapshot> getHistoricalMessages(DocumentReference chatRef, int limit, DocumentSnapshot? startAfterDoc) {
+  Query query = chatRef.collection('messages').orderBy('sentAt', descending: true).limit(limit);
+
+  if (startAfterDoc != null) {
+    query = query.startAfterDocument(startAfterDoc);
+  }
+
+  return query.get();
+}
+
+Stream<QuerySnapshot<Map<String, dynamic>>> getNewMessagesStream(DocumentReference chatRef) {
+  return chatRef.collection('messages').orderBy('sentAt').where('sentAt', isGreaterThan: DateTime.now()).snapshots();
+}
+
 //AUTH
 User? getCurrentUser() {
   try {
