@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rent_app/db/isar_model.dart';
@@ -24,6 +25,9 @@ import 'package:rent_app/constants.dart';
 import 'package:rent_app/screens/login_screen.dart';
 import 'package:rent_app/screens/initial_screen.dart';
 import 'package:rent_app/screens/welcome_screen.dart';
+import 'package:rent_app/services/notification_utils.dart';
+import 'db/chatDB.dart';
+import 'db/messageDB.dart';
 import 'models/user.dart';
 import 'screens/home_screen.dart';
 import 'screens/user_screen.dart';
@@ -31,16 +35,13 @@ import 'screens/registration_screen.dart';
 import 'screens/main_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
-import 'db/chatDB.dart';
-import 'db/messageDB.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 
 String? userUid;
 late UserDetails userDetails;
-
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // This function handles background notifications
-  print('Handling a background message: ${message.messageId}');
-}
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+late String currentScreen;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,12 +71,18 @@ void main() async {
       // Navigate to the chat screen using the chatId passed in the data payload
       // Navigator.of(context).pushNamed('/chat', arguments: message.data['chatId']);
     });
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onBackgroundMessage(messagingHandlerBackground);
     FirebaseAppCheck firebaseAppCheck =  await FirebaseAppCheck.instance.activate(
       webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
       androidProvider: AndroidProvider.debug,
         appleProvider: AppleProvider.debug,
     ) as FirebaseAppCheck;
+
+    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+
+    final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
     // await FirebaseAppCheck.instance.activate(
     //   webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
       // androidProvider: AndroidProvider.playIntegrity,
@@ -90,6 +97,7 @@ void main() async {
     //   webProvider: ReCaptchaV3Provider(kWebRecaptchaSiteKey),
     // );
 
+
   } catch (e) {
     print('error: $e');
   }
@@ -102,8 +110,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   final Isar isar;
-  MyApp({super.key, required this.isar});
-  String initRoute = WelcomeScreen.id;
+  const MyApp({super.key, required this.isar});
 
   @override
   Widget build(BuildContext context) {

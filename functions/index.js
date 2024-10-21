@@ -119,7 +119,7 @@ exports.sendChatNotification = functions.firestore
 
       const payload = {
         notification: {
-          title: `הודעה חדשה מ${senderName}`,
+          title: senderName,
           body: messageData.text || "You have received a new message",
         },
         data: {

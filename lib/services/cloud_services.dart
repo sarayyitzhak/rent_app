@@ -12,6 +12,7 @@ import '../models/address_info.dart';
 import '../models/category.dart';
 import '../models/chat.dart';
 import '../models/request.dart';
+import 'notification_utils.dart';
 
 final _firestore = FirebaseFirestore.instance;
 final _auth = FirebaseAuth.instance;
@@ -254,12 +255,7 @@ Future<void> createNewUser(String email, String password, String name, String ph
       seen: [],
       chats: []
   );
-  _messaging.getToken().then((String? token) {
-    if (token != null) {
-      userDetails.token = token;
-    }
-  });
-  userReference.set(userDetails.userAsMap());
+  setToken();
 }
 
 void signOut(){
@@ -280,9 +276,7 @@ Future<UserDetails> getItemContactUser(Item item) async {
 
 //Messaging
 void requestNotificationsPermission() async {
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-  NotificationSettings settings = await messaging.requestPermission(
+  NotificationSettings settings = await _messaging.requestPermission(
     alert: true,
     announcement: false,
     badge: true,
@@ -298,5 +292,37 @@ void requestNotificationsPermission() async {
     print('User granted provisional permission');
   } else {
     print('User declined or has not accepted permission');
+  }
+}
+
+void setToken(){
+  _messaging.getToken().then((String? token) {
+    if (token != null) {
+      userDetails.token = token;
+      userDetails.userReference.update({'token': token});
+    }
+  });
+}
+
+void onTokenRefreshed(){
+  _messaging.onTokenRefresh.listen((newToken) {
+    userDetails.token = newToken;
+    FirebaseFirestore.instance.collection('users').doc(userUid).update({
+      'token': newToken,
+    });
+  });
+}
+
+void messagingListenForeground(){
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    if (message.notification != null) {
+      showNotification(message.notification!.title, message.notification!.body);
+    }
+  });
+}
+
+Future<void> messagingHandlerBackground(RemoteMessage message)async{
+  if (message.notification != null) {
+    showNotification(message.notification!.title, message.notification!.body);
   }
 }

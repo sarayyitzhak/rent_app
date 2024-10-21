@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/screens/pending_requests_screen.dart';
@@ -24,8 +23,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   ItemCategory _selectedCategory = ItemCategory.values[0];
   final ScrollController _categoryScrollController = ScrollController();
-
-
 
   List<Widget> buildCategoriesList() {
     List<Widget> categoriesCards = [];
@@ -105,41 +102,6 @@ class _HomeScreenState extends State<HomeScreen> {
         cityName = 'מיקום לא ידוע'; // Fallback when location is not found
       });
     }
-  }
-
-  void _showInAppAlert(BuildContext context, String? title, String? body) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          width: double.infinity,
-          // margin: EdgeInsets.all(5),
-          child: AlertDialog(
-            // icon: Icon(Icons.chat),
-            title: Text(title ?? 'Notification'),
-            content: Text(body ?? 'You have received a new message.'),
-            alignment: Alignment.topCenter,
-            titleTextStyle: kBlackTextStyle,
-            contentTextStyle: kSmallBlackTextStyle,
-            titlePadding: EdgeInsets.all(4),
-            contentPadding: EdgeInsets.all(4),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            insetPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-
-            // actions: [
-            //   TextButton(
-            //     child: const Text('OK'),
-            //     onPressed: () {
-            //       Navigator.of(context).pop(); // Close the dialog
-            //     },
-            //   ),
-            // ],
-          ),
-        );
-      },
-    );
   }
 
   @override

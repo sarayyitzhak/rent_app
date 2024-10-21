@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 const kYellowLogoImage = 'assets/images/handshake_yellow.png';
 const kWhiteLogoImage = 'assets/images/handshake.png';
@@ -158,6 +159,19 @@ const kSendButtonTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
   fontSize: 18.0,
 );
+
+const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    'chat_channel_id',
+    'Chat Notifications',
+    channelDescription: 'Notifications for chat messages',
+    importance: Importance.high,
+    priority: Priority.high,
+    showWhen: false,
+    icon: 'app_icon'
+);
+
+const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+
 
 const kDarkYellow = Color(0xFFFFC30B);
 const kLightYellow = Color(0xFFFAF0E6);

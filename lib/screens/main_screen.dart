@@ -1,25 +1,16 @@
-import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:rent_app/constants.dart';
-import 'package:rent_app/db/chatDB.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/models/user.dart';
 import 'package:rent_app/screens/chats_screen.dart';
 import 'package:rent_app/screens/search_screen.dart';
 import 'package:rent_app/screens/user_items_screen.dart';
-import '../db/messageDB.dart';
 import '../services/cloud_services.dart';
 import 'home_screen.dart';
 import 'user_screen.dart';
-
-// Position? currentPosition;
-// String? cityName;
 
 class MainScreen extends StatefulWidget {
   static String id = 'main_screen';
@@ -51,201 +42,89 @@ class _MainScreenState extends State<MainScreen> {
     return userDetails;
   }
 
-  // Future<void> _getCurrentLocation() async {
-  //   bool serviceEnabled;
-  //   LocationPermission permission;
+  // Future<void> syncData(Isar isar) async {
+  //   await getUser();
+  //   for (DocumentReference chat in userDetails.chats) {
+  //     var chatDoc = await chat.get();
+  //     var chatData = chatDoc.data() as Map<String, dynamic>;
+  //     List participants = chatData['participants'];
+  //     List participantsAsString = participants.map((p) => p.path).toList();
+  //     DocumentReference otherParticipant = participants.firstWhere((p) => p != userDetails.userReference);
+  //     String otherParticipantAsString = otherParticipant.path;
+  //     DocumentSnapshot<Object?> otherParticipantDoc = await otherParticipant.get();
+  //     var otherParticipantData = otherParticipantDoc.data() as Map<String, dynamic>;
+  //     String otherParticipantName = otherParticipantData['fullName'];
+  //     var messagesSnapshot = await chat.collection('messages').get();
   //
-  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  //   if (!serviceEnabled) {
-  //     return Future.error('Location services are disabled.');
-  //   }
+  //     var chatInDB = await isar.chats.filter().participantsElementEqualTo(otherParticipantAsString).findFirst();
+  //     if (chatInDB != null) {
+  //       //chat exist in both, just sync it
+  //       int messagesCount = chatInDB.messages.length;
+  //       if (messagesSnapshot.size != messagesCount){
+  //         //changed, get messages that added
+  //         var lastMessageInDB = chatInDB.messages.last;
+  //         Timestamp lastMessageTimeInDB = Timestamp.fromDate(lastMessageInDB.sentAt);
+  //         for(var message in messagesSnapshot.docs){
+  //           Map<String, dynamic> messageData = message.data();
+  //           Timestamp messageTime = messageData['sentAt'];
+  //           if(messageTime.compareTo(lastMessageTimeInDB) > 0){
+  //             Message newMessage = Message()
+  //               ..sender = messageData['sender']
+  //               ..text = messageData['text']
+  //               ..read = messageData['read']
+  //               ..sentAt = messageData['sentAt'].toDate()
+  //               ..senderName = otherParticipantName;
   //
-  //   permission = await Geolocator.checkPermission();
-  //   if (permission == LocationPermission.denied) {
-  //     permission = await Geolocator.requestPermission();
-  //     if (permission == LocationPermission.denied) {
-  //       return Future.error('Location permissions are denied');
+  //             await isar.writeTxn(() async {
+  //               await isar.messages.put(newMessage);
+  //               chatInDB.messages.add(newMessage);
+  //               await chatInDB.messages.save();
+  //             });
+  //           }
+  //
+  //         }
+  //       }
+  //     } else {
+  //       //need to fetch it from firebase
+  //       final chat = Chat()..participants = participantsAsString.cast<String>()..cloudKey = chatDoc.id;
+  //       List messagesList = [];
+  //       for (var doc in messagesSnapshot.docs) {
+  //         var messageData = doc.data();
+  //         final message = Message()
+  //           ..sender = messageData['sender']
+  //           ..read = messageData['read']
+  //           ..text = messageData['text']
+  //           ..sentAt = messageData['sentAt'].toDate()
+  //           ..senderName = otherParticipantName;
+  //           // ..senderRef = otherParticipant
+  //           // ..messRef = doc.reference;
+  //         messagesList.add(message);
+  //       }
+  //       await isar.writeTxn(() async {
+  //         await isar.chats.put(chat);
+  //         for (var messageToPut in messagesList) {
+  //           await isar.messages.put(messageToPut);
+  //           chat.messages.add(messageToPut);
+  //         }
+  //         await chat.messages.save();
+  //       });
   //     }
   //   }
-  //   if (permission == LocationPermission.deniedForever) {
-  //     return Future.error('Location permissions are permanently denied.');
-  //   }
-  //
-  //   Position position = await Geolocator.getCurrentPosition(
-  //       desiredAccuracy: LocationAccuracy.high);
-  //
-  //   setState(() {
-  //     currentPosition = position;
-  //   });
   // }
-  //
-  // Future<void> _getAddressFromLatLng(Position position) async {
-  //   try {
-  //     List<Placemark> placemarks = await placemarkFromCoordinates(
-  //       position.latitude,
-  //       position.longitude,
-  //     );
-  //
-  //     Placemark place = placemarks[0];
-  //     cityName = await place.locality.toString();
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
-  //
-  // Future<void> getLoc() async {
-  //   await _getCurrentLocation();
-  //   if (currentPosition != null) {
-  //     await _getAddressFromLatLng(currentPosition!);
-  //     setState(() {
-  //       cityName =
-  //           cityName ?? 'מיקום לא ידוע';
-  //     });
-  //   } else {
-  //     setState(() {
-  //       cityName = 'מיקום לא ידוע';
-  //     });
-  //   }
-  // }
-
-  Future<void> syncData(Isar isar) async {
-    await getUser();
-    for (DocumentReference chat in userDetails.chats) {
-      var chatDoc = await chat.get();
-      var chatData = chatDoc.data() as Map<String, dynamic>;
-      List participants = chatData['participants'];
-      List participantsAsString = participants.map((p) => p.path).toList();
-      DocumentReference otherParticipant = participants.firstWhere((p) => p != userDetails.userReference);
-      String otherParticipantAsString = otherParticipant.path;
-      DocumentSnapshot<Object?> otherParticipantDoc = await otherParticipant.get();
-      var otherParticipantData = otherParticipantDoc.data() as Map<String, dynamic>;
-      String otherParticipantName = otherParticipantData['fullName'];
-      var messagesSnapshot = await chat.collection('messages').get();
-
-      var chatInDB = await isar.chats.filter().participantsElementEqualTo(otherParticipantAsString).findFirst();
-      if (chatInDB != null) {
-        //chat exist in both, just sync it
-        int messagesCount = chatInDB.messages.length;
-        if (messagesSnapshot.size != messagesCount){
-          //changed, get messages that added
-          var lastMessageInDB = chatInDB.messages.last;
-          Timestamp lastMessageTimeInDB = Timestamp.fromDate(lastMessageInDB.sentAt);
-          for(var message in messagesSnapshot.docs){
-            Map<String, dynamic> messageData = message.data();
-            Timestamp messageTime = messageData['sentAt'];
-            if(messageTime.compareTo(lastMessageTimeInDB) > 0){
-              Message newMessage = Message()
-                ..sender = messageData['sender']
-                ..text = messageData['text']
-                ..read = messageData['read']
-                ..sentAt = messageData['sentAt'].toDate()
-                ..senderName = otherParticipantName;
-
-              await isar.writeTxn(() async {
-                await isar.messages.put(newMessage);
-                chatInDB.messages.add(newMessage);
-                await chatInDB.messages.save();
-              });
-            }
-
-          }
-        }
-      } else {
-        //need to fetch it from firebase
-        final chat = Chat()..participants = participantsAsString.cast<String>()..cloudKey = chatDoc.id;
-        List messagesList = [];
-        for (var doc in messagesSnapshot.docs) {
-          var messageData = doc.data();
-          final message = Message()
-            ..sender = messageData['sender']
-            ..read = messageData['read']
-            ..text = messageData['text']
-            ..sentAt = messageData['sentAt'].toDate()
-            ..senderName = otherParticipantName;
-            // ..senderRef = otherParticipant
-            // ..messRef = doc.reference;
-          messagesList.add(message);
-        }
-        await isar.writeTxn(() async {
-          await isar.chats.put(chat);
-          for (var messageToPut in messagesList) {
-            await isar.messages.put(messageToPut);
-            chat.messages.add(messageToPut);
-          }
-          await chat.messages.save();
-        });
-      }
-    }
-  }
 
   Future<void> requestMicrophonePermission() async {
     await Permission.microphone.request();
-  }
-
-  void _showInAppAlert(BuildContext context, String? title, String? body) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          width: double.infinity,
-          // margin: EdgeInsets.all(5),
-          child: AlertDialog(
-            // icon: Icon(Icons.chat),
-            title: Text(title ?? 'Notification'),
-            content: Text(body ?? 'You have received a new message.'),
-            alignment: Alignment.topCenter,
-            titleTextStyle: kBlackTextStyle,
-            contentTextStyle: kSmallBlackTextStyle,
-            titlePadding: EdgeInsets.all(4),
-            contentPadding: EdgeInsets.all(4),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            insetPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-
-            // actions: [
-            //   TextButton(
-            //     child: const Text('OK'),
-            //     onPressed: () {
-            //       Navigator.of(context).pop(); // Close the dialog
-            //     },
-            //   ),
-            // ],
-          ),
-        );
-      },
-    );
   }
 
   @override
   void initState() {
     super.initState();
     getUser();
-    // sleep(Duration(seconds: 5));
-    // _messaging.getToken().then((String? token) {
-    //   if (token != null) {
-    //     userDetails.token = token;
-    //     // userDetails.userReference.update({'token': token});
-    //   }
-    // });
     requestMicrophonePermission();
     requestNotificationsPermission();
-    // FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-    //   userDetails.token = newToken;
-    //   FirebaseFirestore.instance.collection('users').doc(userUid).update({
-    //     'token': newToken,
-    //   });
-    // });
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.notification != null) {
-        print('Notification title: ${message.notification?.title}');
-        print('Notification body: ${message.notification?.body}');
-        _showInAppAlert(context, message.notification!.title, message.notification!.body);
-      }
-    });
+    onTokenRefreshed();
+    messagingListenForeground();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
