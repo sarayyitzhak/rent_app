@@ -57,18 +57,25 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   // }
 
   Future<void> onRegisterButtonPressed() async {
-    try {
-      if (passwordController.text != confirmPasswordController.text) {
-        throw 'password confirmation failed'; //TODO
-      }
-      createNewUser(emailController.text, passwordController.text, nameController.text, phoneNumberController.text);
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        MainScreen.id,
-        (Route<dynamic> route) => false, // This removes all previous routes
-      );
-        } catch (e) {
-      print(e); //TODO
+    if (passwordController.text != confirmPasswordController.text) {
+      throw 'password confirmation failed';
     }
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent user from closing the dialog
+      builder: (context) => const Center(child: CircularProgressIndicator(color: kPastelYellow,)),
+    );
+    FocusScope.of(context).requestFocus(FocusNode());
+    try {
+      await createNewUser(emailController.text, passwordController.text, nameController.text, phoneNumberController.text);
+    } catch (e) {
+      print(e);
+    }
+    Navigator.pop(context);
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      MainScreen.id,
+          (Route<dynamic> route) => false, // This removes all previous routes
+    );
   }
 
   @override

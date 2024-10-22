@@ -5,7 +5,6 @@ import 'package:rent_app/screens/login_screen.dart';
 import 'package:rent_app/screens/registration_screen.dart';
 import 'package:rent_app/widgets/custom_button.dart';
 
-
 class WelcomeScreen extends StatelessWidget {
   static String id = 'welcome_screen';
   const WelcomeScreen({super.key});

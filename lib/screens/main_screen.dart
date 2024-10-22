@@ -35,11 +35,6 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  Future<UserDetails> getUser() async {
-    userDetails = await getUserDetailsByUid(userUid!);
-    return userDetails;
-  }
-
   Future<void> requestMicrophonePermission() async {
     await Permission.microphone.request();
   }

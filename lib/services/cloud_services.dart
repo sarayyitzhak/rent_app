@@ -200,6 +200,15 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getNewMessagesStream(DocumentReferen
 }
 
 //AUTH
+
+Future<void> login(String email, String password) async {
+  final user = await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password);
+  userUid = user.user?.uid;
+  await getUser();
+}
+
 User? getCurrentUser() {
   try {
     return _auth.currentUser;
@@ -207,6 +216,11 @@ User? getCurrentUser() {
     print(e);
   }
   return null;
+}
+
+Future<UserDetails> getUser() async {
+  userDetails = await getUserDetailsByUid(userUid!);
+  return userDetails;
 }
 
 Future<void> createNewUser(String email, String password, String name, String phoneNumber) async{
