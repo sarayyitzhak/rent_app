@@ -1,8 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:rent_app/db/isar_model.dart';
 import 'package:rent_app/screens/add_item_screen.dart';
 import 'package:rent_app/screens/category_screen.dart';
 import 'package:rent_app/screens/chat_screen.dart';
@@ -16,7 +13,6 @@ import 'package:rent_app/screens/search_result_screen.dart';
 import 'package:rent_app/screens/search_screen.dart';
 import 'package:rent_app/screens/user_items_screen.dart';
 import 'package:rent_app/screens/wishlist_screen.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -25,9 +21,6 @@ import 'package:rent_app/constants.dart';
 import 'package:rent_app/screens/login_screen.dart';
 import 'package:rent_app/screens/initial_screen.dart';
 import 'package:rent_app/screens/welcome_screen.dart';
-import 'package:rent_app/services/notification_utils.dart';
-import 'db/chatDB.dart';
-import 'db/messageDB.dart';
 import 'models/user.dart';
 import 'screens/home_screen.dart';
 import 'screens/user_screen.dart';
@@ -37,7 +30,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-
 String? userUid;
 late UserDetails userDetails;
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -45,12 +37,6 @@ late String currentScreen;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final dir = await getApplicationDocumentsDirectory();
-  final isar = await Isar.open(
-    [MessageSchema, ChatSchema],
-    directory: dir.path,
-    inspector: true
-  );
   try {
     await Firebase.initializeApp(
         options: const FirebaseOptions(
@@ -102,65 +88,58 @@ void main() async {
     print('error: $e');
   }
 
-  runApp(ChangeNotifierProvider(
-    create: (context) => IsarModel(isar),
-    child: MyApp(isar: isar,),
-  ),);
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final Isar isar;
-  const MyApp({super.key, required this.isar});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Provider.value(
-      value: isar,
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(
-              foregroundColor: kDarkYellow, // Default text color
-            ),
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: kDarkYellow, // Default text color
           ),
         ),
-        initialRoute: InitialScreen.id,
-        // initialRoute: ItemScreen.id,
-        routes: {
-          InitialScreen.id: (context) => const InitialScreen(),
-          MainScreen.id: (context) => const MainScreen(),
-          WelcomeScreen.id: (context) => const WelcomeScreen(),
-          LoginScreen.id: (context) => const LoginScreen(),
-          RegistrationScreen.id: (context) => const RegistrationScreen(),
-          HomeScreen.id: (context) => const HomeScreen(),
-          UserScreen.id: (context) => const UserScreen(),
-          UserItemsScreen.id: (context) => const UserItemsScreen(),
-          AddItemScreen.id: (context) => const AddItemScreen(),
-          ItemScreen.id: (context) => const ItemScreen(),
-          RentalScreen.id: (context) => RentalScreen(),
-          RequestSubmittedScreen.id: (context) => const RequestSubmittedScreen(),
-          PendingRequestsScreen.id: (context) => PendingRequestsScreen(),
-          WishlistScreen.id: (context) => const WishlistScreen(),
-          ChatsScreen.id: (context) => ChatsScreen(),
-          ChatScreen.id: (context) => ChatScreen(),
-          SearchScreen.id: (context) => const SearchScreen(),
-          SearchResultScreen.id: (context) => const SearchResultScreen(),
-          CategoryScreen.id: (context) => CategoryScreen(),
-          ProfileScreen.id: (context) => const ProfileScreen(),
-
-        },
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('en'), // English
-          Locale('he'), // Hebrew
-        ],
       ),
+      initialRoute: InitialScreen.id,
+      // initialRoute: ItemScreen.id,
+      routes: {
+        InitialScreen.id: (context) => const InitialScreen(),
+        MainScreen.id: (context) => const MainScreen(),
+        WelcomeScreen.id: (context) => const WelcomeScreen(),
+        LoginScreen.id: (context) => const LoginScreen(),
+        RegistrationScreen.id: (context) => const RegistrationScreen(),
+        HomeScreen.id: (context) => const HomeScreen(),
+        UserScreen.id: (context) => const UserScreen(),
+        UserItemsScreen.id: (context) => const UserItemsScreen(),
+        AddItemScreen.id: (context) => const AddItemScreen(),
+        ItemScreen.id: (context) => const ItemScreen(),
+        RentalScreen.id: (context) => RentalScreen(),
+        RequestSubmittedScreen.id: (context) => const RequestSubmittedScreen(),
+        PendingRequestsScreen.id: (context) => PendingRequestsScreen(),
+        WishlistScreen.id: (context) => const WishlistScreen(),
+        ChatsScreen.id: (context) => ChatsScreen(),
+        ChatScreen.id: (context) => ChatScreen(),
+        SearchScreen.id: (context) => const SearchScreen(),
+        SearchResultScreen.id: (context) => const SearchResultScreen(),
+        CategoryScreen.id: (context) => CategoryScreen(),
+        ProfileScreen.id: (context) => const ProfileScreen(),
+
+      },
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'), // English
+        Locale('he'), // Hebrew
+      ],
     );
   }
 }

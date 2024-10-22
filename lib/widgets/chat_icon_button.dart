@@ -23,7 +23,6 @@ class _ChatIconButtonState extends State<ChatIconButton> {
 
   @override
   Widget build(BuildContext context) {
-    // final isar = Provider.of<Isar>(context);
     return IconButton(
         padding: const EdgeInsets.all(3),
         constraints: const BoxConstraints(),

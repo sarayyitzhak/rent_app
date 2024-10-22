@@ -16,7 +16,6 @@ class ChatsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final isar = Provider.of<Isar>(context);
     var localization = AppLocalizations.of(context)!;
     return SafeArea(
       child: Scaffold(
@@ -58,12 +57,6 @@ class ChatCard extends StatefulWidget {
 
 class _ChatCardState extends State<ChatCard> {
   late Chat chatObg;
-
-  // Future<Message?> getChat(int index) async {
-  //   chat = await widget.isar.chats.get(index);
-  //   lastMessage = chat?.messages.last;
-  //   return lastMessage;
-  // }
 
   Future<Chat> getChat(QueryDocumentSnapshot<Map<String, dynamic>> chat) async {
     Map<String, dynamic> chatData = chat.data();

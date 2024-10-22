@@ -45,7 +45,6 @@ class ChatScreen extends StatelessWidget {
     personName = chat.otherParticipantName;
     getUserIndex(chat);
     setMessagesRead();
-    // final isar = Provider.of<Isar>(context);
     return Scaffold(
       appBar: CustomAppBar(
           title: personName!.isNotEmpty ? personName.toString() : ''),

@@ -164,16 +164,6 @@ Future<Chat> createNewChat(DocumentReference contactUser) async {
   contactUser.update({'chats': FieldValue.arrayUnion([chatDoc])});
   userDetails.chats.add(chatDoc);
   chatDoc.set({'participants': [userDetails.userReference, contactUser]});
-  // chatDoc.collection('messages').add({//do it after first message is sent
-  //   'sender': 1,
-  //   'text': 'hi how are you',
-  //   'sentAt': Timestamp.now(),
-  //   'read': true,
-  // });
-  // Chat chat = Chat()..participants = participants.map((p) => p.path).toList()..cloudKey = chatDoc.id;
-  // await isar.writeTxn(() async {
-  //   await isar.chats.put(chat);
-  // });
   return chat;
 }
 
@@ -185,27 +175,6 @@ Future<Chat?> getChat(DocumentReference contactUser) async {
     if (participants[0] == contactUser || participants[1] == contactUser) {
       return Chat(participants: participants, cloudKey: chat.reference);
     }
-    // var c = await isar.chats.filter().participantsElementContains(userDetails.userReference.path).participantsElementContains(widget.item.contactUser.path).findFirst();
-    // return c;
-
-    // List participants = await isar.chats.filter().participantsElementContains(widget.item.contactUser.id).findAll();//user is in the participants
-    // if(participants.isNotEmpty){
-    //go to chat
-    // } else {
-    //create chat
-    // }
-    // CollectionReference chatsRef = _firestore.collection('chats'); // maybe better somehow
-    // var chat = chatsRef.where('participants', arrayContains: [userDetails.userReference, widget.item.contactUser]);
-    //
-    // for(DocumentReference chat in userDetails.chats){
-    //   var chatDoc = await chat.get();
-    //   var chatData = chatDoc.data() as Map<String, dynamic>;
-    //   participants = chatData['participants'];
-    //   if(participants.contains(widget.item.contactUser)){
-    //     return chatData;
-    //   }
-    // }
-    // return null;
   }
   return null;
 }
