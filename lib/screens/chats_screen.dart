@@ -7,125 +7,114 @@ import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../main.dart';
 import '../models/message.dart';
+import '../models/user.dart';
 import '../services/cloud_services.dart';
 
 class ChatsScreen extends StatelessWidget {
   static String id = 'chats_screen.dart';
-  ChatsScreen({super.key});
-  late int chatsCount;
+
+  const ChatsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     var localization = AppLocalizations.of(context)!;
     return SafeArea(
       child: Scaffold(
-        appBar: CustomAppBar(title: localization.chats, isBackButton: false),
-        body: StreamBuilder(
-            stream:  getUserChatsStream(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return Center(
-                  child: Text(localization.noChatsYet, style: kBlackHeaderTextStyle,)
+          appBar: CustomAppBar(title: localization.chats, isBackButton: false),
+          body: StreamBuilder(
+              stream: getUserChatsStream(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(
+                      child: Text(
+                    localization.noChatsYet,
+                    style: kBlackHeaderTextStyle,
+                  ));
+                }
+                List<Chat> chats = snapshot.data!;
+                List<ChatCard> chatCards = [];
+                for (Chat chat in chats) {
+                  chatCards.add(ChatCard(chat: chat));
+                }
+                return ListView(
+                  // reverse: true,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                  children: chatCards,
                 );
-              }
-              final chats = snapshot.data?.docs.reversed;
-              List<ChatCard> chatCards = [];
-              for (var chat in chats!) {
-                chatCards.add(ChatCard(chatDoc: chat));
-              }
-              return ListView(
-                // reverse: true,
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                children: chatCards,
-
-              );
-              }
-        )
-      ),
+              })),
     );
   }
 }
 
 class ChatCard extends StatefulWidget {
-  // int index;
-  QueryDocumentSnapshot<Map<String, dynamic>> chatDoc;
-  ChatCard({super.key, required this.chatDoc});
+  final Chat chat;
+
+  const ChatCard({super.key, required this.chat});
 
   @override
   State<ChatCard> createState() => _ChatCardState();
 }
 
 class _ChatCardState extends State<ChatCard> {
-  late Chat chatObg;
+  String? _otherParticipantName;
+  Message? _lastMessage;
 
-  Future<Chat> getChat(QueryDocumentSnapshot<Map<String, dynamic>> chat) async {
-    Map<String, dynamic> chatData = chat.data();
-    List<DocumentReference> participants = (chatData['participants'] as List<dynamic>)
-        .map((e) => e as DocumentReference)
-        .toList();
-    var lastMessageSnapshot = await chat.reference.collection('messages').orderBy('sentAt', descending: true).limit(1).get();
-    Map<String, dynamic> lastMessageData;
-    Message lastMessage;
-    if(lastMessageSnapshot.docs.isNotEmpty){
-      var lastMessageDoc = lastMessageSnapshot.docs.first;
-      lastMessageData = lastMessageDoc.data();
-      lastMessage = mapAsMessage(lastMessageData, lastMessageDoc.reference);
-      chatObg = Chat(participants: participants, cloudKey: chat.reference, lastMessage: lastMessage);
-    }
-    List<String> nameAndToken = await getChatUserNameAndToken();
-    chatObg.otherParticipantName = nameAndToken[0];
-    chatObg.otherParticipantToken = nameAndToken[1];
-    return chatObg;
+  @override
+  void initState() {
+    super.initState();
+    _fetchOtherParticipantData();
+    _fetchLastMessage();
   }
 
-  Future<List<String>> getChatUserNameAndToken() async {
-    List<String> nameAndToken = [];
-    DocumentReference otherParticipantDoc = chatObg.participants[0] == userDetails.userReference ? chatObg.participants[1] : chatObg.participants[0];
-    DocumentSnapshot<Object?> otherParticipant = await otherParticipantDoc.get();
-    Map<String, dynamic> otherParticipantData = otherParticipant.data() as Map<String, dynamic>;
-    nameAndToken.add(otherParticipantData['fullName']);
-    nameAndToken.add(otherParticipantData['token']);
-    return nameAndToken;
+  void _fetchOtherParticipantData() async {
+    for (String uid in widget.chat.participants.keys) {
+      if (uid != userDetails.userReference.id) {
+        UserDetails otherParticipantUser = await getUserDetailsByUid(uid);
+        setState(() {
+          _otherParticipantName = otherParticipantUser.name;
+        });
+      }
+    }
+  }
+
+  void _fetchLastMessage() async {
+    Message? lastMessage = await getLastMessage(widget.chat.docRef);
+    setState(() {
+      _lastMessage = lastMessage;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, ChatScreen.id, arguments: ChatScreenArguments(chatObg)),
+      onTap: () => Navigator.pushNamed(context, ChatScreen.id,
+          arguments: ChatScreenArguments(widget.chat, _otherParticipantName)),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          // color: kBlue,
-          border: Border.all(color: kActiveButtonColor)
-        ),
-        child: FutureBuilder(
-            future: getChat(widget.chatDoc),
-            builder: (context, snapshot){
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator(color: kPastelYellow,));
-              } else if (snapshot.hasData) {
-                Chat chatData = snapshot.data!;
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(chatData.otherParticipantName as String, style: kBlackHeaderTextStyle,),
-                        Text(chatData.lastMessage?.text as String, style: kSmallBlackTextStyle,),
-                      ],
-                    ),
-                    Text(chatData.lastMessage!.sentAtAsString()),
-                  ],
-                );
-              }
-              return Text(localization.noMessages);
-            },
-        ),
-      ),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: kActiveButtonColor)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _otherParticipantName ?? '',
+                    style: kBlackHeaderTextStyle,
+                  ),
+                  Text(
+                    _lastMessage?.text ?? '',
+                    style: kSmallBlackTextStyle,
+                  ),
+                ],
+              ),
+              Text(_lastMessage?.sentAtAsString() ?? ''),
+            ],
+          )),
     );
   }
 }

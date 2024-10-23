@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
+import 'package:rent_app/models/chat.dart';
 import 'package:rent_app/models/message_type.dart';
 import 'package:rent_app/models/message.dart';
 import 'image_message_bubble.dart';
@@ -9,12 +10,13 @@ import 'text_message_bubble.dart';
 
 
 class MessageBubble extends StatefulWidget {
+  final Chat chat;
   final Message message;
   final bool isMe;
   bool tail;
   double bottomMargin;
 
-  MessageBubble({super.key, required this.message, required this.isMe, this.tail = true, this.bottomMargin = 2});
+  MessageBubble({super.key, required this.chat, required this.message, required this.isMe, this.tail = true, this.bottomMargin = 2});
 
   @override
   State<MessageBubble> createState() => _MessageBubbleState();
@@ -24,13 +26,13 @@ class _MessageBubbleState extends State<MessageBubble> {
 
   Widget createBubbleByType(){
     if(widget.message.type.index == MessageType.TEXT.index){
-      return TextMessageBubble(message: widget.message, isMe: widget.isMe, tail: widget.tail);
+      return TextMessageBubble(chat: widget.chat, message: widget.message, isMe: widget.isMe, tail: widget.tail);
     } else if(MessageType.VOICE_RECORD.index == widget.message.type.index){
-      return RecordMessageBubble(message: widget.message, isMe: widget.isMe, tail: widget.tail);
+      return RecordMessageBubble(chat: widget.chat, message: widget.message, isMe: widget.isMe, tail: widget.tail);
     } else if(MessageType.IMAGE.index == widget.message.type.index){
-      return ImageMessageBubble(message: widget.message, isMe: widget.isMe, tail: widget.tail);
+      return ImageMessageBubble(chat: widget.chat, message: widget.message, isMe: widget.isMe, tail: widget.tail);
     } else if(MessageType.ITEM.index == widget.message.type.index){
-      return ItemMessageBubble(message: widget.message, isMe: widget.isMe, tail: widget.tail);
+      return ItemMessageBubble(chat: widget.chat, message: widget.message, isMe: widget.isMe, tail: widget.tail);
     }
     else{
       return Container();

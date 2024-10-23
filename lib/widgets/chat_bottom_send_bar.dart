@@ -31,9 +31,9 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
     if (messageTextController.text.isNotEmpty) {
       messageTextController.clear();
       DateTime sentAt = Timestamp.now().toDate();
-      Message message = Message(sender: widget.userIdx, text: messageText, read: false, sentAt: sentAt, type: MessageType.TEXT);
-      widget.chat.cloudKey.collection('messages').add(message.toMap());
-      widget.chat.cloudKey.update({'lastMessageSentAt': sentAt});
+      Message message = Message(sender: widget.userIdx, text: messageText, sentAt: sentAt, type: MessageType.TEXT);
+      widget.chat.docRef.collection('messages').add(message.toMap());
+      widget.chat.docRef.update({'lastMessageSentAt': sentAt});
       setState(() {
         showMic = true;
       });
@@ -42,13 +42,13 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
 
   void uploadImage() async {
     DateTime sentAt = Timestamp.now().toDate();
-    final itemRef = storageRef.child('${widget.chat.cloudKey}/$sentAt');
+    final itemRef = storageRef.child('${widget.chat.docRef}/$sentAt');
     UploadTask uploadTask = itemRef.putFile(image!);
     TaskSnapshot taskSnapshot = await uploadTask;
     var imageUrl = await taskSnapshot.ref.getDownloadURL();
-    Message message = Message(sender: widget.userIdx, text: 'תמונה', read: false, sentAt: sentAt, type: MessageType.IMAGE, fileRef: imageUrl);
-    widget.chat.cloudKey.collection('messages').add(message.toMap());
-    widget.chat.cloudKey.update({'lastMessageSentAt': sentAt});
+    Message message = Message(sender: widget.userIdx, text: 'תמונה', sentAt: sentAt, type: MessageType.IMAGE, fileRef: imageUrl);
+    widget.chat.docRef.collection('messages').add(message.toMap());
+    widget.chat.docRef.update({'lastMessageSentAt': sentAt});
   }
 
   void onImagePressed(File? newImage){

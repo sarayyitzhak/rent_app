@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/models/chat.dart';
+import 'package:rent_app/models/user.dart';
 import 'package:rent_app/screens/chat_screen.dart';
 import '../constants.dart';
 import '../models/item.dart';
@@ -15,11 +16,6 @@ class ChatIconButton extends StatefulWidget {
 }
 
 class _ChatIconButtonState extends State<ChatIconButton> {
-  late List<DocumentReference> participants;
-
-  void goToChat(Chat? chat) async {
-    Navigator.pushNamed(context, ChatScreen.id, arguments: ChatScreenArguments(chat!));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +26,11 @@ class _ChatIconButtonState extends State<ChatIconButton> {
           tapTargetSize: MaterialTapTargetSize.shrinkWrap, // the '2023' part
         ),
         onPressed: () async {
-          Chat? chat = await getChat(widget.item.contactUser);
-          Chat newChat;
-          chat ??= await createNewChat(widget.item.contactUser);
-          DocumentSnapshot<Object?> contactUser = await widget.item.contactUser.get();
-          Map<String, dynamic> contactUserData = contactUser.data() as Map<String, dynamic>;
-          chat.otherParticipantName = contactUserData['fullName'];
-          goToChat(chat);
+          Chat chat = await sendItemMessage(widget.item.contactUser, widget.item.itemReference);
+          UserDetails userDetails = await getUserDetailsByUid(widget.item.contactUser.id);
+          if (mounted) {
+            Navigator.pushNamed(context, ChatScreen.id, arguments: ChatScreenArguments(chat, userDetails.name));
+          }
         },
         icon: const CircleAvatar(
           radius: kIconRadius,

@@ -5,6 +5,7 @@ import 'package:rent_app/services/cloud_services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../constants.dart';
 import '../../../main.dart';
+import '../../../models/chat.dart';
 import '../../../models/item.dart';
 import '../../../models/message.dart';
 import '../../../screens/item_screen.dart';
@@ -12,11 +13,12 @@ import '../message_time.dart';
 import '../../../utils.dart';
 
 class ItemMessageBubble extends StatelessWidget {
+  final Chat chat;
   final Message message;
   final bool isMe;
   final bool tail;
 
-  const ItemMessageBubble({super.key, required this.message, required this.isMe, required this.tail});
+  const ItemMessageBubble({super.key, required this.chat, required this.message, required this.isMe, required this.tail});
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +111,7 @@ class ItemMessageBubble extends StatelessWidget {
               }
           ),
           const SizedBox(height: 4),
-          MessageTime(message: message, isMe: isMe)
+          MessageTime(chat: chat, message: message, isMe: isMe)
         ],
       ),
     );

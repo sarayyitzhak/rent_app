@@ -75,9 +75,9 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
     TaskSnapshot taskSnapshot = await uploadTask;
     recordingUrl = await taskSnapshot.ref.getDownloadURL();
     DateTime sentAt = Timestamp.now().toDate();
-    Message message = Message(sender: widget.userIdx, text: 'הקלטה קולית', read: false, sentAt: sentAt, fileRef: recordingUrl, type: MessageType.VOICE_RECORD);
-    widget.chat.cloudKey.collection('messages').add(message.toMap());
-    widget.chat.cloudKey.update({'lastMessageSentAt': sentAt});
+    Message message = Message(sender: widget.userIdx, text: 'הקלטה קולית', sentAt: sentAt, fileRef: recordingUrl, type: MessageType.VOICE_RECORD);
+    widget.chat.docRef.collection('messages').add(message.toMap());
+    widget.chat.docRef.update({'lastMessageSentAt': sentAt});
   }
 
   @override

@@ -1,14 +1,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/chat_widgets/message_time.dart';
+import '../../../models/chat.dart';
 import '../../../models/message.dart';
 
 class TextMessageBubble extends StatelessWidget {
+  final Chat chat;
   final Message message;
   final bool isMe;
   final bool tail;
 
-  const TextMessageBubble({super.key, required this.message, required this.isMe, required this.tail});
+  const TextMessageBubble({super.key, required this.chat, required this.message, required this.isMe, required this.tail});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,7 @@ class TextMessageBubble extends StatelessWidget {
           ),
         ),
         isMe ? const SizedBox(width: 4) : Container(),
-        MessageTime(message: message, isMe: isMe)
+        MessageTime(chat: chat, message: message, isMe: isMe)
       ],
     );
   }

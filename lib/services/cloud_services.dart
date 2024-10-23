@@ -7,10 +7,12 @@ import 'package:geolocator/geolocator.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/models/item.dart';
+import 'package:rent_app/models/message.dart';
 import 'package:rent_app/models/user.dart';
 import '../models/address_info.dart';
 import '../models/category.dart';
 import '../models/chat.dart';
+import '../models/message_type.dart';
 import '../models/request.dart';
 import 'notification_utils.dart';
 
@@ -157,33 +159,65 @@ Future<QuerySnapshot<Map<String, dynamic>>> getPendingRequestsStream() {
 
 //CHATS
 
-Future<Chat> createNewChat(DocumentReference contactUser) async {
-  DocumentReference chatDoc = _firestore.collection('chats').doc();
-  Chat chat = Chat(participants: [userDetails.userReference, contactUser], cloudKey: chatDoc);
-  userDetails.userReference.update({'chats': FieldValue.arrayUnion([chatDoc])});
-  contactUser.update({'chats': FieldValue.arrayUnion([chatDoc])});
-  userDetails.chats.add(chatDoc);
-  chatDoc.set({'participants': [userDetails.userReference, contactUser]});
+Future<Chat> sendItemMessage(DocumentReference userRef, DocumentReference itemRef) async {
+  Chat? chat;
+  QuerySnapshot usersChatsQuery = await _firestore.collection('chats')
+      .where('participants.${userDetails.userReference.id}', isNotEqualTo: null)
+      .get();
+  chat = usersChatsQuery.docs.map((doc) => Chat.fromDocumentSnapshot(doc)).where((chat) => chat.participants.containsKey(userRef.id)).firstOrNull;
+  if (chat == null) {
+    DocumentReference chatDoc = await _firestore.collection('chats').add({
+      'lastMessageSentAt': FieldValue.serverTimestamp(),
+      'participants': {
+        userDetails.userReference.id: {'index': 0, 'lastMessageSeenTime': FieldValue.serverTimestamp()},
+        userRef.id: {'index': 1, 'lastMessageSeenTime': Timestamp.fromMillisecondsSinceEpoch(0)},
+      }
+    });
+    DocumentSnapshot chatSnapshot = await chatDoc.get();
+    chat = Chat.fromDocumentSnapshot(chatSnapshot);
+  }
+  int userIndex = chat.participants[userDetails.userReference.id]?.index ?? -1;
+  if (userIndex == 0 || userIndex == 1) {
+    await chat.docRef.collection('messages').add({
+      'sender': userIndex,
+      'text': 'האם ניתן להשכיר פריט זה?',
+      'sentAt': FieldValue.serverTimestamp(),
+      'type': MessageType.ITEM.index,
+      'fileRef': itemRef.id
+    });
+    await chat.docRef.update({'lastMessageSentAt': FieldValue.serverTimestamp()});
+  }
   return chat;
 }
 
-Future<Chat?> getChat(DocumentReference contactUser) async {
-  var usersChats = await _firestore.collection('chats').where('participants', arrayContains: userDetails.userReference).get();
-  for (var chat in usersChats.docs) {
-    Map<String, dynamic> chatData = chat.data();
-    List<DocumentReference> participants = (chatData['participants'] as List<dynamic>).map((e) => e as DocumentReference).toList();
-    if (participants[0] == contactUser || participants[1] == contactUser) {
-      return Chat(participants: participants, cloudKey: chat.reference);
-    }
-  }
-  return null;
+Future<void> updateUserLastMessageSeenTime(DocumentReference chatRef, DateTime dateTime) {
+  return chatRef.update({
+    'participants.${userDetails.userReference.id}.lastMessageSeenTime': Timestamp.fromDate(dateTime)
+  });
 }
 
-Stream<QuerySnapshot<Map<String, dynamic>>> getUserChatsStream(){
-  return _firestore.collection('chats').where('participants', arrayContains: userDetails.userReference).orderBy('lastMessageSentAt').snapshots();
+Stream<List<Chat>> getUserChatsStream(){
+  return _firestore
+      .collection('chats')
+      .where('participants.${userDetails.userReference.id}', isNotEqualTo: null)
+      .orderBy('lastMessageSentAt', descending: true)
+      .snapshots()
+      .map((QuerySnapshot query) {
+    return query.docs.map((doc) => Chat.fromDocumentSnapshot(doc)).toList();
+  });
+}
+
+Stream<Chat> getChatStream(DocumentReference chatRef) {
+  return chatRef.snapshots().map((DocumentSnapshot snapshot) => Chat.fromDocumentSnapshot(snapshot));
 }
 
 //MESSAGES
+
+Future<Message?> getLastMessage(DocumentReference chatRef) async {
+  QuerySnapshot querySnapshot = await chatRef.collection('messages').orderBy('sentAt', descending: true).limit(1).get();
+  List<Message> messages = querySnapshot.docs.map((doc) => mapAsMessage(doc.data() as Map<String, dynamic>, doc.reference)).toList();
+  return messages.isEmpty ? null : messages[0];
+}
 
 Future<QuerySnapshot> getHistoricalMessages(DocumentReference chatRef, int limit, DocumentSnapshot? startAfterDoc) {
   Query query = chatRef.collection('messages').orderBy('sentAt', descending: true).limit(limit);

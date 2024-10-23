@@ -9,7 +9,6 @@ class Message {
   late String _text;
   late String? _fileRef;
   late DateTime _sentAt;
-  late bool _read;
   late String _senderName;
   late MessageType _type;
   DocumentReference? _senderRef;
@@ -19,7 +18,6 @@ class Message {
     required int sender,
     required String text,
     String? fileRef,
-    required bool read,
     required DateTime sentAt,
     required MessageType type,
     DocumentReference? senderRef,
@@ -27,7 +25,6 @@ class Message {
         _sender = sender,
         _text = text,
         _fileRef = fileRef,
-        _read = read,
         _sentAt = sentAt,
         _type = type,
         _senderRef = senderRef;
@@ -37,13 +34,11 @@ class Message {
   String get text => _text;
   String? get fileRef => _fileRef;
   DateTime get sentAt => _sentAt;
-  bool get read => _read;
   String get senderName => _senderName;
   MessageType get type => _type;
   DocumentReference? get senderRef => _senderRef;
 
   set fileRef(String? value) => _fileRef = value;
-  set read(bool value) => _read = value;
   set senderRef(DocumentReference? value) => _senderRef = value;
 
   String sentAtAsString() {
@@ -56,7 +51,6 @@ class Message {
       'sender': _sender,
       'text': _text,
       'sentAt': _sentAt,
-      'read': _read,
       'type': _type.index,
     };
     if (_fileRef != null) {
@@ -67,7 +61,7 @@ class Message {
 }
 
 Message mapAsMessage(Map<String, dynamic> map, DocumentReference? reference){
-  Message message = Message(cloudKey: reference, read: map['read'], sender: map['sender'], sentAt: map['sentAt'].toDate(), text: map['text'], type: numToMessageType(map['type']));
+  Message message = Message(cloudKey: reference, sender: map['sender'], sentAt: map['sentAt'].toDate(), text: map['text'], type: numToMessageType(map['type']));
   if(map.containsKey('fileRef')){
     message.fileRef = map['fileRef'];
   }

@@ -68,5 +68,5 @@ class UserDetails {
 UserDetails mapAsUser(Map<String, dynamic> map){
   final firestore = FirebaseFirestore.instance;
   DocumentReference userReference = firestore.collection('users').doc(userUid);
-  return UserDetails(userReference: userReference, name: map['fullName'], email: map['email'], phoneNumber: map['phoneNumber'], items: map['items'], wishlist: map['wishlist'], seen: map['seen'], chats: map['chats'], token: map['token']);
+  return UserDetails(userReference: userReference, name: map['fullName'], email: map['email'], phoneNumber: map['phoneNumber'], items: map['items'], wishlist: map['wishlist'], seen: map['seen'] ?? List.empty(), chats: map['chats'], token: map['token']);
 }

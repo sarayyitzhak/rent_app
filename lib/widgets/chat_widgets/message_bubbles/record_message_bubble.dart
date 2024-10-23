@@ -1,19 +1,20 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:rent_app/models/message.dart';
 
 import '../../../constants.dart';
+import '../../../models/chat.dart';
 import '../message_time.dart';
 
 class RecordMessageBubble extends StatefulWidget {
+  final Chat chat;
   final Message message;
   final bool isMe;
   final bool tail;
 
-  const RecordMessageBubble({super.key, required this.message, required this.isMe, required this.tail});
+  const RecordMessageBubble({super.key, required this.chat, required this.message, required this.isMe, required this.tail});
 
   @override
   State<RecordMessageBubble> createState() => _RecordMessageBubbleState();
@@ -142,7 +143,7 @@ class _RecordMessageBubbleState extends State<RecordMessageBubble> {
                         ),
                       ),
                     ),
-                    MessageTime(message: widget.message, isMe: widget.isMe)
+                    MessageTime(chat: widget.chat, message: widget.message, isMe: widget.isMe)
                   ],
                 ),
               ],
