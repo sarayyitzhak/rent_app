@@ -159,6 +159,20 @@ Future<QuerySnapshot<Map<String, dynamic>>> getPendingRequestsStream() {
 
 //CHATS
 
+void sendMessage(DocumentReference chatRef, int userIndex, String text, MessageType type, String? fileRef) {
+  Map<String, dynamic> messageData = {
+    'sender': userIndex,
+    'text': text,
+    'sentAt': FieldValue.serverTimestamp(),
+    'type': type.index,
+  };
+  if (fileRef != null) {
+    messageData['fileRef'] = fileRef;
+  }
+  chatRef.collection('messages').add(messageData);
+  chatRef.update({'lastMessageSentAt': FieldValue.serverTimestamp()});
+}
+
 Future<Chat> sendItemMessage(DocumentReference userRef, DocumentReference itemRef) async {
   Chat? chat;
   QuerySnapshot usersChatsQuery = await _firestore.collection('chats')

@@ -98,11 +98,25 @@ exports.sendChatNotification = functions.firestore
       const participants = chatData.participants;
       const senderIndex = messageData.sender;
 
-      const senderDocRef = participants[senderIndex];
-      const recipientDocRef = participants[1 - senderIndex];
+      senderUid = null;
+      recipientUid = null;
 
-      const senderDoc = await senderDocRef.get();
-      const recipientDoc = await recipientDocRef.get();
+      Object.keys(participants).forEach((uid) => {
+        if (participants[uid].index == senderIndex) {
+            senderUid = uid;
+        } else {
+            recipientUid = uid;
+        }
+      });
+
+      if (!senderUid || !recipientUid) {
+          console.log("Sender or recipient does not found in chat");
+          return null;
+      }
+
+      const senderDoc = await firestore.doc(`users/${senderUid}`).get();
+      const recipientDoc = await firestore.doc(`users/${senderUid}`).get();
+
       if (!senderDoc.exists || !recipientDoc.exists) {
         console.log("Sender or recipient does not exist");
         return null;

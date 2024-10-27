@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rent_app/models/chat.dart';
 import 'package:rent_app/models/message_type.dart';
+import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/voice_recorder_button.dart';
 import 'package:rent_app/widgets/pick_image_button.dart';
 import '../constants.dart';
@@ -30,10 +31,7 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
   void onSendPressed(){
     if (messageTextController.text.isNotEmpty) {
       messageTextController.clear();
-      DateTime sentAt = Timestamp.now().toDate();
-      Message message = Message(sender: widget.userIdx, text: messageText, sentAt: sentAt, type: MessageType.TEXT);
-      widget.chat.docRef.collection('messages').add(message.toMap());
-      widget.chat.docRef.update({'lastMessageSentAt': sentAt});
+      sendMessage(widget.chat.docRef, widget.userIdx, messageText, MessageType.TEXT, null);
       setState(() {
         showMic = true;
       });
@@ -46,9 +44,7 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
     UploadTask uploadTask = itemRef.putFile(image!);
     TaskSnapshot taskSnapshot = await uploadTask;
     var imageUrl = await taskSnapshot.ref.getDownloadURL();
-    Message message = Message(sender: widget.userIdx, text: 'תמונה', sentAt: sentAt, type: MessageType.IMAGE, fileRef: imageUrl);
-    widget.chat.docRef.collection('messages').add(message.toMap());
-    widget.chat.docRef.update({'lastMessageSentAt': sentAt});
+    sendMessage(widget.chat.docRef, widget.userIdx, 'תמונה', MessageType.IMAGE, imageUrl);
   }
 
   void onImagePressed(File? newImage){

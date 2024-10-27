@@ -8,6 +8,7 @@ import 'package:rent_app/constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rent_app/models/message.dart';
 import 'package:rent_app/models/message_type.dart';
+import 'package:rent_app/services/cloud_services.dart';
 import '../models/chat.dart';
 
 class VoiceRecorderButton extends StatefulWidget {
@@ -71,13 +72,9 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
   Future<void> uploadVoiceRecording(String filePath) async {
     File file = File(filePath);
     final recordingRef = storageRef.child('voice_record_${DateTime.now().millisecondsSinceEpoch}.aac');
-    UploadTask uploadTask = recordingRef.putFile(file!);
-    TaskSnapshot taskSnapshot = await uploadTask;
+    TaskSnapshot taskSnapshot = await recordingRef.putFile(file);
     recordingUrl = await taskSnapshot.ref.getDownloadURL();
-    DateTime sentAt = Timestamp.now().toDate();
-    Message message = Message(sender: widget.userIdx, text: 'הקלטה קולית', sentAt: sentAt, fileRef: recordingUrl, type: MessageType.VOICE_RECORD);
-    widget.chat.docRef.collection('messages').add(message.toMap());
-    widget.chat.docRef.update({'lastMessageSentAt': sentAt});
+    sendMessage(widget.chat.docRef, widget.userIdx, 'הקלטה קולית', MessageType.VOICE_RECORD, recordingUrl);
   }
 
   @override
