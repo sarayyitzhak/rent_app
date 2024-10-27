@@ -352,7 +352,7 @@ void onTokenRefreshed(){
 
 void messagingListenForeground(){
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    if (message.notification != null) {
+    if (message.notification != null && !isChatScreenActive) {
       showNotification(message.notification!.title, message.notification!.body);
     }
   });

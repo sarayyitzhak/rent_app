@@ -38,6 +38,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    isChatScreenActive = true;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final arg = ModalRoute.of(context)!.settings.arguments as ChatScreenArguments;
@@ -129,7 +130,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void dispose() {
     super.dispose();
-
+    isChatScreenActive = false;
     _newMessagesSubscription?.cancel();
   }
 
