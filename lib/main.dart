@@ -33,7 +33,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 String? userUid;
 late UserDetails userDetails;
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-late String currentScreen;
+// late String currentScreen;
+bool isChatScreenActive = false;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

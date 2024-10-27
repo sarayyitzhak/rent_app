@@ -1,20 +1,22 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/models/category.dart';
 import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/models/address_info.dart';
+import 'package:rent_app/screens/home_screen.dart';
 import 'package:rent_app/screens/item_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:rent_app/widgets/custom_button.dart';
 import 'package:rent_app/widgets/text_and_text_field.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 import '../models/item.dart';
+import '../widgets/custom_button.dart';
 import '../widgets/map_dialog.dart';
 import '../widgets/pick_image_button.dart';
 
@@ -37,8 +39,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   late TextEditingController priceController;
   late TextEditingController descriptionController;
   Condition? conditionValue;
-  late AddressInfo addressValue =
-      AddressInfo(latitude: 0, longitude: 0, addressData: {'city': '', 'road': ''});
+  late AddressInfo addressValue = AddressInfo(geoPoint: GeoPoint(currentPosition!.latitude, currentPosition!.longitude), addressData: {});
   var _selectedCategories = [];
 
   @override
@@ -68,8 +69,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         return MapDialog(localization: localization, context: context,
           onPicked: (PickedData pickedData) {
             setState(() {
-              addressValue.latitude = pickedData.latLong.latitude;
-              addressValue.longitude = pickedData.latLong.longitude;
+              addressValue.geoPoint = GeoPoint(pickedData.latLong.latitude, pickedData.latLong.longitude);
               addressValue.addressData = pickedData.addressData;
             });
           });
@@ -262,6 +262,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   style: kAddressButtonStyle,
                   child: Text(
                     addressValue.addressDataToString(),
+                    // addressValue.addressDataToString(),
                     style: kBlackTextStyle,),
                 ),
 

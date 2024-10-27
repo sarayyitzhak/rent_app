@@ -137,40 +137,31 @@ List itemsTitles = [
 ];
 List<AddressInfo> addressValues = [
   AddressInfo(
-      latitude: 0,
-      longitude: 0,
+      geoPoint: const GeoPoint(32.784809, 35.023056),
       addressData: {'city': 'חיפה', 'road': 'הרב מימון'}),
   AddressInfo(
-      latitude: 0,
-      longitude: 0,
+      geoPoint: const GeoPoint(32.776475, 35.036188),
       addressData: {'city': 'נשר', 'road': 'מעלה הגיבורים'}),
   AddressInfo(
-      latitude: 0,
-      longitude: 0,
+      geoPoint: const GeoPoint(31.795468, 35.153486),
       addressData: {'city': 'מוצא עילית', 'road': 'ארזה'}),
   AddressInfo(
-      latitude: 0,
-      longitude: 0,
+      geoPoint: const GeoPoint(32.026828, 34.872005),
       addressData: {'city': 'אור יהודה', 'road': 'ניצן'}),
   AddressInfo(
-      latitude: 0,
-      longitude: 0,
+      geoPoint: const GeoPoint(31.762280, 35.174503),
       addressData: {'city': 'ירושלים', 'road': 'קרית יובל'}),
   AddressInfo(
-      latitude: 0,
-      longitude: 0,
+      geoPoint: const GeoPoint(31.746798, 35.220745),
       addressData: {'city': 'ירושלים', 'road': 'ארנונה'}),
   AddressInfo(
-      latitude: 0,
-      longitude: 0,
+      geoPoint: const GeoPoint(32.815981, 35.002303),
       addressData: {'city': 'חיפה', 'road': 'עיר תחתית'}),
   AddressInfo(
-      latitude: 0,
-      longitude: 0,
+      geoPoint: const GeoPoint(31.781190, 35.309961),
       addressData: {'city': 'מעלה אדומים', 'road': 'החלמיש'}),
   AddressInfo(
-      latitude: 0,
-      longitude: 0,
+      geoPoint: const GeoPoint(31.767112, 35.303640),
       addressData: {'city': 'מעלה אדומים', 'road': 'צמח השדה'}),
 ];
 List categories = ItemCategory.values;

@@ -74,10 +74,7 @@ class Item {
       'imageRef': _imageRef,
       'title': _title,
       'price': _price,
-      'location': {
-        'city': _location.addressData['city'],
-        'road': _location.addressData['road'] ?? ''
-      },
+      'location': _location.toMap(),
       'description': _description,
       'condition': _condition.idx,
       'categories': _categories.map((c) => c.idx).toList(),
@@ -89,15 +86,6 @@ class Item {
 }
 
 Item mapAsItem(Map<String, dynamic> map, DocumentReference itemRef) {
-  AddressInfo location = AddressInfo(
-    latitude: 0,
-    longitude: 0,
-    addressData: {
-      'city': map['location']['city'],
-      'road': map['location']['road'],
-    },
-  );
-
   var categoryTitlesList = map['categories'];
   List<ItemCategory> categoryList = [];
   for (int idx in categoryTitlesList) {
@@ -111,7 +99,7 @@ Item mapAsItem(Map<String, dynamic> map, DocumentReference itemRef) {
     imageRef: map['imageRef'],
     title: map['title'],
     price: map['price'],
-    location: location,
+    location: mapToAddressInfo(map['location']),
     description: map['description'],
     condition: condition,
     categories: categoryList,

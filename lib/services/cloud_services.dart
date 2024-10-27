@@ -75,6 +75,12 @@ Future<List<Item>> getItemsByLocation(Position position, String cityName) async 
       'location.city', isEqualTo: cityName).get(), true);
 }
 
+Future<List<Item>> getItemsByGeoPoint(double minLat, double maxLat, double minLng, double maxLng) async {
+  return _getItemsByQuery(_firestore.collection('items').where(
+      'location.geoPoint', isGreaterThanOrEqualTo: GeoPoint(minLat, minLng)).where(
+      'location.geoPoint', isLessThanOrEqualTo: GeoPoint(maxLat, maxLng)).get(), true);
+}
+
 Future<List<Item>> getItemsByContactUser(DocumentReference contactUser) async {
   return _getItemsByQuery(_firestore.collection('items').where(
       'contactUser', isEqualTo: contactUser).orderBy('createdAt', descending: true).get(), false);
@@ -346,7 +352,7 @@ void onTokenRefreshed(){
 
 void messagingListenForeground(){
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    if (message.notification != null) {
+    if (message.notification != null && !isChatScreenActive) {
       showNotification(message.notification!.title, message.notification!.body);
     }
   });

@@ -7,6 +7,7 @@ import 'package:rent_app/models/user.dart';
 import 'package:rent_app/widgets/item_card.dart';
 import '../models/category.dart';
 import '../models/request.dart';
+import '../utils.dart';
 import '../widgets/request_card.dart';
 import 'cloud_services.dart';
 
@@ -27,6 +28,12 @@ Future<List<ItemCard>> getItemsFilterByCategory(ItemCategory category, bool isHo
 
 Future<List<ItemCard>> getItemsFilterByLocation(Position position, String cityName, bool isHorizontal) async {
   List<Item> items = await getItemsByLocation(position, cityName);
+  return getItemCards(items, isHorizontal);
+}
+
+Future<List<ItemCard>> getItemsFilterByGeoPoint(double lat, double lng, bool isHorizontal) async {
+  Map latLng = getLatLngSquare(lat, lng);
+  List<Item> items = await getItemsByGeoPoint(latLng['minLat'], latLng['maxLat'], latLng['minLng'], latLng['maxLng']);
   return getItemCards(items, isHorizontal);
 }
 
