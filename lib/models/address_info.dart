@@ -1,9 +1,10 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class AddressInfo{
-  double latitude;
-  double longitude;
+  GeoPoint geoPoint;
   Map addressData;
-  AddressInfo({required this.latitude, required this.longitude, required this.addressData});
+  AddressInfo({required this.geoPoint, required this.addressData});
 
   String addressDataToString(){
     return '${addressData['city']}${(addressData['road'] != '' && addressData['road'] != null) ? ',  ${addressData['road']}' : ''}';
@@ -11,15 +12,15 @@ class AddressInfo{
 
   Map<String, dynamic> toMap(){
     return {
-      'latitude': latitude,
-      'longitude': longitude,
-      'addressData': addressData
+      'geoPoint': geoPoint,
+      'city': addressData['city'],
+      'road': addressData['road'] ?? '',
     };
   }
 }
 
 AddressInfo mapToAddressInfo(Map<String, dynamic> map){
-  return AddressInfo(latitude: map['latitude'], longitude: map['longitude'], addressData: map['addressData']);
+  return AddressInfo(geoPoint: map['geoPoint'], addressData: {'city': map['city'], 'road': map['road']});
 }
 
 

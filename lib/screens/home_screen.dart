@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/screens/pending_requests_screen.dart';
+import 'package:rent_app/utils.dart';
 import 'package:rent_app/widgets/reusable_card.dart';
+import '../add_users.dart';
 import '../constants.dart';
 import 'package:rent_app/models/category.dart';
 import '../main.dart';
@@ -210,7 +212,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(
                       height: 250,
                       child: currentPosition == null || cityName == null ? const Center(child: CircularProgressIndicator(color: kPastelYellow,)) : FutureBuilder(
-                          future: getItemsFilterByLocation(currentPosition!, cityName!, true),
+                          future: getItemsFilterByGeoPoint(currentPosition!.latitude, currentPosition!.longitude, true),
+                          // future: getItemsFilterByLocation(currentPosition!, cityName!, true),TODO: decide what to do
                           builder: (context, snapshot) {
                             if (snapshot.hasData &&
                                 snapshot.data != null &&
