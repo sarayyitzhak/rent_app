@@ -8,11 +8,15 @@ import '../../models/message.dart';
 import '../../services/cloud_services.dart';
 
 class MessageTime extends StatefulWidget {
-  Chat chat;
+  final Chat chat;
   final Message message;
   final bool isMe;
 
-  MessageTime({super.key, required this.chat, required this.message, required this.isMe});
+  const MessageTime(
+      {super.key,
+      required this.chat,
+      required this.message,
+      required this.isMe});
 
   @override
   State<MessageTime> createState() => _MessageTimeState();
@@ -20,45 +24,23 @@ class MessageTime extends StatefulWidget {
 
 class _MessageTimeState extends State<MessageTime> {
 
-  StreamSubscription? _chatSubscription;
-
-  bool isMessageRead() {
-    for (String uid in widget.chat.participants.keys) {
+  bool isMessageRead(Chat chat) {
+    for (String uid in chat.participants.keys) {
       if (uid != userDetails.userReference.id) {
-        DateTime lastMessageSeenTime = widget.chat.participants[uid]!.lastMessageSeenTime;
-        return widget.message.sentAt.isBefore(lastMessageSeenTime);
+        DateTime lastMessageSeenTime =
+            chat.participants[uid]!.lastMessageSeenTime;
+        return !lastMessageSeenTime.isBefore(widget.message.sentAt);
       }
     }
     return false;
   }
 
-  Icon buildReadIcon() {
-    bool messageRead = isMessageRead();
+  Icon buildReadIcon(bool messageRead) {
     return Icon(
-      messageRead ? Icons.done_all : Icons.done,
-      color: messageRead ? Colors.cyan[300] : Colors.grey[300],
-      size: 18
+        messageRead ? Icons.done_all : Icons.done,
+        color: messageRead ? Colors.cyan[300] : Colors.grey[300],
+        size: 18
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (widget.isMe && !isMessageRead()) {
-      _chatSubscription = getChatStream(widget.chat.docRef).listen((chat) {
-        setState(() {
-          widget.chat = chat;
-        });
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    _chatSubscription?.cancel();
   }
 
   @override
@@ -66,7 +48,18 @@ class _MessageTimeState extends State<MessageTime> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        widget.isMe ? buildReadIcon() : Container(),
+        widget.isMe
+            ? isMessageRead(widget.chat)
+                ? buildReadIcon(true)
+                : StreamBuilder(
+                    stream: getChatStream(widget.chat.docRef),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return buildReadIcon(isMessageRead(snapshot.data!));
+                      }
+                      return buildReadIcon(false);
+                    })
+            : Container(),
         const SizedBox(width: 4),
         Text(
           widget.message.sentAtAsString(),

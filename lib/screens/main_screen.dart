@@ -47,6 +47,7 @@ class _MainScreenState extends State<MainScreen> {
     requestNotificationsPermission();
     onTokenRefreshed();
     messagingListenForeground();
+    setToken();
   }
 
   @override
