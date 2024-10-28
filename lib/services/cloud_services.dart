@@ -182,7 +182,7 @@ void sendMessage(DocumentReference chatRef, int userIndex, String text, MessageT
 Future<Chat> sendItemMessage(DocumentReference userRef, DocumentReference itemRef) async {
   Chat? chat;
   QuerySnapshot usersChatsQuery = await _firestore.collection('chats')
-      .where('participants.${userDetails.userReference.id}', isNotEqualTo: null)
+      .where('participants.${userDetails.userReference.id}', isNull: false)
       .get();
   chat = usersChatsQuery.docs.map((doc) => Chat.fromDocumentSnapshot(doc)).where((chat) => chat.participants.containsKey(userRef.id)).firstOrNull;
   if (chat == null) {
@@ -219,12 +219,10 @@ Future<void> updateUserLastMessageSeenTime(DocumentReference chatRef, DateTime d
 Stream<List<Chat>> getUserChatsStream(){
   return _firestore
       .collection('chats')
-      .where('participants.${userDetails.userReference.id}', isNotEqualTo: null)
-      .orderBy('lastMessageSentAt', descending: true)
+      .where('participants.${userDetails.userReference.id}', isNull: false)
+      // .orderBy('lastMessageSentAt', descending: true)
       .snapshots()
-      .map((QuerySnapshot query) {
-    return query.docs.map((doc) => Chat.fromDocumentSnapshot(doc)).toList();
-  });
+      .map((QuerySnapshot query) => query.docs.map((doc) => Chat.fromDocumentSnapshot(doc)).toList());
 }
 
 Stream<Chat> getChatStream(DocumentReference chatRef) {
@@ -233,10 +231,13 @@ Stream<Chat> getChatStream(DocumentReference chatRef) {
 
 //MESSAGES
 
-Future<Message?> getLastMessage(DocumentReference chatRef) async {
-  QuerySnapshot querySnapshot = await chatRef.collection('messages').orderBy('sentAt', descending: true).limit(1).get();
-  List<Message> messages = querySnapshot.docs.map((doc) => mapAsMessage(doc.data() as Map<String, dynamic>, doc.reference)).toList();
-  return messages.isEmpty ? null : messages[0];
+Stream<Message?> getLastMessageStream(DocumentReference chatRef) {
+  return chatRef
+      .collection('messages')
+      .orderBy('sentAt', descending: true)
+      .limit(1)
+      .snapshots()
+      .map((QuerySnapshot query) => query.docs.map((doc) => mapAsMessage(doc.data() as Map<String, dynamic>, doc.reference)).toList().firstOrNull);
 }
 
 Future<QuerySnapshot> getHistoricalMessages(DocumentReference chatRef, int limit, DocumentSnapshot? startAfterDoc) {
