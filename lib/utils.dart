@@ -28,3 +28,9 @@ Map<String, double> getLatLngSquare(double lat, double lng){
 
   return {'minLat': minLat, 'minLng': minLng, 'maxLat': maxLat, 'maxLng': maxLng};
 }
+
+String getNextAlphabeticalString(String input) {
+  List<int> chars = List.of(input.codeUnits);
+  chars[chars.length - 1]++;
+  return String.fromCharCodes(chars);
+}

@@ -9,6 +9,7 @@ import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/models/message.dart';
 import 'package:rent_app/models/user.dart';
+import 'package:rent_app/utils.dart';
 import '../models/address_info.dart';
 import '../models/category.dart';
 import '../models/chat.dart';
@@ -87,7 +88,10 @@ Future<List<Item>> getItemsByContactUser(DocumentReference contactUser) async {
 }
 
 Future<List<Item>> getItemsByTitle(String title) async {
-  return _getItemsByQuery(_firestore.collection('items').where('title', isEqualTo: title).get(), false);
+  return _getItemsByQuery(_firestore.collection('items')
+      .where('title', isGreaterThanOrEqualTo: title)
+      .where('title', isLessThan: getNextAlphabeticalString(title))
+      .get(), false);
 }
 
 Future<Item?> getItemById(String id) async {
