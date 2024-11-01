@@ -15,6 +15,7 @@ import '../models/category.dart';
 import '../models/chat.dart';
 import '../models/message_type.dart';
 import '../models/request.dart';
+import '../models/request_status.dart';
 import 'notification_utils.dart';
 
 final _firestore = FirebaseFirestore.instance;
@@ -140,6 +141,15 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getUserItemsStream() {
 //REQUESTS
 Future<QuerySnapshot<Map<String, dynamic>>> getUserRequestsStream() {
   return _firestore.collection('requests').where('ownerID', isEqualTo: userDetails.userReference.id).orderBy('requestTime', descending: true).get();
+}
+
+Stream<List<ItemRequest>> getFutureItemRequestsStream(DocumentReference itemRef) {
+  return _firestore.collection('requests')
+      .where('itemID', isEqualTo: itemRef.id)
+      .where('time.end', isGreaterThan: DateTime.now())
+      .where('status', isNotEqualTo: RequestStatus.REJECTED.index)
+      .snapshots()
+      .map((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => mapToItemRequest(snapshot.data() as Map<String, dynamic>, snapshot.id)).toList());
 }
 
 void addRequest(ItemRequest request){

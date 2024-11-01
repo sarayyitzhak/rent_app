@@ -69,6 +69,7 @@ dependencies:
   audioplayers: ^6.1.0
   date_picker_plus: ^4.1.0
   flutter_local_notifications: ^17.2.3
+  syncfusion_flutter_datepicker: ^27.1.57
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -92,16 +93,6 @@ flutter:
   generate: true # Add this line
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/usersImages/Camping/
-    - assets/images/usersImages/Electronics/
-    - assets/images/usersImages/Events/
-    - assets/images/usersImages/Games/
-    - assets/images/usersImages/Kitchen/
-    - assets/images/usersImages/Pets/
-    - assets/images/usersImages/School/
-    - assets/images/usersImages/Sport/
-    - assets/images/usersImages/Tools/
-    - assets/images/usersImages/Travel/
     - assets/images/
 
 
