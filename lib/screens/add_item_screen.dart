@@ -24,13 +24,14 @@ import '../widgets/pick_image_button.dart';
 class AddItemScreen extends StatefulWidget {
   static String id = 'add_item_screen';
 
-  const AddItemScreen({super.key});
+  final AddItemScreenArguments args;
+  const AddItemScreen(this.args, {super.key});
+
   @override
   _AddItemScreenState createState() => _AddItemScreenState();
 }
 
 class _AddItemScreenState extends State<AddItemScreen> {
-  late bool isOnEditMode;
   Item? item;
   File? image;
   String? imageURLOnEditMode;
@@ -48,6 +49,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
     titleController = TextEditingController();
     priceController = TextEditingController();
     descriptionController = TextEditingController();
+
+    if (widget.args.isEditMode) {
+      item = widget.args.item;
+      initOnEditMode(widget.args.item);
+    }
   }
 
   void initOnEditMode(Item? item){
@@ -185,14 +191,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
   @override
   Widget build(BuildContext context) {
     var localization = AppLocalizations.of(context)!;
-    final arg = ModalRoute.of(context)!.settings.arguments as AddItemScreenArguments;
-    isOnEditMode = arg.isEditMode;
-    if(isOnEditMode && item == null){
-      item = arg.item;
-      initOnEditMode(item);
-    }
     return Scaffold(
-      appBar: CustomAppBar(title: isOnEditMode ? localization.edit : localization.addItem),
+      appBar: CustomAppBar(title: widget.args.isEditMode ? localization.edit : localization.addItem),
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
@@ -200,7 +200,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                imageContainer(localization, isOnEditMode),
+                imageContainer(localization, widget.args.isEditMode),
                 TextAndTextField(
                     title: localization.title, controller: titleController),
                 TextAndTextField(
@@ -269,7 +269,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 const SizedBox(
                   height: 15,
                 ),
-                isOnEditMode
+                widget.args.isEditMode
                     ?  CustomButton(title: localization.edit, onPress: onEditItemButtonPressed)
                     :  CustomButton(title: localization.addItem, onPress: onAddItemButtonPressed),
               ],
@@ -281,7 +281,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   }
 }
 
-class AddItemScreenArguments{
+class AddItemScreenArguments {
   Item? item;
   bool isEditMode;
   AddItemScreenArguments({this.item, required this.isEditMode});

@@ -20,12 +20,13 @@ import '../widgets/dial_icon_button.dart';
 
 class ItemScreen extends StatelessWidget {
   static String id = 'item_screen.dart';
-  const ItemScreen({super.key});
+
+  final ItemScreenArguments args;
+  const ItemScreen(this.args, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    final arg = ModalRoute.of(context)!.settings.arguments as ItemScreenArguments;
-    Item item = arg.item;
+    Item item = args.item;
     var localization = AppLocalizations.of(context)!;
     if (userDetails.userReference != item.contactUser && !userDetails.seen.contains(item.itemReference)) {
       item.itemReference.update({'seenCount': FieldValue.increment(1)});
@@ -68,7 +69,7 @@ class ItemScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        arg.isMe
+                        args.isMe
                             ? Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -165,7 +166,7 @@ class ItemScreen extends StatelessWidget {
                               getFormattedPrice(item.price),
                               style: kHeadersTextStyle,
                             ),
-                            arg.isMe
+                            args.isMe
                                 ? Container()
                                 : Row(
                                     children: [
@@ -191,8 +192,8 @@ class ItemScreen extends StatelessWidget {
                   ),
                   Center(
                       child: CustomButton(
-                          title: arg.isMe ? localization.edit : localization.rentItem,
-                          onPress: arg.isMe
+                          title: args.isMe ? localization.edit : localization.rentItem,
+                          onPress: args.isMe
                               ? () => Navigator.pushNamed(context, AddItemScreen.id, arguments: AddItemScreenArguments(item: item, isEditMode: true))
                               : () => Navigator.pushNamed(context, RentalScreen.id, arguments: RentalScreenArgument(item: item)),
                       )

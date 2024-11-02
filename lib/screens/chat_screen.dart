@@ -16,7 +16,8 @@ import '../widgets/chat_widgets/message_bubbles/message_bubble.dart';
 class ChatScreen extends StatefulWidget {
   static const String id = 'chat_screen';
 
-  const ChatScreen({super.key});
+  final ChatScreenArguments args;
+  const ChatScreen(this.args, {super.key});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -40,20 +41,18 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     isChatScreenActive = true;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final arg = ModalRoute.of(context)!.settings.arguments as ChatScreenArguments;
-      setState(() {
-        chat = arg.chat;
-        _personName = arg.otherParticipantName;
-        _userIndex = chat.participants[userDetails.userReference.id]?.index ?? -1;
-      });
-      _fetchMessages(20);
-      _fetchNewMessages();
-
-      if (chat.participants[userDetails.userReference.id]!.lastMessageSeenTime != chat.lastMessageSentAt) {
-        updateUserLastMessageSeenTime(chat.docRef, chat.lastMessageSentAt);
-      }
+    setState(() {
+      chat = widget.args.chat;
+      _personName = widget.args.otherParticipantName;
+      _userIndex = chat.participants[userDetails.userReference.id]?.index ?? -1;
     });
+
+    _fetchMessages(20);
+    _fetchNewMessages();
+
+    if (chat.participants[userDetails.userReference.id]!.lastMessageSeenTime != chat.lastMessageSentAt) {
+      updateUserLastMessageSeenTime(chat.docRef, chat.lastMessageSentAt);
+    }
   }
 
   void _fetchMessages(int limit) async {

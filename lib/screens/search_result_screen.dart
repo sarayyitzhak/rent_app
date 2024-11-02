@@ -8,7 +8,8 @@ import '../services/card_utils.dart';
 class SearchResultScreen extends StatefulWidget {
   static String id = 'search_result_screen';
 
-  const SearchResultScreen({super.key});
+  final SearchResultScreenArguments args;
+  const SearchResultScreen(this.args, {super.key});
 
   @override
   State<SearchResultScreen> createState() => _SearchResultScreenState();
@@ -16,21 +17,20 @@ class SearchResultScreen extends StatefulWidget {
 
 class _SearchResultScreenState extends State<SearchResultScreen> {
   late TextEditingController searchTextController;
-  bool showGrid = false;
-  String? text;
-  late ScrollableItemGrid itemGrid = ScrollableItemGrid(future: getItemsFilterByTitle(searchTextController.text, false));
+  late ScrollableItemGrid itemGrid;
 
   @override
   void initState() {
     super.initState();
+
+    searchTextController = TextEditingController(text: widget.args.text);
+    itemGrid = ScrollableItemGrid(future: getItemsFilterByTitle(searchTextController.text, false));
   }
 
   Future<ScrollableItemGrid?> onSearchPressed() async {
     FocusScope.of(context).requestFocus(FocusNode());
     if (searchTextController.text.isNotEmpty) {
       setState(() {
-        showGrid = true;
-        text = searchTextController.text;
         itemGrid = ScrollableItemGrid(future: getItemsFilterByTitle(searchTextController.text, false));
       });
     }
@@ -40,11 +40,6 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
   @override
   Widget build(BuildContext context) {
     var localization = AppLocalizations.of(context)!;
-    if (text == null) {
-      final arg = ModalRoute.of(context)!.settings.arguments as SearchResultScreenArguments;
-      text = arg.text;
-    }
-    searchTextController = TextEditingController(text: text);
     return Scaffold(
       appBar: CustomAppBar(title: localization.search, isBackButton: false),
       body: Padding(

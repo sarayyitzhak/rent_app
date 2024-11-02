@@ -146,7 +146,7 @@ Future<QuerySnapshot<Map<String, dynamic>>> getUserRequestsStream() {
 Stream<List<ItemRequest>> getFutureItemRequestsStream(DocumentReference itemRef) {
   return _firestore.collection('requests')
       .where('itemID', isEqualTo: itemRef.id)
-      .where('time.end', isGreaterThan: DateTime.now())
+      .where('time.end', isGreaterThan: Timestamp.now())
       .where('status', isNotEqualTo: RequestStatus.REJECTED.index)
       .snapshots()
       .map((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => mapToItemRequest(snapshot.data() as Map<String, dynamic>, snapshot.id)).toList());

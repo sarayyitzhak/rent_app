@@ -9,8 +9,9 @@ import '../services/card_utils.dart';
 
 class CategoryScreen extends StatelessWidget {
   static String id = 'category_screen';
-  CategoryScreen({super.key});
-  late ItemCategory category;
+
+  final CategoryScreenArguments args;
+  const CategoryScreen(this.args, {super.key});
 
   List<Widget> createListOfSubCategories(List titles){
     List<Widget> subCategories = [];
@@ -32,11 +33,8 @@ class CategoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var localization = AppLocalizations.of(context)!;
-    final arg =
-        ModalRoute.of(context)!.settings.arguments as CategoryScreenArguments;
-    category = arg.category;
     return Scaffold(
-        appBar: CustomAppBar(title: category.getTitle(localization)),
+        appBar: CustomAppBar(title: args.category.getTitle(localization)),
         body: Column(
           children: [
             Container(
@@ -46,7 +44,7 @@ class CategoryScreen extends StatelessWidget {
             ),
             Expanded(
               child: ScrollableItemGrid(
-                  future: getItemsFilterByCategory(category, false)),
+                  future: getItemsFilterByCategory(args.category, false)),
             ),
           ],
         ));

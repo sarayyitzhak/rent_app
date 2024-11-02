@@ -20,14 +20,15 @@ import '../utils.dart';
 
 class RentalScreen extends StatefulWidget {
   static String id = 'rental_screen';
-  const RentalScreen({super.key});
+
+  final RentalScreenArgument args;
+  const RentalScreen(this.args, {super.key});
 
   @override
   State<RentalScreen> createState() => _RentalScreenState();
 }
 
 class _RentalScreenState extends State<RentalScreen> {
-  late Item _item;
   final DateRangePickerController _controller = DateRangePickerController();
   int totalPrice = 0;
 
@@ -46,7 +47,7 @@ class _RentalScreenState extends State<RentalScreen> {
       return;
     }
 
-    ItemRequest request = ItemRequest(ownerID: _item.contactUser.id, applicantID: userDetails.userReference.id, itemID: _item.itemReference.id, status: RequestStatus.WAITING, time: dateTimeRange, finalPrice: totalPrice, pickUpLocation: _item.location, requestTime: Timestamp.now());
+    ItemRequest request = ItemRequest(ownerID: widget.args.item.contactUser.id, applicantID: userDetails.userReference.id, itemID: widget.args.item.itemReference.id, status: RequestStatus.WAITING, time: dateTimeRange, finalPrice: totalPrice, pickUpLocation: widget.args.item.location, requestTime: Timestamp.now());
     addRequest(request);
     Navigator.pushNamed(context, RequestSubmittedScreen.id);
   }
@@ -72,7 +73,7 @@ class _RentalScreenState extends State<RentalScreen> {
       );
     } else {
       setState(() {
-        totalPrice = _item.price * (_getSelectedEndDate()!.difference(_getSelectedStartDate()!).inDays + 1);
+        totalPrice = widget.args.item.price * (_getSelectedEndDate()!.difference(_getSelectedStartDate()!).inDays + 1);
       });
     }
   }
@@ -94,7 +95,7 @@ class _RentalScreenState extends State<RentalScreen> {
   }
 
   void _updateDates() async {
-    _itemRequestsSubscription = getFutureItemRequestsStream(_item.itemReference).listen((List<ItemRequest> itemRequests) {
+    _itemRequestsSubscription = getFutureItemRequestsStream(widget.args.item.itemReference).listen((List<ItemRequest> itemRequests) {
       List<DateTime> blackoutDates = [];
       List<DateTime> waitingDates = [];
 
@@ -130,12 +131,7 @@ class _RentalScreenState extends State<RentalScreen> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final arg = ModalRoute.of(context)!.settings.arguments as RentalScreenArgument;
-      _item = arg.item;
-
-      _updateDates();
-    });
+    _updateDates();
   }
 
   @override
@@ -148,8 +144,6 @@ class _RentalScreenState extends State<RentalScreen> {
   @override
   Widget build(BuildContext context) {
     var localization = AppLocalizations.of(context)!;
-    final arg = ModalRoute.of(context)!.settings.arguments as RentalScreenArgument;
-    Item item = arg.item;
     return Scaffold(
       appBar: CustomAppBar(
         title: 'בקשה לשכירת מוצר',
@@ -171,7 +165,7 @@ class _RentalScreenState extends State<RentalScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       image: DecorationImage(
-                        image: NetworkImage(item.imageRef),
+                        image: NetworkImage(widget.args.item.imageRef),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -182,11 +176,11 @@ class _RentalScreenState extends State<RentalScreen> {
                   Column(
                     children: [
                       Text(
-                        item.title,
+                        widget.args.item.title,
                         style: kHeadersTextStyle,
                       ),
                       Text(
-                        getFormattedPrice(item.price),
+                        getFormattedPrice(widget.args.item.price),
                       ),
                     ],
                   )
@@ -255,7 +249,7 @@ class _RentalScreenState extends State<RentalScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text('מקום איסוף:', style: kBlackHeaderTextStyle,),
-                Text(item.location.addressDataToString(), style: kBlackHeaderTextStyle,),
+                Text(widget.args.item.location.addressDataToString(), style: kBlackHeaderTextStyle,),
               ],
             ),
             Align(
