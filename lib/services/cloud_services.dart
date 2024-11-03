@@ -3,17 +3,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/models/message.dart';
 import 'package:rent_app/models/user.dart';
+import 'package:rent_app/screens/chat_screen.dart';
+import 'package:rent_app/screens/chats_screen.dart';
+import 'package:rent_app/screens/pending_requests_screen.dart';
+import 'package:rent_app/screens/user_items_screen.dart';
 import 'package:rent_app/utils.dart';
 import '../models/address_info.dart';
 import '../models/category.dart';
 import '../models/chat.dart';
 import '../models/message_type.dart';
+import '../models/participant_data.dart';
 import '../models/request.dart';
 import '../models/request_status.dart';
 import 'notification_utils.dart';
@@ -243,6 +249,21 @@ Stream<Chat> getChatStream(DocumentReference chatRef) {
   return chatRef.snapshots().map((DocumentSnapshot snapshot) => Chat.fromDocumentSnapshot(snapshot));
 }
 
+Future<Chat> getChatFromChatID(String chatID) async {
+  DocumentSnapshot<Map<String, dynamic>> chatDoc = await _firestore.collection('chats').doc(chatID).get();
+  return Chat.fromDocumentSnapshot(chatDoc);
+}
+
+Future<String> getOtherParticipantName(Chat chat) async {
+  for (String uid in chat.participants.keys) {
+    if (uid != userDetails.userReference.id) {
+      UserDetails otherParticipantUser = await getUserDetailsByUid(uid);
+      return otherParticipantUser.name;
+    }
+  }
+  return '';
+}
+
 //MESSAGES
 
 Stream<Message?> getLastMessageStream(DocumentReference chatRef) {
@@ -367,14 +388,20 @@ void onTokenRefreshed(){
 
 void messagingListenForeground(){
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    if (message.notification != null && !isChatScreenActive) {
-      showNotification(message.notification!.title, message.notification!.body);
+    if (message.notification != null && activeChatId != message.data['chatId']) {
+      // showNotification(message.notification!.title, message.notification!.body, message);
     }
+  });
+}
+
+void onMessageOpenedApp(BuildContext context){
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    handleNotificationTap(context, message.data);
   });
 }
 
 Future<void> messagingHandlerBackground(RemoteMessage message)async{
   if (message.notification != null) {
-    showNotification(message.notification!.title, message.notification!.body);
+    // showNotification(message.notification!.title, message.notification!.body, message);
   }
 }

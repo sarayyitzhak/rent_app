@@ -33,6 +33,19 @@ class _UserItemsScreenState extends State<UserItemsScreen> {
   }
 
   @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final arg = ModalRoute.of(context)!.settings.arguments;
+      if(arg != null){
+        if((arg as UserItemsScreenArguments).showRequests){
+          onOnlyRequestsPressed();
+        }
+      }
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var localization = AppLocalizations.of(context)!;
     return SafeArea(
@@ -72,4 +85,9 @@ class _UserItemsScreenState extends State<UserItemsScreen> {
       ),
     ));
   }
+}
+
+class UserItemsScreenArguments{
+  bool showRequests;
+  UserItemsScreenArguments({this.showRequests = false});
 }

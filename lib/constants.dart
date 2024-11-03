@@ -167,7 +167,7 @@ const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotifi
     importance: Importance.high,
     priority: Priority.high,
     showWhen: false,
-    icon: 'app_icon'
+    icon: 'app_icon',
 );
 
 const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);

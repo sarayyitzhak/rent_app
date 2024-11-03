@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rent_app/constants.dart';
-import 'package:rent_app/main.dart';
-import 'package:rent_app/models/user.dart';
 import 'package:rent_app/screens/chats_screen.dart';
 import 'package:rent_app/screens/search_screen.dart';
 import 'package:rent_app/screens/user_items_screen.dart';
@@ -25,7 +23,7 @@ class _MainScreenState extends State<MainScreen> {
     const HomeScreen(),
     const SearchScreen(),
     const UserItemsScreen(),
-    ChatsScreen(),
+    const ChatsScreen(),
     const UserScreen(),
   ];
 
@@ -46,14 +44,24 @@ class _MainScreenState extends State<MainScreen> {
     requestMicrophonePermission();
     requestNotificationsPermission();
     onTokenRefreshed();
-    messagingListenForeground();
+    // messagingListenForeground();
+    setToken();
+    onMessageOpenedApp(context);
     setToken();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _widgetOptions[_selectedBottomBarIndex],
+      body: PopScope(
+        canPop: _selectedBottomBarIndex == 0,
+        onPopInvokedWithResult: (didPop, result) async {
+          setState(() {
+            _selectedBottomBarIndex = 0;
+          });
+        },
+        child: _widgetOptions[_selectedBottomBarIndex],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(

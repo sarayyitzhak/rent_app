@@ -39,20 +39,14 @@ class _ChatCardState extends State<ChatCard> {
   }
 
   void _fetchOtherParticipantData() async {
-    for (String uid in widget.chat.participants.keys) {
-      if (uid != userDetails.userReference.id) {
-        UserDetails otherParticipantUser = await getUserDetailsByUid(uid);
-        setState(() {
-          _otherParticipantName = otherParticipantUser.name;
-        });
-      }
-    }
+    setState(() async {
+      _otherParticipantName = await getOtherParticipantName(widget.chat);
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
-
     _lastMessageSubscription?.cancel();
   }
 

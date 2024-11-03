@@ -34,7 +34,7 @@ String? userUid;
 late UserDetails userDetails;
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 // late String currentScreen;
-bool isChatScreenActive = false;
+String? activeChatId;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,11 +53,14 @@ void main() async {
       badge: true,
       sound: true,
     );
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('Notification clicked!');
-      // Navigate to the chat screen using the chatId passed in the data payload
-      // Navigator.of(context).pushNamed('/chat', arguments: message.data['chatId']);
-    });
+    // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    //   if(message.data['type'] == 'CHAT'){
+    //     int x = 8;
+    //     Navigator.pushNamed(context, routeName)
+      // } else if(message.data['type'] == 'REQUEST'){
+      //   Navigator.pushNamed(context, UserItemsScreen.id, );
+      // }
+    // });
     FirebaseMessaging.onBackgroundMessage(messagingHandlerBackground);
     FirebaseAppCheck firebaseAppCheck =  await FirebaseAppCheck.instance.activate(
       webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
@@ -68,7 +71,8 @@ void main() async {
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
 
     final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings, onDidReceiveBackgroundNotificationResponse: (details) => print('--------------------------------'),);
+
 
     // await FirebaseAppCheck.instance.activate(
     //   webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
@@ -97,6 +101,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // onNotificationOpenedApp(context);
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -132,6 +137,7 @@ class MyApp extends StatelessWidget {
         };
         return MaterialPageRoute(builder: routes[settings.name]!);
       },
+
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

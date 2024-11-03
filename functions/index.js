@@ -13,6 +13,84 @@ admin.initializeApp();
 const firestore = admin.firestore();
 const messaging = admin.messaging();
 
+exports.requestStatusChanged = functions.firestore
+    .document("requests/{requestId}")
+    .onUpdate((change, context) => {
+      const requestID = context.params.requestId;
+      const requestData = snapshot.data();
+      if (!requestData) {
+        console.log("No request data found");
+        return null;
+      }
+
+      const ownerID = requestData.ownerID;
+      const ownerDoc = await firestore.doc(`users/${ownerID}`).get();
+
+      const applicantID = requestData.applicantID;
+      const applicantDoc = await firestore.doc(`users/${applicantID}`).get();
+
+      if (!ownerDoc.exists || !applicantDoc.exists) {
+        console.log("Owner or applicant does not exist");
+        return null;
+      }
+
+      const ownerData = ownerDoc.data();
+      const applicantData = applicantDoc.data();
+
+      if (!ownerData || !applicantData) {
+        console.log("No owner or applicant data");
+        return null;
+      }
+
+      const ownerName = ownerData.fullName;
+      const ownerToken = ownerData.token;
+      const applicantName = applicantData.fullName;
+      const applicantToken = applicantData.token;
+
+      const itemID = requestData.itemID;
+      const itemDoc = await firestore.doc(`items/${itemID}`).get();
+      if (!itemDoc.exists) {
+        console.log("Item does not exist");
+        return null;
+      }
+      const itemData = itemDoc.data();
+      if (!itemData) {
+        console.log("No item data");
+        return null;
+      }
+      const itemTitle = itemData.title;
+
+      const requestStatus = requestData.status;
+      let statusTitle;
+      if(requestStatus == 1){
+        statusTitle = 'אושרה'
+      }
+      if(requestStatus == 2){
+        statusTitle = 'נדחתה'
+      }
+      const payload = {
+        notification: {
+          title: `הבקשה שלך ${statusTitle}`,
+          body: `הבקשה של ${itemTitle} עודכנה`,
+        },
+        data: {
+          type: "REQUEST_STATUS_CHANGED",
+          requestId: requestID,
+          click_action: "REQUEST_STATUS_CHANGED_NOTIFICATION_CLICK",
+        },
+        token: applicantToken,
+      };
+
+      try {
+        const response = await messaging.send(payload);
+        console.log("Successfully sent notification:", response);
+      } catch (error) {
+        console.error("Error sending notification:", error);
+      }
+      return null;
+
+    });
+
 exports.newRequestNotification = functions.firestore
     .document("requests/{requestId}")
     .onCreate(async (snapshot, context) => {
@@ -63,7 +141,9 @@ exports.newRequestNotification = functions.firestore
           body: `${applicantName} רוצה להשכיר את ה${itemTitle} שלך`,
         },
         data: {
-          chatId: requestID,
+          type: "REQUEST",
+          requestId: requestID,
+          click_action: "REQUEST_NOTIFICATION_CLICK",
         },
         token: ownerToken,
       };
@@ -138,7 +218,9 @@ exports.sendChatNotification = functions.firestore
           body: messageData.text || "You have received a new message",
         },
         data: {
+          type: "CHAT",
           chatId: context.params.chatId,
+          click_action: "CHAT_NOTIFICATION_CLICK",
         },
         token: recipientFCMToken,
       };

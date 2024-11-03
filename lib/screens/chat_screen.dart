@@ -39,12 +39,12 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    isChatScreenActive = true;
 
     setState(() {
       chat = widget.args.chat;
       _personName = widget.args.otherParticipantName;
       _userIndex = chat.participants[userDetails.userReference.id]?.index ?? -1;
+      activeChatId = chat.docRef.id;
     });
 
     _fetchMessages(20);
@@ -129,7 +129,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void dispose() {
     super.dispose();
-    isChatScreenActive = false;
+    activeChatId = null;
     _newMessagesSubscription?.cancel();
   }
 
