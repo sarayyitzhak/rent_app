@@ -61,7 +61,7 @@ class Message {
 }
 
 Message mapAsMessage(Map<String, dynamic> map, DocumentReference? reference){
-  Message message = Message(cloudKey: reference, sender: map['sender'], sentAt: map['sentAt'].toDate(), text: map['text'], type: numToMessageType(map['type']));
+  Message message = Message(cloudKey: reference, sender: map['sender'], sentAt: map['sentAt']?.toDate() ?? DateTime.now(), text: map['text'], type: numToMessageType(map['type']));
   if(map.containsKey('fileRef')){
     message.fileRef = map['fileRef'];
   }
