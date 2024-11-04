@@ -4,20 +4,16 @@ import 'package:rent_app/widgets/request_card.dart';
 import '../models/request.dart';
 
 class ScrollableRequestList extends StatelessWidget {
-  Future<List<ItemRequest>> future;
-  ScrollableRequestList({super.key, required this.future});
+  final Future<List<ItemRequest>> future;
+  const ScrollableRequestList({super.key, required this.future});
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(future: future, builder: (context, snapshot) {
       if (snapshot.hasData) {
-        List<RequestCard> requestCards = [];
-        for (ItemRequest request in snapshot.data!) {
-          requestCards.add(RequestCard(request: request));
-        }
         return Expanded(
           child: ListView(
-            children: requestCards,
+            children: snapshot.data!.map((request) => RequestCard(request: request)).toList(),
           ),
         );
       } else {

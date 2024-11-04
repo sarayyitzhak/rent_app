@@ -39,8 +39,10 @@ class _ChatCardState extends State<ChatCard> {
   }
 
   void _fetchOtherParticipantData() async {
-    setState(() async {
-      _otherParticipantName = await getOtherParticipantName(widget.chat);
+    String otherParticipantName = await getOtherParticipantName(widget.chat);
+
+    setState(() {
+      _otherParticipantName = otherParticipantName;
     });
   }
 
