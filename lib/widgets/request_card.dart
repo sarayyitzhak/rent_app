@@ -3,7 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/models/item.dart';
-import 'package:rent_app/models/request.dart';
+import 'package:rent_app/models/item_request.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import '../constants.dart';
 import '../models/request_status.dart';

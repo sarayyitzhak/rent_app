@@ -13,7 +13,7 @@ class ItemRequest {
   final String _itemID;
   final RequestStatus _status;
   final DateTimeRange _time;
-  final int _finalPrice;
+  final int _price;
   final AddressInfo _pickUpLocation;
   final Timestamp _requestTime;
 
@@ -24,7 +24,7 @@ class ItemRequest {
     required String itemID,
     required RequestStatus status,
     required DateTimeRange time,
-    required int finalPrice,
+    required int price,
     required AddressInfo pickUpLocation,
     required Timestamp requestTime,
   })  : _docRef = docRef,
@@ -33,7 +33,7 @@ class ItemRequest {
         _itemID = itemID,
         _status = status,
         _time = time,
-        _finalPrice = finalPrice,
+        _price = price,
         _pickUpLocation = pickUpLocation,
         _requestTime = requestTime;
 
@@ -43,7 +43,7 @@ class ItemRequest {
   String get itemID => _itemID;
   RequestStatus get status => _status;
   DateTimeRange get time => _time;
-  int get finalPrice => _finalPrice;
+  int get price => _price;
   AddressInfo get pickUpLocation => _pickUpLocation;
   Timestamp get requestTime => _requestTime;
 
@@ -54,7 +54,7 @@ class ItemRequest {
       'itemID': _itemID,
       'status': _status.index,
       'time': {'start': _time.start, 'end': _time.end},
-      'finalPrice': _finalPrice,
+      'price': _price,
       'pickUpLocation': _pickUpLocation.toMap(),
       'requestTime': _requestTime
     };
@@ -72,7 +72,7 @@ class ItemRequest {
       itemID: data['itemID'],
       status: getRequestStatus(data['status']),
       time: DateTimeRange(start: start.toDate(), end: end.toDate()),
-      finalPrice: data['finalPrice'],
+      price: data['price'],
       pickUpLocation: mapToAddressInfo(data['pickUpLocation']),
       requestTime: data['requestTime']
     );

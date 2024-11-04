@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/models/item.dart';
-import 'package:rent_app/models/request.dart';
+import 'package:rent_app/models/item_request.dart';
 import 'package:rent_app/screens/request_submitted_screen.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

@@ -1,14 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/models/user.dart';
 import 'package:rent_app/widgets/item_card.dart';
 import '../models/category.dart';
-import '../models/request.dart';
 import '../utils.dart';
-import '../widgets/request_card.dart';
 import 'cloud_services.dart';
 
 

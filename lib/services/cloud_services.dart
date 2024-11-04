@@ -11,17 +11,12 @@ import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/models/message.dart';
 import 'package:rent_app/models/user.dart';
-import 'package:rent_app/screens/chat_screen.dart';
-import 'package:rent_app/screens/chats_screen.dart';
-import 'package:rent_app/screens/pending_requests_screen.dart';
-import 'package:rent_app/screens/user_items_screen.dart';
 import 'package:rent_app/utils.dart';
 import '../models/address_info.dart';
 import '../models/category.dart';
 import '../models/chat.dart';
 import '../models/message_type.dart';
-import '../models/participant_data.dart';
-import '../models/request.dart';
+import '../models/item_request.dart';
 import '../models/request_status.dart';
 import 'notification_utils.dart';
 
@@ -181,7 +176,7 @@ void addRequest(Item item, DateTimeRange range){
       'start': range.start,
       'end': range.end
     },
-    'finalPrice': item.price,
+    'price': item.price,
     'pickUpLocation': item.location.toMap(),
     'requestTime': FieldValue.serverTimestamp()
   });
