@@ -18,7 +18,7 @@ class PendingRequestsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ScrollableRequestList(future: getPendingRequestsStream(), localization: localization, isMyRequest: true,),
+            ScrollableRequestList(future: getPendingRequestsStream()),
           ],
         ),
       ),

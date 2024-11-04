@@ -72,7 +72,7 @@ class _UserItemsScreenState extends State<UserItemsScreen> {
               child: DynamicScrollableItemGrid(
             stream: getUserItemsStream(),
           ))
-          : Expanded(child: ScrollableRequestList(future: getUserRequestsStream(), localization: localization, isMyRequest: false,),),
+          : Expanded(child: ScrollableRequestList(future: getUserRequestsStream())),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: CustomButton(

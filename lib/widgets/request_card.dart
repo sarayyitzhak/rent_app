@@ -1,5 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:rent_app/main.dart';
+import 'package:rent_app/models/item.dart';
 import 'package:rent_app/models/request.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import '../constants.dart';
@@ -7,10 +10,9 @@ import '../models/request_status.dart';
 import '../utils.dart';
 
 class RequestCard extends StatefulWidget {
-  final AppLocalizations localization;
-  final bool isMyRequest;
   final ItemRequest request;
-  const RequestCard({super.key, required this.localization, required this.isMyRequest, required this.request});
+
+  const RequestCard({super.key, required this.request});
 
   @override
   State<RequestCard> createState() => _RequestCardState();
@@ -18,12 +20,15 @@ class RequestCard extends StatefulWidget {
 
 class _RequestCardState extends State<RequestCard> {
 
-  ElevatedButton createStatusButton(String title, RequestStatus status, Color color){
+  Item? _item;
+  RequestStatus? _status;
+
+  ElevatedButton createStatusButton(String title, RequestStatus status, Color color) {
     return ElevatedButton(
       onPressed: () {
         setState(() {
-          widget.request.status = status;
-          updateRequestStatus(widget.request);
+          _status = status;
+          updateRequestStatus(widget.request.docRef, status);
         });
       },
       child: Text(title),
@@ -35,33 +40,55 @@ class _RequestCardState extends State<RequestCard> {
     );
   }
 
+  void fetchData() async {
+    Item? item = await getItemById(widget.request.itemID);
+
+    setState(() {
+      _item = item;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _status = widget.request.status;
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return widget.request.item != null
-        ? Container(
+    var localization = AppLocalizations.of(context)!;
+    return Container(
       height: 100,
+      margin: const EdgeInsets.all(5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Container(
-                height: 70,
-                width: 70,
-                margin: const EdgeInsets.symmetric(horizontal: 5),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    widget.request.item!.imageRef,
-                    fit: BoxFit.cover,
+              CachedNetworkImage(
+                width: 100,
+                height: 100,
+                imageUrl: _item?.imageRef ?? '',
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+                imageBuilder: (context, imageProvider) => Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
+              const SizedBox(width: 10),
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.request.item!.title,
+                    _item?.title ?? '',
                     style: kBlackHeaderTextStyle,
                   ),
                   Text(
@@ -73,20 +100,22 @@ class _RequestCardState extends State<RequestCard> {
             ],
           ),
           Padding(
-              padding: const EdgeInsets.all(10),
-              child: widget.isMyRequest || widget.request.status != RequestStatus.WAITING
-                  ? Text(widget.request.status.getTitle(widget.localization))
-                  : Row(
-                children: [
-                  createStatusButton(widget.localization.accept, RequestStatus.APPROVED, Colors.green),
-                  const SizedBox(width: 5),
-                  createStatusButton(widget.localization.reject, RequestStatus.REJECTED, Colors.red)
-                ],
-              ),
+            padding: const EdgeInsets.all(10),
+            child: widget.request.applicantID == userDetails.userReference.id ||
+                    _status != RequestStatus.WAITING
+                ? Text(_status!.getTitle(localization))
+                : Row(
+                    children: [
+                      createStatusButton(localization.accept,
+                          RequestStatus.APPROVED, Colors.green),
+                      const SizedBox(width: 5),
+                      createStatusButton(localization.reject,
+                          RequestStatus.REJECTED, Colors.red)
+                    ],
+                  ),
           ),
         ],
       ),
-    )
-        : Container();
+    );
   }
 }

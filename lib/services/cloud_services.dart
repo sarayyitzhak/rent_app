@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rent_app/main.dart';
@@ -145,8 +146,20 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getUserItemsStream() {
 }
 
 //REQUESTS
-Future<QuerySnapshot<Map<String, dynamic>>> getUserRequestsStream() {
-  return _firestore.collection('requests').where('ownerID', isEqualTo: userDetails.userReference.id).orderBy('requestTime', descending: true).get();
+Future<List<ItemRequest>> getUserRequestsStream() {
+  return _firestore.collection('requests')
+      .where('ownerID', isEqualTo: userDetails.userReference.id)
+      .orderBy('requestTime', descending: true)
+      .get()
+      .then((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => ItemRequest.fromDocumentSnapshot(snapshot)).toList());
+}
+
+Future<List<ItemRequest>> getPendingRequestsStream() {
+  return _firestore.collection('requests')
+      .where('applicantID', isEqualTo: userDetails.userReference.id)
+      .orderBy('requestTime', descending: true)
+      .get()
+      .then((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => ItemRequest.fromDocumentSnapshot(snapshot)).toList());
 }
 
 Stream<List<ItemRequest>> getFutureItemRequestsStream(DocumentReference itemRef) {
@@ -155,32 +168,27 @@ Stream<List<ItemRequest>> getFutureItemRequestsStream(DocumentReference itemRef)
       .where('time.end', isGreaterThan: Timestamp.now())
       .where('status', isNotEqualTo: RequestStatus.REJECTED.index)
       .snapshots()
-      .map((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => mapToItemRequest(snapshot.data() as Map<String, dynamic>, snapshot.id)).toList());
+      .map((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => ItemRequest.fromDocumentSnapshot(snapshot)).toList());
 }
 
-void addRequest(ItemRequest request){
-  _firestore.collection('requests').add(request.toMap());
+void addRequest(Item item, DateTimeRange range){
+  _firestore.collection('requests').add({
+    'ownerID': item.contactUser.id,
+    'applicantID': userDetails.userReference.id,
+    'itemID': item.itemReference.id,
+    'status': RequestStatus.WAITING.index,
+    'time': {
+      'start': range.start,
+      'end': range.end
+    },
+    'finalPrice': item.price,
+    'pickUpLocation': item.location.toMap(),
+    'requestTime': FieldValue.serverTimestamp()
+  });
 }
 
-void updateRequestStatus(ItemRequest request){
-  _firestore.collection('requests').doc(request.cloudKey).update(request.toMap());
-}
-
-Future<List<ItemRequest>> getRequestsByFuture(Future<QuerySnapshot<Map<String, dynamic>>> future) async {
-  List<ItemRequest> requests = [];
-  var requestDocs = await future;
-  for(var requestDoc in requestDocs.docs){
-    ItemRequest request = mapToItemRequest(requestDoc.data(), requestDoc.id);
-    var itemRef = _firestore.collection('items').doc(request.itemID);
-    var itemDoc = await itemRef.get();
-    request.item = mapAsItem(itemDoc.data()!, itemRef);
-    requests.add(request);
-  }
-  return requests;
-}
-
-Future<QuerySnapshot<Map<String, dynamic>>> getPendingRequestsStream() {
-  return _firestore.collection('requests').where('applicantID', isEqualTo: userDetails.userReference.id).get();
+void updateRequestStatus(DocumentReference docRef, RequestStatus status){
+  docRef.update({'status': status.index});
 }
 
 //CHATS

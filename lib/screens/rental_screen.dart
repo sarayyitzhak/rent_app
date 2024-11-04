@@ -38,7 +38,6 @@ class _RentalScreenState extends State<RentalScreen> {
   StreamSubscription? _itemRequestsSubscription;
 
   void onSendRequestPressed(){
-    //TODO: send notification
     DateTimeRange? dateTimeRange = _getDateTimeRange();
     if (dateTimeRange == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -47,8 +46,7 @@ class _RentalScreenState extends State<RentalScreen> {
       return;
     }
 
-    ItemRequest request = ItemRequest(ownerID: widget.args.item.contactUser.id, applicantID: userDetails.userReference.id, itemID: widget.args.item.itemReference.id, status: RequestStatus.WAITING, time: dateTimeRange, finalPrice: totalPrice, pickUpLocation: widget.args.item.location, requestTime: Timestamp.now());
-    addRequest(request);
+    addRequest(widget.args.item, dateTimeRange);
     Navigator.pushNamed(context, RequestSubmittedScreen.id);
   }
 

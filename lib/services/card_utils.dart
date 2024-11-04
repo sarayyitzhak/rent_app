@@ -69,17 +69,3 @@ List<ItemCard> getItemsByStream(dynamic items, bool isHorizontal){
   }
   return getItemCards(itemsList, isHorizontal);
 }
-
-//REQUEST CARDS
-List<RequestCard> _getRequestCards(List<ItemRequest> requests, bool isMyRequest, var localization) {
-  List<RequestCard> requestCards = [];
-  for (ItemRequest request in requests) {
-    requestCards.add(RequestCard(request: request, isMyRequest: isMyRequest, localization: localization));
-  }
-  return requestCards;
-}
-
-Future<List<RequestCard>> getPendingRequests(Future<QuerySnapshot<Map<String, dynamic>>> future, bool isMyRequest, var localization) async {
-  List<ItemRequest> requests = await getRequestsByFuture(future);
-  return _getRequestCards(requests, isMyRequest, localization);
-}
