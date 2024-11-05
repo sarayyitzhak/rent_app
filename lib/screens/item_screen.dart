@@ -56,12 +56,9 @@ class ItemScreen extends StatelessWidget {
     var localization = AppLocalizations.of(context)!;
     double rate = 0;
     TextEditingController commentController = TextEditingController();
-    if (userDetails.userReference != item.contactUser && !userDetails.seen.contains(item.itemReference)) {
-      item.itemReference.update({'seenCount': FieldValue.increment(1)});
-      userDetails.userReference.update({
-        'seen': FieldValue.arrayUnion([item.itemReference])
-      });
-      userDetails.seen.add(item.itemReference);
+
+    if (userDetails.userReference != item.contactUser) {
+      updateUserItemSeen(item.itemReference);
     }
 
     return Scaffold(

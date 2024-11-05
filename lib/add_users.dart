@@ -202,7 +202,6 @@ Future<void> onRegisterButtonPressed(int idx) async {
       phoneNumber: int.parse('54808825$idx'),
       items: [],
       wishlist: [],
-      seen: [],
       chats: [],
   );
   _messaging.getToken().then((String? token) {

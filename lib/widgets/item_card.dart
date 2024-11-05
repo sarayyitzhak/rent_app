@@ -21,7 +21,7 @@ class ItemCard extends StatelessWidget {
       onTap: () => Navigator.pushNamed(context, ItemScreen.id, arguments: ItemScreenArguments(item, isMine)),
       child: Card(
         elevation: 5,
-        margin: isHorizontal ? const EdgeInsets.all(5) : null,
+        margin: isHorizontal ? const EdgeInsets.symmetric(horizontal: 5, vertical: 10) : null,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),

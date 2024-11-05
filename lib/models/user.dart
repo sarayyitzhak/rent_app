@@ -8,7 +8,6 @@ class UserDetails {
   late int _phoneNumber;
   late List _items;
   late List _wishlist;
-  late List _seen;
   late List _chats;
   String? _token;
 
@@ -19,7 +18,6 @@ class UserDetails {
     required int phoneNumber,
     required List items,
     required List wishlist,
-    required List seen,
     required List chats,
     String? token,
   })  : _userReference = userReference,
@@ -28,7 +26,6 @@ class UserDetails {
         _phoneNumber = phoneNumber,
         _items = items,
         _wishlist = wishlist,
-        _seen = seen,
         _chats = chats,
         _token = token;
 
@@ -38,7 +35,6 @@ class UserDetails {
   int get phoneNumber => _phoneNumber;
   List get items => _items;
   List get wishlist => _wishlist;
-  List get seen => _seen;
   List get chats => _chats;
   String? get token => _token;
 
@@ -46,7 +42,6 @@ class UserDetails {
   set phoneNumber(int value) => _phoneNumber = value;
   set items(List value) => _items = value;
   set wishlist(List value) => _wishlist = value;
-  set seen(List value) => _seen = value;
   set chats(List value) => _chats = value;
   set token(String? value) => _token = value;
 
@@ -58,7 +53,6 @@ class UserDetails {
       'phoneNumber': _phoneNumber,
       'items': _items,
       'wishlist': _wishlist,
-      'seen': _seen,
       'chats': _chats,
       'token': _token,
     };
@@ -68,5 +62,5 @@ class UserDetails {
 UserDetails mapAsUser(Map<String, dynamic> map){
   final firestore = FirebaseFirestore.instance;
   DocumentReference userReference = firestore.collection('users').doc(userUid);
-  return UserDetails(userReference: userReference, name: map['fullName'], email: map['email'], phoneNumber: map['phoneNumber'], items: map['items'], wishlist: map['wishlist'], seen: map['seen'] ?? List.empty(), chats: map['chats'], token: map['token']);
+  return UserDetails(userReference: userReference, name: map['fullName'], email: map['email'], phoneNumber: map['phoneNumber'], items: map['items'], wishlist: map['wishlist'], chats: map['chats'], token: map['token']);
 }

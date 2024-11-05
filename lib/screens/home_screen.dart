@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rent_app/models/item.dart';
 import 'package:rent_app/screens/pending_requests_screen.dart';
-import 'package:rent_app/utils.dart';
+import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/reusable_card.dart';
-import '../add_users.dart';
 import '../constants.dart';
 import 'package:rent_app/models/category.dart';
-import '../main.dart';
 import '../services/card_utils.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+
+import '../widgets/item_card.dart';
 
 Position? currentPosition;
 String? cityName;
@@ -240,15 +241,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(
                       height: 250,
                       child: FutureBuilder(
-                          future: getUserItemsLastSeen(userDetails, true, true),
+                          future: getUserSeenItems(),
                           builder: (context, snapshot) {
-                            if (snapshot.hasData &&
-                                snapshot.data != null &&
-                                snapshot.data!.isNotEmpty) {
-                              List? itemCards = snapshot.data;
+                            if (snapshot.hasData) {
+                              List<Item> items = snapshot.data!;
                               return ListView(
                                 scrollDirection: Axis.horizontal,
-                                children: itemCards as List<Widget>,
+                                children: items.map((Item item) => ItemCard(item: item, isHorizontal: true)).toList(),
                               );
                             } else {
                               return Container();

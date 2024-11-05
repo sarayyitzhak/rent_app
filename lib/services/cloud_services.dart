@@ -387,7 +387,6 @@ Future<void> createNewUser(String email, String password, String name, String ph
       phoneNumber: int.parse(phoneNumber),
       items: [],
       wishlist: [],
-      seen: [],
       chats: []
   );
   setToken();
@@ -407,6 +406,36 @@ Future<UserDetails> getItemContactUser(Item item) async {
   var contactUserDoc = await item.contactUser.get();
   Map<String, dynamic>? contactUserData = contactUserDoc.data() as Map<String, dynamic>?;
   return mapAsUser(contactUserData!);
+}
+
+Future<List<Item>> getUserSeenItems() async {
+  List<String> itemIds = await userDetails.userReference.collection('seen')
+    .orderBy('seenTime', descending: true)
+    .limit(20)
+    .get()
+    .then((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => snapshot.id).toList());
+
+  List<Item> items = await _firestore.collection('items')
+      .where(FieldPath.documentId, whereIn: itemIds)
+      .get()
+      .then((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => mapAsItem(snapshot.data() as Map<String, dynamic>, snapshot.reference)).toList());
+  
+  Map<String, Item> itemMap = { for (Item item in items) item.itemReference.id : item };
+
+  List<Item?> list = itemIds.map((String id) => itemMap[id]).toList();
+  list.removeWhere((item) => item == null);
+
+  return list.cast<Item>();
+}
+
+Future<void> updateUserItemSeen(DocumentReference itemRef) async {
+  var batch = _firestore.batch();
+  DocumentSnapshot snapshot = await userDetails.userReference.collection('seen').doc(itemRef.id).get();
+  if (!snapshot.exists) {
+    batch.update(itemRef, {'seenCount': FieldValue.increment(1)});
+  }
+  batch.set(userDetails.userReference.collection('seen').doc(itemRef.id), {'seenTime': FieldValue.serverTimestamp()});
+  return batch.commit();
 }
 
 //Messaging
