@@ -70,6 +70,7 @@ dependencies:
   date_picker_plus: ^4.1.0
   flutter_local_notifications: ^17.2.3
   syncfusion_flutter_datepicker: ^27.1.57
+  flutter_rating_stars: ^1.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

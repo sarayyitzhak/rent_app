@@ -46,7 +46,7 @@ Future<void> createNewItem(File? image, String title, String price, AddressInfo 
       categories: categories,
       createdAt: Timestamp.now(),
       likesCount: 0,
-      seenCount: 0
+      seenCount: 0,
   );
   itemDoc.set(newItem.itemToMap());
 
@@ -322,6 +322,34 @@ Future<QuerySnapshot> getHistoricalMessages(DocumentReference chatRef, int limit
 Stream<QuerySnapshot<Map<String, dynamic>>> getNewMessagesStream(DocumentReference chatRef) {
   return chatRef.collection('messages').orderBy('sentAt').where('sentAt', isGreaterThan: DateTime.now()).snapshots();
 }
+
+//REVIEWS
+
+void addItemReview(DocumentReference itemRef, int rate, String text) {
+  WriteBatch batch = _firestore.batch();
+  batch.set(itemRef.collection('reviews').doc(), {
+    'userID': userDetails.userReference.id,
+    'rate': rate,
+    'text': text,
+    'createdAt': FieldValue.serverTimestamp()
+  });
+  batch.update(itemRef, {'reviewCount': FieldValue.increment(1), 'rateSum': FieldValue.increment(rate)});
+  batch.commit();
+}
+
+// Future<void> addRateField() async {
+//   var snapshot = await _firestore.collection('items').get();
+//   WriteBatch batch = _firestore.batch();
+//   for (var doc in snapshot.docs) {
+//     batch.update(doc.reference, {'rate': 0});
+//   }
+//   try {
+//     await batch.commit();
+//     print('All documents updated successfully!');
+//   } catch (e) {
+//     print('Error updating documents: $e');
+//   }
+// }
 
 //AUTH
 

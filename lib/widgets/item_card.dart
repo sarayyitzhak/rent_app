@@ -67,10 +67,20 @@ class ItemCard extends StatelessWidget {
                       item.title,
                       style: kBlackHeaderTextStyle,
                     ),
-                    const Text(
-                      '9.8',
-                      style: kSmallBlackTextStyle,
-                    ),
+                    item.getRate() != null
+                        ? Row(
+                            children: [
+                              Icon(
+                                Icons.star_rounded,
+                                color: kActiveButtonColor,
+                              ),
+                              Text(
+                                item.getRate()!.toStringAsFixed(1),
+                                style: kSmallBlackTextStyle,
+                              ),
+                            ],
+                          )
+                        : Container(),
                   ],
                 ),
               ), //description

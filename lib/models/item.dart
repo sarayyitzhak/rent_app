@@ -17,6 +17,8 @@ class Item {
   final Timestamp _createdAt;
   int _likesCount;
   int _seenCount;
+  int? _reviewCount;
+  int? _rateSum;
 
   // Constructor
   Item({
@@ -32,6 +34,8 @@ class Item {
     required Timestamp createdAt,
     required int likesCount,
     required int seenCount,
+    int? reviewCount,
+    int? rateSum,
   })  : _itemReference = itemReference,
         _contactUser = contactUser,
         _imageRef = imageRef,
@@ -43,7 +47,9 @@ class Item {
         _categories = categories,
         _createdAt = createdAt,
         _likesCount = likesCount,
-        _seenCount = seenCount;
+        _seenCount = seenCount,
+        _reviewCount = reviewCount,
+        _rateSum = rateSum;
 
   DocumentReference get itemReference => _itemReference;
   DocumentReference get contactUser => _contactUser;
@@ -54,9 +60,12 @@ class Item {
   String get description => _description;
   Condition get condition => _condition;
   List<dynamic> get categories => _categories;
+
   Timestamp get createdAt => _createdAt;
   int get likesCount => _likesCount;
   int get seenCount => _seenCount;
+  int? get reviewCount => _reviewCount;
+  int? get rateSum => _rateSum;
 
   set imageRef(String value) => _imageRef = value;
   set likesCount(int value) => _likesCount = value;
@@ -67,6 +76,12 @@ class Item {
   set title(String value) => _title = value;
   set condition(Condition value) => _condition = value;
   set categories(List<dynamic> value) => _categories = value;
+  set reviewCount(int? value) => _reviewCount = value;
+  set rateSum(int? value) => _rateSum = value;
+
+  double? getRate(){
+    return reviewCount != null ? (rateSum! / reviewCount!) : null;
+  }
 
   Map<String, dynamic> itemToMap() {
     return {
@@ -81,6 +96,8 @@ class Item {
       'createdAt': _createdAt,
       'likesCount': _likesCount,
       'seenCount': _seenCount,
+      'reviewCount': _reviewCount,
+      'rateSum': _rateSum
     };
   }
 }
@@ -106,5 +123,8 @@ Item mapAsItem(Map<String, dynamic> map, DocumentReference itemRef) {
     createdAt: map['createdAt'],
     likesCount: map['likesCount'],
     seenCount: map['seenCount'],
+    reviewCount: map['reviewCount'],
+    rateSum: map['rateSum']
   );
+
 }

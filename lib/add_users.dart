@@ -239,7 +239,7 @@ Future<void> onRegisterButtonPressed(int idx) async {
         categories: [categories[j]],
         createdAt: Timestamp.now(),
         likesCount: 0,
-        seenCount: 0
+        seenCount: 0,
     );
     newItem.imageRef = imageDownloadUrl;
     itemDoc.set(newItem.itemToMap());
