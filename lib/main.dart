@@ -8,6 +8,7 @@ import 'package:rent_app/screens/item_screen.dart';
 import 'package:rent_app/screens/pending_requests_screen.dart';
 import 'package:rent_app/screens/profile_screen.dart';
 import 'package:rent_app/screens/rental_screen.dart';
+import 'package:rent_app/screens/request_screen.dart';
 import 'package:rent_app/screens/request_submitted_screen.dart';
 import 'package:rent_app/screens/search_result_screen.dart';
 import 'package:rent_app/screens/search_screen.dart';
@@ -124,7 +125,7 @@ class MyApp extends StatelessWidget {
           UserItemsScreen.id: (context) => const UserItemsScreen(),
           AddItemScreen.id: (context) => AddItemScreen(settings.arguments as AddItemScreenArguments),
           ItemScreen.id: (context) => ItemScreen(settings.arguments as ItemScreenArguments),
-          RentalScreen.id: (context) => RentalScreen(settings.arguments as RentalScreenArgument),
+          RentalScreen.id: (context) => RentalScreen(settings.arguments as RentalScreenArguments),
           RequestSubmittedScreen.id: (context) => const RequestSubmittedScreen(),
           PendingRequestsScreen.id: (context) => const PendingRequestsScreen(),
           WishlistScreen.id: (context) => const WishlistScreen(),
@@ -134,6 +135,7 @@ class MyApp extends StatelessWidget {
           SearchResultScreen.id: (context) => SearchResultScreen(settings.arguments as SearchResultScreenArguments),
           CategoryScreen.id: (context) => CategoryScreen(settings.arguments as CategoryScreenArguments),
           ProfileScreen.id: (context) => const ProfileScreen(),
+          RequestScreen.id: (context) => RequestScreen(settings.arguments as RequestScreenArguments),
         };
         return MaterialPageRoute(builder: routes[settings.name]!);
       },

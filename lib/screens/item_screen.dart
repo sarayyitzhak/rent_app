@@ -195,7 +195,7 @@ class ItemScreen extends StatelessWidget {
                           title: args.isMe ? localization.edit : localization.rentItem,
                           onPress: args.isMe
                               ? () => Navigator.pushNamed(context, AddItemScreen.id, arguments: AddItemScreenArguments(item: item, isEditMode: true))
-                              : () => Navigator.pushNamed(context, RentalScreen.id, arguments: RentalScreenArgument(item: item)),
+                              : () => Navigator.pushNamed(context, RentalScreen.id, arguments: RentalScreenArguments(item: item)),
                       )
                   ),
                 ],

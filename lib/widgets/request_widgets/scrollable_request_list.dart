@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:rent_app/widgets/request_card.dart';
-import '../models/item_request.dart';
+import 'package:rent_app/widgets/request_widgets/request_card.dart';
+import '../../models/item_request.dart';
 
 class ScrollableRequestList extends StatelessWidget {
   final Future<List<ItemRequest>> future;

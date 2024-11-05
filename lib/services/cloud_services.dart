@@ -166,6 +166,21 @@ Stream<List<ItemRequest>> getFutureItemRequestsStream(DocumentReference itemRef)
       .map((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => ItemRequest.fromDocumentSnapshot(snapshot)).toList());
 }
 
+Future<List<ItemRequest>> getFutureItemRequests(String itemID) {
+  return _firestore.collection('requests')
+      .where('itemID', isEqualTo: itemID)
+      .where('time.end', isGreaterThan: Timestamp.now())
+      .where('status', isNotEqualTo: RequestStatus.REJECTED.index)
+      .get()
+      .then((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => ItemRequest.fromDocumentSnapshot(snapshot)).toList());
+}
+
+Stream<ItemRequest> getItemRequestStream(DocumentReference docRef) {
+  return docRef
+      .snapshots()
+      .map((DocumentSnapshot snapshot) => ItemRequest.fromDocumentSnapshot(snapshot));
+}
+
 void addRequest(Item item, DateTimeRange range){
   _firestore.collection('requests').add({
     'ownerID': item.contactUser.id,
@@ -184,6 +199,22 @@ void addRequest(Item item, DateTimeRange range){
 
 void updateRequestStatus(DocumentReference docRef, RequestStatus status){
   docRef.update({'status': status.index});
+}
+
+void updateExtensionRequest(DocumentReference docRef, DateTime toDate) {
+  docRef.update({'extensionRequest': {
+    'toDate': toDate,
+    'status': RequestStatus.WAITING.index,
+    'requestTime': FieldValue.serverTimestamp()
+  }});
+}
+
+void removeExtensionRequest(DocumentReference docRef) {
+  docRef.update({'extensionRequest': null});
+}
+
+void deleteRequest(DocumentReference docRef) {
+  docRef.delete();
 }
 
 //CHATS

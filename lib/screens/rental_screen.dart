@@ -21,7 +21,7 @@ import '../utils.dart';
 class RentalScreen extends StatefulWidget {
   static String id = 'rental_screen';
 
-  final RentalScreenArgument args;
+  final RentalScreenArguments args;
   const RentalScreen(this.args, {super.key});
 
   @override
@@ -98,16 +98,16 @@ class _RentalScreenState extends State<RentalScreen> {
       List<DateTime> waitingDates = [];
 
       for (ItemRequest itemRequest in itemRequests) {
-        DateTime currentDate = itemRequest.time.start;
+        if (itemRequest.status == RequestStatus.WAITING) {
+          waitingDates.addAll(getDateList(itemRequest.time));
+        } else if (itemRequest.status == RequestStatus.APPROVED) {
+          blackoutDates.addAll(getDateList(itemRequest.time));
 
-        while (!itemRequest.time.end.isBefore(currentDate)) {
-          if (itemRequest.status == RequestStatus.APPROVED) {
-            blackoutDates.add(currentDate);
+          if (itemRequest.extensionRequest != null && itemRequest.extensionRequest!.status == RequestStatus.WAITING) {
+            var start = itemRequest.time.end.add(const Duration(days: 1));
+            var end = itemRequest.extensionRequest!.toDate;
+            waitingDates.addAll(getDateList(DateTimeRange(start: start, end: end)));
           }
-          if (itemRequest.status == RequestStatus.WAITING) {
-            waitingDates.add(currentDate);
-          }
-          currentDate = currentDate.add(Duration(days: 1));
         }
       }
 
@@ -261,7 +261,7 @@ class _RentalScreenState extends State<RentalScreen> {
   }
 }
 
-class RentalScreenArgument {
+class RentalScreenArguments {
   Item item;
-  RentalScreenArgument({required this.item});
+  RentalScreenArguments({required this.item});
 }

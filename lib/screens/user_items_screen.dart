@@ -5,7 +5,7 @@ import 'package:rent_app/screens/add_item_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:rent_app/widgets/custom_button.dart';
-import 'package:rent_app/widgets/scrollable_request_list.dart';
+import 'package:rent_app/widgets/request_widgets/scrollable_request_list.dart';
 import '../services/cloud_services.dart';
 import '../widgets/dynamic_scrollable_item_grid.dart';
 
