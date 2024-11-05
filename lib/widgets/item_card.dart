@@ -8,96 +8,93 @@ import '../constants.dart';
 import '../models/item.dart';
 import '../utils.dart';
 
-class IsInWishlist{
-  bool value;
-  IsInWishlist(this.value);
-}
-
 class ItemCard extends StatelessWidget {
   final Item item;
-  bool isHorizontal;
-  ItemCard({super.key, required this.item, this.isHorizontal = false});
-  late bool isMine;
+  final bool isHorizontal;
+
+  const ItemCard({super.key, required this.item, this.isHorizontal = false});
 
   @override
   Widget build(BuildContext context) {
-    isMine = item.contactUser == userDetails.userReference;
+    bool isMine = item.contactUser == userDetails.userReference;
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, ItemScreen.id,
-          arguments: ItemScreenArguments(item, isMine)),
-      child: Container(
-        width: isHorizontal ? 200 : null,
+      onTap: () => Navigator.pushNamed(context, ItemScreen.id, arguments: ItemScreenArguments(item, isMine)),
+      child: Card(
+        elevation: 5,
         margin: isHorizontal ? const EdgeInsets.all(5) : null,
-        padding: const EdgeInsets.all(5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Center(
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: CachedNetworkImage(
-                    imageUrl: item.imageRef,
-                    placeholder: (context, url) => const CircularProgressIndicator(color: kPastelYellow,),
-                    errorWidget: (context, url, error) => const Icon(Icons.error),
-                    imageBuilder: (context, imageProvider) => Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        image: DecorationImage(
-                            image: imageProvider,
-                            scale: isHorizontal ? 0.5 : 1.0,
-                            fit: BoxFit.cover),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: SizedBox(
+          width: isHorizontal ? 200 : null,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Stack(
+                  children: [
+                    CachedNetworkImage(
+                      imageUrl: item.imageRef,
+                      placeholder: (context, url) => const CircularProgressIndicator(
+                        color: kPastelYellow,
                       ),
-
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                      imageBuilder: (context, imageProvider) => Container(
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                          image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                        ),
+                      ),
                     ),
-                  ),
+                    !isMine
+                        ? PositionedDirectional(
+                            top: 8,
+                            end: 8,
+                            child: WishlistIconButton(
+                              item: item,
+                            ),
+                          )
+                        : Container(),
+                  ],
                 ),
               ),
-            ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  item.title,
-                  style: kBlackHeaderTextStyle,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      item.title,
+                      style: kBlackHeaderTextStyle,
+                    ),
+                    const Text(
+                      '9.8',
+                      style: kSmallBlackTextStyle,
+                    ),
+                  ],
                 ),
-                const Text(
-                  '9.8',
+              ), //description
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  item.location.addressDataToString(),
                   style: kSmallBlackTextStyle,
                 ),
-              ],
-            ), //description
-            Text(
-              item.location.addressDataToString(),
-              style: kSmallBlackTextStyle,
-            ), //place
-            const Divider(
-              color: kPastelYellow,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
+              ), //place
+              const Divider(
+                color: kPastelYellow,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
                   getFormattedPrice(item.price),
                   style: kHeadersTextStyle,
-                ), //price
-                Container(
-                  child: isMine ? null : Row(
-                    children: [
-                      WishlistIconButton(item: item,),
-                      ChatIconButton(item: item,),
-                    ],
-                  ),
-                )
-              ],
-            )
-          ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
   }
 }
-

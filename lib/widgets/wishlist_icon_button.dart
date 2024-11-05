@@ -6,6 +6,7 @@ import '../models/item.dart';
 
 class WishlistIconButton extends StatefulWidget {
   Item item;
+
   WishlistIconButton({super.key, required this.item});
 
   @override
@@ -20,30 +21,26 @@ class _WishlistIconButtonState extends State<WishlistIconButton> {
         padding: const EdgeInsets.symmetric(horizontal: 3),
         constraints: const BoxConstraints(),
         style: const ButtonStyle(
-          tapTargetSize: MaterialTapTargetSize
-              .shrinkWrap, // the '2023' part
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap, // the '2023' part
         ),
         onPressed: () {
           setState(() {
-            if(isIn){
-              isIn = false;
+            if (isIn) {
               userDetails.wishlist.remove(widget.item.itemReference);
-              userDetails.userReference.update({'wishlist': FieldValue.arrayRemove([widget.item.itemReference])});
+              userDetails.userReference.update({
+                'wishlist': FieldValue.arrayRemove([widget.item.itemReference])
+              });
               widget.item.itemReference.update({'likesCount': FieldValue.increment(-1)});
             } else {
-              isIn = true;
               userDetails.wishlist.add(widget.item.itemReference);
-              userDetails.userReference.update({'wishlist': FieldValue.arrayUnion([widget.item.itemReference])});
+              userDetails.userReference.update({
+                'wishlist': FieldValue.arrayUnion([widget.item.itemReference])
+              });
               widget.item.itemReference.update({'likesCount': FieldValue.increment(1)});
             }
+            isIn = !isIn;
           });
-
         },
-        icon: CircleAvatar(
-          radius: kIconRadius,
-          backgroundColor: isIn ? Colors.pink.shade200 : kActiveButtonColor,
-          child: const Icon(Icons.favorite, size: 15, color: kWhiteColor,/*color: isIn ? kActiveButtonColor : kWhiteColor,*/),
-        ));
+        icon: Icon(isIn ? Icons.favorite : Icons.favorite_outline, size: 25, color: isIn ? Colors.red : Colors.white));
   }
 }
-
