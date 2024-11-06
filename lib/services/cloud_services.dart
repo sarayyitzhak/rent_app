@@ -11,6 +11,7 @@ import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/models/message.dart';
 import 'package:rent_app/models/user.dart';
+import 'package:rent_app/services/query_batch.dart';
 import 'package:rent_app/utils.dart';
 import '../models/address_info.dart';
 import '../models/category.dart';
@@ -408,24 +409,33 @@ Future<UserDetails> getItemContactUser(Item item) async {
   return mapAsUser(contactUserData!);
 }
 
-Future<List<Item>> getUserSeenItems() async {
-  List<String> itemIds = await userDetails.userReference.collection('seen')
-    .orderBy('seenTime', descending: true)
-    .limit(20)
-    .get()
-    .then((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => snapshot.id).toList());
+Future<QueryBatch<Item>> getUserSeenItems([DocumentSnapshot? startAfterDoc]) {
+  Query query = userDetails.userReference.collection('seen').orderBy('seenTime', descending: true).limit(20);
 
-  List<Item> items = await _firestore.collection('items')
-      .where(FieldPath.documentId, whereIn: itemIds)
-      .get()
-      .then((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => mapAsItem(snapshot.data() as Map<String, dynamic>, snapshot.reference)).toList());
-  
-  Map<String, Item> itemMap = { for (Item item in items) item.itemReference.id : item };
+  if (startAfterDoc != null) {
+    query = query.startAfterDocument(startAfterDoc);
+  }
 
-  List<Item?> list = itemIds.map((String id) => itemMap[id]).toList();
-  list.removeWhere((item) => item == null);
+  return query.get().then((QuerySnapshot itemIdsQuery) {
+    List<String> itemIds = itemIdsQuery.docs.map((QueryDocumentSnapshot snapshot) => snapshot.id).toList();
 
-  return list.cast<Item>();
+    return _firestore
+        .collection('items')
+        .where(FieldPath.documentId, whereIn: itemIds)
+        .get()
+        .then((QuerySnapshot itemsQuery) {
+      List<Item> items = itemsQuery.docs
+          .map((QueryDocumentSnapshot snapshot) => mapAsItem(snapshot.data() as Map<String, dynamic>, snapshot.reference))
+          .toList();
+
+      Map<String, Item> itemMap = {for (Item item in items) item.itemReference.id: item};
+
+      List<Item?> list = itemIds.map((String id) => itemMap[id]).toList();
+      list.removeWhere((item) => item == null);
+
+      return QueryBatch(list.cast<Item>(), itemIds.length == 20, itemIdsQuery.docs.isNotEmpty ? itemIdsQuery.docs.last : null);
+    });
+  });
 }
 
 Future<void> updateUserItemSeen(DocumentReference itemRef) async {

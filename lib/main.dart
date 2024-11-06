@@ -5,6 +5,7 @@ import 'package:rent_app/screens/category_screen.dart';
 import 'package:rent_app/screens/chat_screen.dart';
 import 'package:rent_app/screens/chats_screen.dart';
 import 'package:rent_app/screens/item_screen.dart';
+import 'package:rent_app/screens/last_seen_items_screen.dart';
 import 'package:rent_app/screens/pending_requests_screen.dart';
 import 'package:rent_app/screens/profile_screen.dart';
 import 'package:rent_app/screens/rental_screen.dart';
@@ -136,6 +137,7 @@ class MyApp extends StatelessWidget {
           CategoryScreen.id: (context) => CategoryScreen(settings.arguments as CategoryScreenArguments),
           ProfileScreen.id: (context) => const ProfileScreen(),
           RequestScreen.id: (context) => RequestScreen(settings.arguments as RequestScreenArguments),
+          LastSeenItemsScreen.id: (context) => const LastSeenItemsScreen(),
         };
         return MaterialPageRoute(builder: routes[settings.name]!);
       },

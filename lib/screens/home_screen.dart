@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/models/item.dart';
+import 'package:rent_app/screens/last_seen_items_screen.dart';
 import 'package:rent_app/screens/pending_requests_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
+import 'package:rent_app/services/query_batch.dart';
 import 'package:rent_app/widgets/reusable_card.dart';
 import '../constants.dart';
 import 'package:rent_app/models/category.dart';
@@ -17,6 +19,7 @@ String? cityName;
 
 class HomeScreen extends StatefulWidget {
   static String id = 'home_screen';
+
   const HomeScreen({super.key});
 
   @override
@@ -32,9 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     for (ItemCategory category in ItemCategory.values) {
       categoriesCards.add(ReusableCard(
-          color: _selectedCategory == category
-              ? kActiveButtonColor
-              : kPastelYellowOpacity,
+          color: _selectedCategory == category ? kActiveButtonColor : kPastelYellowOpacity,
           cardChild: Icon(
             category.icon,
             color: _selectedCategory == category ? Colors.white : kPastelYellow,
@@ -69,8 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
       return Future.error('Location permissions are permanently denied.');
     }
 
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
 
     setState(() {
       currentPosition = position;
@@ -97,8 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
       await _getAddressFromLatLng(currentPosition!);
       setState(() {
         // Update the city name when location is retrieved
-        cityName =
-            cityName ?? 'מיקום לא ידוע'; // Fallback if cityName is still null
+        cityName = cityName ?? 'מיקום לא ידוע'; // Fallback if cityName is still null
       });
     } else {
       setState(() {
@@ -141,10 +140,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 AppLocalizations.of(context)!.hiWelcomeBack,
                                 style: kTopHeaderTextStyle,
                               ),
-
                             ],
                           ),
-                          IconButton(onPressed: () => Navigator.pushNamed(context, PendingRequestsScreen.id), icon: Icon(Icons.pending_outlined, color: kDarkYellow,)),
+                          IconButton(
+                              onPressed: () => Navigator.pushNamed(context, PendingRequestsScreen.id),
+                              icon: Icon(
+                                Icons.pending_outlined,
+                                color: kDarkYellow,
+                              )),
                         ],
                       ),
                     ),
@@ -159,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: buildCategoriesList(),
                       ),
                     ),
-                    
+
                     // Text('חיפושים אחרונים', style: kBlackHeaderTextStyle,),
                     // Container(
                     //   width: double.infinity,
@@ -167,7 +170,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     //   color: Colors.white10,
                     //   child: Text('שמפו'),
                     // ),
-
 
                     const SizedBox(
                       height: 30,
@@ -182,9 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: FutureBuilder(
                           future: getItemsFilterByCategory(_selectedCategory, true),
                           builder: (context, snapshot) {
-                            if (snapshot.hasData &&
-                                snapshot.data != null &&
-                                snapshot.data!.isNotEmpty) {
+                            if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
                               List? itemCards = snapshot.data;
                               return ListView(
                                 scrollDirection: Axis.horizontal,
@@ -212,31 +212,43 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     SizedBox(
                       height: 250,
-                      child: currentPosition == null || cityName == null ? const Center(child: CircularProgressIndicator(color: kPastelYellow,)) : FutureBuilder(
-                          future: getItemsFilterByGeoPoint(currentPosition!.latitude, currentPosition!.longitude, true),
-                          // future: getItemsFilterByLocation(currentPosition!, cityName!, true),TODO: decide what to do
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData &&
-                                snapshot.data != null &&
-                                snapshot.data!.isNotEmpty) {
-                              List? itemCards = snapshot.data;
-                              return ListView(
-                                scrollDirection: Axis.horizontal,
-                                children: itemCards as List<Widget>,
-                              );
-                            } else {
-                              return Container();
-                            }
-                          }),
+                      child: currentPosition == null || cityName == null
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                              color: kPastelYellow,
+                            ))
+                          : FutureBuilder(
+                              future:
+                                  getItemsFilterByGeoPoint(currentPosition!.latitude, currentPosition!.longitude, true),
+                              // future: getItemsFilterByLocation(currentPosition!, cityName!, true),TODO: decide what to do
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
+                                  List? itemCards = snapshot.data;
+                                  return ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: itemCards as List<Widget>,
+                                  );
+                                } else {
+                                  return Container();
+                                }
+                              }),
                     ),
 
                     const SizedBox(
                       height: 30,
                     ),
 
-                    Text(
-                      localization.lastSeen,
-                      style: kBlackHeaderTextStyle,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          localization.lastSeen,
+                          style: kBlackHeaderTextStyle,
+                        ),
+                        TextButton(
+                            onPressed: () => Navigator.pushNamed(context, LastSeenItemsScreen.id),
+                            child: Text(localization.show_more, style: const TextStyle(color: Colors.black54),))
+                      ],
                     ),
                     SizedBox(
                       height: 250,
@@ -244,10 +256,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           future: getUserSeenItems(),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
-                              List<Item> items = snapshot.data!;
+                              QueryBatch<Item> items = snapshot.data!;
                               return ListView(
                                 scrollDirection: Axis.horizontal,
-                                children: items.map((Item item) => ItemCard(item: item, isHorizontal: true)).toList(),
+                                children: items.list.map((Item item) => ItemCard(item: item, isHorizontal: true)).toList(),
                               );
                             } else {
                               return Container();
