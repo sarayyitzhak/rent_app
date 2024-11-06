@@ -5,21 +5,60 @@ import 'package:rent_app/screens/item_screen.dart';
 import 'package:rent_app/widgets/chat_icon_button.dart';
 import 'package:rent_app/widgets/rating_stars_widget.dart';
 import 'package:rent_app/widgets/favorite_button.dart';
+import 'package:shimmer/shimmer.dart';
 import '../constants.dart';
 import '../models/item.dart';
 import '../utils.dart';
 
 class ItemCard extends StatelessWidget {
-  final Item item;
+  final Item? item;
   final bool isHorizontal;
 
-  const ItemCard({super.key, required this.item, this.isHorizontal = false});
+  const ItemCard({super.key, this.item, this.isHorizontal = false});
 
   @override
   Widget build(BuildContext context) {
-    bool isMine = item.contactUser == userDetails.userReference;
+    if (item == null) {
+      return Card(
+        elevation: 5,
+        margin: isHorizontal ? const EdgeInsets.symmetric(horizontal: 5, vertical: 10) : null,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                height: 200,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(width: 50, height: 12, color: Colors.grey),
+                    const SizedBox(height: 8),
+                    Container(width: 100, height: 10, color: Colors.grey),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    bool isMine = item!.contactUser == userDetails.userReference;
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, ItemScreen.id, arguments: ItemScreenArguments(item, isMine)),
+      onTap: () => Navigator.pushNamed(context, ItemScreen.id, arguments: ItemScreenArguments(item!, isMine)),
       child: Card(
         elevation: 5,
         margin: isHorizontal ? const EdgeInsets.symmetric(horizontal: 5, vertical: 10) : null,
@@ -35,9 +74,12 @@ class ItemCard extends StatelessWidget {
                 child: Stack(
                   children: [
                     CachedNetworkImage(
-                      imageUrl: item.imageRef,
-                      placeholder: (context, url) => const CircularProgressIndicator(
-                        color: kPastelYellow,
+                      imageUrl: item!.imageRef,
+                      placeholder: (context, url) => Container(
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                          color: Colors.grey[200],
+                        ),
                       ),
                       errorWidget: (context, url, error) => const Icon(Icons.error),
                       imageBuilder: (context, imageProvider) => Container(
@@ -47,15 +89,14 @@ class ItemCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    !isMine
-                        ? PositionedDirectional(
-                            top: 8,
-                            end: 8,
-                            child: FavoriteButton(
-                              item: item,
-                            ),
-                          )
-                        : Container(),
+                    if (!isMine)
+                      PositionedDirectional(
+                        top: 8,
+                        end: 8,
+                        child: FavoriteButton(
+                          item: item!,
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -65,19 +106,17 @@ class ItemCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      item.title,
+                      item!.title,
                       style: kBlackHeaderTextStyle,
                     ),
-                    item.getRate() != null
-                        ? RatingStarsWidget(rate: item.getRate()!)
-                        : Container(),
+                    if (item!.getRate() != null) RatingStarsWidget(rate: item!.getRate()!),
                   ],
                 ),
               ), //description
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
-                  item.location.addressDataToString(),
+                  item!.location.addressDataToString(),
                   style: kSmallBlackTextStyle,
                 ),
               ), //place
@@ -87,7 +126,7 @@ class ItemCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
-                  getFormattedPrice(item.price),
+                  getFormattedPrice(item!.price),
                   style: kHeadersTextStyle,
                 ),
               )

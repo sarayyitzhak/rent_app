@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/services/query_batch.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:rent_app/widgets/item_card.dart';
-import '../services/cloud_services.dart';
 
 class GridItemsScreen extends StatefulWidget {
   static String id = 'grid_items_screen';
@@ -23,19 +21,40 @@ class _GridItemsScreenState extends State<GridItemsScreen> {
   final List<ItemCard> _cards = [];
   bool _loading = false;
 
+  bool onScroll(ScrollNotification scrollInfo) {
+    var currentScroll = scrollInfo.metrics.pixels;
+    var maxScroll = scrollInfo.metrics.maxScrollExtent;
+    var offset = MediaQuery.of(context).size.height * 0.5;
+    if (currentScroll >= (maxScroll - offset) && !_loading) {
+      _fetchItems();
+    }
+    return false;
+  }
+
   Future<void> _fetchItems() async {
     if (_loading || !_queryBatch.hasMore) return;
 
-    setState(() {
-      _loading = true;
-    });
+    _loading = true;
 
     _queryBatch = await widget.args.queryBatchGetter(_queryBatch.lastDoc);
 
     setState(() {
+      if (_cards.isNotEmpty) {
+        _cards.removeWhere((ItemCard card) => card.item == null);
+      }
+
       _cards.addAll(_queryBatch.list.map((Item item) => ItemCard(item: item)).toList());
-      _loading = false;
+
+      if (_queryBatch.hasMore) {
+        _cards.add(const ItemCard());
+        _cards.add(const ItemCard());
+        if (_cards.length % 2 == 1) {
+          _cards.add(const ItemCard());
+        }
+      }
     });
+
+    _loading = false;
   }
 
   @override
@@ -54,12 +73,7 @@ class _GridItemsScreenState extends State<GridItemsScreen> {
         children: [
           Expanded(
             child: NotificationListener<ScrollNotification>(
-              onNotification: (ScrollNotification scrollInfo) {
-                if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent && !_loading) {
-                  _fetchItems();
-                }
-                return false;
-              },
+              onNotification: onScroll,
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
@@ -72,11 +86,6 @@ class _GridItemsScreenState extends State<GridItemsScreen> {
               ),
             ),
           ),
-          if (_loading)
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: CircularProgressIndicator(),
-            ),
         ],
       ),
     );
