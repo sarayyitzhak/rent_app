@@ -9,6 +9,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/models/item.dart';
+import 'package:rent_app/models/item_review.dart';
 import 'package:rent_app/models/message.dart';
 import 'package:rent_app/models/user.dart';
 import 'package:rent_app/services/query_batch.dart';
@@ -321,6 +322,10 @@ void addItemReview(DocumentReference itemRef, int rate, String text) {
   batch.commit();
 }
 
+Future<List<ItemReview>> getItemReviews(DocumentReference itemRef) async {
+  return await itemRef.collection('reviews').orderBy('createdAt', descending: true).get().then((QuerySnapshot query) => query.docs.map((doc) => ItemReview.fromDocumentSnapshot(doc)).toList());
+}
+
 // Future<void> addRateField() async {
 //   var snapshot = await _firestore.collection('items').get();
 //   WriteBatch batch = _firestore.batch();
@@ -383,10 +388,10 @@ Future<UserDetails> getUserDetailsByUid(String userUid) async{
   return mapAsUser(userDoc.data() as Map<String, dynamic>);
 }
 
-Future<UserDetails> getItemContactUser(Item item) async {
-  var contactUserDoc = await item.contactUser.get();
-  Map<String, dynamic>? contactUserData = contactUserDoc.data() as Map<String, dynamic>?;
-  return mapAsUser(contactUserData!);
+Future<UserDetails> getUserByID(String id) async {
+  var userDoc = await _firestore.collection('users').doc(id).get();
+  Map<String, dynamic>? userData = userDoc.data();
+  return mapAsUser(userData!);
 }
 
 Future<QueryBatch<Item>> getUserSeenItems([DocumentSnapshot? startAfterDoc]) {

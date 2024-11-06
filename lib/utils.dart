@@ -42,3 +42,18 @@ String getNextAlphabeticalString(String input) {
   chars[chars.length - 1]++;
   return String.fromCharCodes(chars);
 }
+
+String getDifferenceInTimeAsString(BuildContext context, DateTime time){
+  Duration duration = DateTime.now().difference(time);
+  if(duration.inMinutes < 60){
+    return duration.inMinutes == 0 ? 'לפני מס׳ שניות' : 'לפני ${duration.inMinutes} דקות';
+  } else if(duration.inHours < 24){
+    return 'לפני ${duration.inHours} שעות';
+  } else if(duration.inDays < 30){
+    return 'לפני ${duration.inDays} ימים';
+  } else if(duration.inDays < 365){
+    return 'לפני ${duration.inDays / 30} חודשים';
+  } else {
+    return 'לפני ${duration.inDays / 365} שנים';
+  }
+}

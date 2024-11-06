@@ -3,7 +3,7 @@ import 'package:rent_app/constants.dart';
 import 'package:flutter/material.dart';
 
 class RatingStarsRow extends StatefulWidget {
-  var onChanged;
+  Function(double) onChanged;
 
   RatingStarsRow({super.key, required this.onChanged});
 

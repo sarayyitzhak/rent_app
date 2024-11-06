@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/screens/item_screen.dart';
 import 'package:rent_app/widgets/chat_icon_button.dart';
+import 'package:rent_app/widgets/rating_stars_widget.dart';
 import 'package:rent_app/widgets/favorite_button.dart';
 import '../constants.dart';
 import '../models/item.dart';
@@ -68,18 +69,7 @@ class ItemCard extends StatelessWidget {
                       style: kBlackHeaderTextStyle,
                     ),
                     item.getRate() != null
-                        ? Row(
-                            children: [
-                              Icon(
-                                Icons.star_rounded,
-                                color: kActiveButtonColor,
-                              ),
-                              Text(
-                                item.getRate()!.toStringAsFixed(1),
-                                style: kSmallBlackTextStyle,
-                              ),
-                            ],
-                          )
+                        ? RatingStarsWidget(rate: item.getRate()!)
                         : Container(),
                   ],
                 ),

@@ -29,15 +29,22 @@ class ItemReview {
     };
   }
 
+
   factory ItemReview.fromDocumentSnapshot(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
     return ItemReview(
         docRef: doc.reference,
-        userID: doc.reference.id,
+        userID: data['userID'],
         rate: data['rate'],
         text: data['text'],
         createdAt: data['createdAt'].toDate()
     );
   }
+
+  DocumentReference get docRef => _docRef;
+  String get userID => _userID;
+  int get rate => _rate;
+  String get text => _text;
+  DateTime get createdAt => _createdAt;
 }

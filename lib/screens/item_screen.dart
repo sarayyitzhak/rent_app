@@ -8,12 +8,14 @@ import 'package:rent_app/models/item_review.dart';
 import 'package:rent_app/models/user.dart';
 import 'package:rent_app/screens/add_item_screen.dart';
 import 'package:rent_app/screens/rental_screen.dart';
+import 'package:rent_app/screens/reviews_screen.dart';
 import 'package:rent_app/utils.dart';
 import 'package:rent_app/widgets/chat_icon_button.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/custom_button.dart';
 import 'package:rent_app/widgets/rating_stars.dart';
+import 'package:rent_app/widgets/rating_stars_widget.dart';
 import 'package:rent_app/widgets/favorite_button.dart';
 
 import '../services/cloud_services.dart';
@@ -26,10 +28,11 @@ class ItemScreen extends StatelessWidget {
 
   const ItemScreen(this.args, {super.key});
 
-  Row commentWidget(double rate, TextEditingController commentController, Item item) {
+  Row commentWidget(BuildContext context, double rate, TextEditingController commentController, Item item) {
+    var localization = AppLocalizations.of(context)!;
     return Row(
       children: [
-        TextButton(onPressed: () {}, child: Text('הוסף תגובה')),
+        TextButton(onPressed: () {}, child: Text(localization.addComment)),
         Expanded(
           child: Column(
             children: [
@@ -42,8 +45,10 @@ class ItemScreen extends StatelessWidget {
         ),
         ElevatedButton(
             onPressed: () {
-              addItemReview(item.itemReference, rate.toInt(), commentController.text);
-              commentController.clear();
+              if(rate == 0){
+                addItemReview(item.itemReference, rate.toInt(), commentController.text);
+                commentController.clear();
+              }
             },
             child: Text('הגב')),
       ],
@@ -68,7 +73,7 @@ class ItemScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: FutureBuilder(
-            future: getItemContactUser(item),
+            future: getUserByID(item.contactUser.id),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -206,26 +211,15 @@ class ItemScreen extends StatelessWidget {
                               ? Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      '${localization.usersReviews} (${item.reviewCount})',
-                                      style: kSmallBlackTextStyle,
+                                    TextButton(
+                                      child: Text('${localization.usersReviews} (${item.reviewCount})'),
+                                      onPressed: () => Navigator.pushNamed(context, ReviewsScreen.id, arguments: ReviewsScreenArguments(item)),
                                     ),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.star_rounded,
-                                          color: kActiveButtonColor,
-                                        ),
-                                        Text(
-                                          item.getRate()!.toStringAsFixed(1),
-                                          style: kSmallBlackTextStyle,
-                                        ),
-                                      ],
-                                    )
+                                    RatingStarsWidget(rate: item.getRate()!)
                                   ],
                                 )
-                              : Text('אין ביקורות'),
-                          commentWidget(rate, commentController, item),
+                              : Text(localization.noReviewsYet),
+                          commentWidget(context, rate, commentController, item),
                         ],
                       ),
                     ),
