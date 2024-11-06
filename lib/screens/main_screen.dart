@@ -37,17 +37,23 @@ class _MainScreenState extends State<MainScreen> {
     await Permission.microphone.request();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    getUser();
+  Future<void> _initAppData() async {
+    await getUser();
     requestMicrophonePermission();
     requestNotificationsPermission();
     onTokenRefreshed();
     // messagingListenForeground();
     setToken();
     onMessageOpenedApp(context);
-    setToken();
+
+    deleteOldUserItemSeen(DateTime.now().subtract(const Duration(days: 60)));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _initAppData();
   }
 
   @override

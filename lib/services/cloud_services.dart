@@ -448,6 +448,17 @@ Future<void> updateUserItemSeen(DocumentReference itemRef) async {
   return batch.commit();
 }
 
+Future<void> deleteOldUserItemSeen(DateTime dateTime) async {
+  QuerySnapshot querySnapshot = await userDetails.userReference.collection('seen')
+      .where('seenTime', isLessThan: dateTime)
+      .limit(100)
+      .get();
+
+  for (final doc in querySnapshot.docs) {
+    await doc.reference.delete();
+  }
+}
+
 //Messaging
 void requestNotificationsPermission() async {
   NotificationSettings settings = await _messaging.requestPermission(
@@ -471,7 +482,7 @@ void requestNotificationsPermission() async {
 
 void setToken(){
   _messaging.getToken().then((String? token) {
-    if (token != null) {
+    if (token != null && token != userDetails.token) {
       userDetails.token = token;
       userDetails.userReference.update({'token': token});
     }
