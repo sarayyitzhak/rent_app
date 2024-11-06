@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:flutter/material.dart';
@@ -6,17 +7,18 @@ import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:rent_app/widgets/item_card.dart';
 import '../services/cloud_services.dart';
 
-class LastSeenItemsScreen extends StatefulWidget {
-  static String id = 'last_seen_items_screen';
+class GridItemsScreen extends StatefulWidget {
+  static String id = 'grid_items_screen';
 
-  const LastSeenItemsScreen({super.key});
+  final GridItemsScreenArguments args;
+
+  const GridItemsScreen(this.args, {super.key});
 
   @override
-  State<LastSeenItemsScreen> createState() => _LastSeenItemsScreenState();
+  State<GridItemsScreen> createState() => _GridItemsScreenState();
 }
 
-class _LastSeenItemsScreenState extends State<LastSeenItemsScreen> {
-
+class _GridItemsScreenState extends State<GridItemsScreen> {
   QueryBatch<Item> _queryBatch = QueryBatch.empty();
   final List<ItemCard> _cards = [];
   bool _loading = false;
@@ -28,7 +30,7 @@ class _LastSeenItemsScreenState extends State<LastSeenItemsScreen> {
       _loading = true;
     });
 
-    _queryBatch = await getUserSeenItems(_queryBatch.lastDoc);
+    _queryBatch = await widget.args.queryBatchGetter(_queryBatch.lastDoc);
 
     setState(() {
       _cards.addAll(_queryBatch.list.map((Item item) => ItemCard(item: item)).toList());
@@ -45,9 +47,8 @@ class _LastSeenItemsScreenState extends State<LastSeenItemsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: CustomAppBar(title: localization.lastSeen, isBackButton: true),
+      appBar: CustomAppBar(title: widget.args.title, isBackButton: true),
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -80,4 +81,11 @@ class _LastSeenItemsScreenState extends State<LastSeenItemsScreen> {
       ),
     );
   }
+}
+
+class GridItemsScreenArguments {
+  final String title;
+  final Future<QueryBatch<Item>> Function([DocumentSnapshot? startAfterDoc]) queryBatchGetter;
+
+  GridItemsScreenArguments(this.title, this.queryBatchGetter);
 }

@@ -46,7 +46,7 @@ Future<void> createNewItem(File? image, String title, String price, AddressInfo 
       condition: condition,
       categories: categories,
       createdAt: Timestamp.now(),
-      likesCount: 0,
+      favoriteCount: 0,
       seenCount: 0,
   );
   itemDoc.set(newItem.itemToMap());
@@ -102,23 +102,6 @@ Future<Item?> getItemById(String id) async {
   DocumentSnapshot<Map<String, dynamic>> itemSnapshot = await _firestore.collection('items').doc(id).get();
   Map<String, dynamic>? data = itemSnapshot.data();
   return data != null ? mapAsItem(data, itemSnapshot.reference) : null;
-}
-
-Future<List<Item>> getItemsListByField(UserDetails user, String dataField, bool reversed) async {
-  List<Item> items = [];
-  DocumentSnapshot<Object?> userGetData = await user.userReference.get();
-  Map<String, dynamic>? userData = userGetData.data() as Map<String, dynamic>?;
-  List itemsRefs = userData?[dataField];
-  List lastSeenItems = itemsRefs.length > 20 ? itemsRefs.sublist(itemsRefs.length - 20) : itemsRefs;
-  QuerySnapshot<Map<String, dynamic>> itemsRefs2 = await _firestore.collection('items').where(FieldPath.documentId, whereIn: lastSeenItems.map((e) => e.id).toList()).get();
-  for(var itemDoc in itemsRefs2.docs){
-    Map<String, dynamic>? itemData = itemDoc.data();
-    Item item = mapAsItem(itemData, itemDoc.reference);
-    if (item.contactUser != userDetails.userReference) {
-      items.add(item);
-    }
-  }
-  return reversed ? items.reversed.toList() : items;
 }
 
 Future<List<Item>> _getItemsByQuery(Future<QuerySnapshot<Map<String, dynamic>>> query, bool onlyOthersItems) async {
@@ -386,9 +369,6 @@ Future<void> createNewUser(String email, String password, String name, String ph
       name: name,
       email: email,
       phoneNumber: int.parse(phoneNumber),
-      items: [],
-      wishlist: [],
-      chats: []
   );
   setToken();
 }
@@ -410,7 +390,15 @@ Future<UserDetails> getItemContactUser(Item item) async {
 }
 
 Future<QueryBatch<Item>> getUserSeenItems([DocumentSnapshot? startAfterDoc]) {
-  Query query = userDetails.userReference.collection('seen').orderBy('seenTime', descending: true).limit(20);
+  return _getUserItems('seen', 'seenTime', startAfterDoc);
+}
+
+Future<QueryBatch<Item>> getUserFavoriteItems([DocumentSnapshot? startAfterDoc]) {
+  return _getUserItems('favorites', 'updateTime', startAfterDoc);
+}
+
+Future<QueryBatch<Item>> _getUserItems(String collectionName, String orderByFieldName, DocumentSnapshot? startAfterDoc) {
+  Query query = userDetails.userReference.collection(collectionName).orderBy(orderByFieldName, descending: true).limit(20);
 
   if (startAfterDoc != null) {
     query = query.startAfterDocument(startAfterDoc);
@@ -438,6 +426,10 @@ Future<QueryBatch<Item>> getUserSeenItems([DocumentSnapshot? startAfterDoc]) {
   });
 }
 
+Stream<bool> getUserFavoriteItem(DocumentReference itemRef) {
+  return userDetails.userReference.collection('favorites').doc(itemRef.id).snapshots().map((DocumentSnapshot snapshot) => snapshot.exists);
+}
+
 Future<void> updateUserItemSeen(DocumentReference itemRef) async {
   var batch = _firestore.batch();
   DocumentSnapshot snapshot = await userDetails.userReference.collection('seen').doc(itemRef.id).get();
@@ -457,6 +449,19 @@ Future<void> deleteOldUserItemSeen(DateTime dateTime) async {
   for (final doc in querySnapshot.docs) {
     await doc.reference.delete();
   }
+}
+
+Future<void> toggleUserFavoriteItem(DocumentReference itemRef) async {
+  var batch = _firestore.batch();
+  DocumentSnapshot snapshot = await userDetails.userReference.collection('favorites').doc(itemRef.id).get();
+  if (snapshot.exists) {
+    batch.delete(snapshot.reference);
+    batch.update(itemRef, {'favoriteCount': FieldValue.increment(-1)});
+  } else {
+    batch.set(snapshot.reference, {'updateTime': FieldValue.serverTimestamp()});
+    batch.update(itemRef, {'favoriteCount': FieldValue.increment(1)});
+  }
+  return batch.commit();
 }
 
 //Messaging

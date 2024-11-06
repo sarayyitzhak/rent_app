@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/screens/item_screen.dart';
 import 'package:rent_app/widgets/chat_icon_button.dart';
-import 'package:rent_app/widgets/wishlist_icon_button.dart';
+import 'package:rent_app/widgets/favorite_button.dart';
 import '../constants.dart';
 import '../models/item.dart';
 import '../utils.dart';
@@ -50,7 +50,7 @@ class ItemCard extends StatelessWidget {
                         ? PositionedDirectional(
                             top: 8,
                             end: 8,
-                            child: WishlistIconButton(
+                            child: FavoriteButton(
                               item: item,
                             ),
                           )

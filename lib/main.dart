@@ -5,7 +5,7 @@ import 'package:rent_app/screens/category_screen.dart';
 import 'package:rent_app/screens/chat_screen.dart';
 import 'package:rent_app/screens/chats_screen.dart';
 import 'package:rent_app/screens/item_screen.dart';
-import 'package:rent_app/screens/last_seen_items_screen.dart';
+import 'package:rent_app/screens/grid_items_screen.dart';
 import 'package:rent_app/screens/pending_requests_screen.dart';
 import 'package:rent_app/screens/profile_screen.dart';
 import 'package:rent_app/screens/rental_screen.dart';
@@ -14,7 +14,6 @@ import 'package:rent_app/screens/request_submitted_screen.dart';
 import 'package:rent_app/screens/search_result_screen.dart';
 import 'package:rent_app/screens/search_screen.dart';
 import 'package:rent_app/screens/user_items_screen.dart';
-import 'package:rent_app/screens/wishlist_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -129,7 +128,6 @@ class MyApp extends StatelessWidget {
           RentalScreen.id: (context) => RentalScreen(settings.arguments as RentalScreenArguments),
           RequestSubmittedScreen.id: (context) => const RequestSubmittedScreen(),
           PendingRequestsScreen.id: (context) => const PendingRequestsScreen(),
-          WishlistScreen.id: (context) => const WishlistScreen(),
           ChatsScreen.id: (context) => const ChatsScreen(),
           ChatScreen.id: (context) => ChatScreen(settings.arguments as ChatScreenArguments),
           SearchScreen.id: (context) => const SearchScreen(),
@@ -137,7 +135,7 @@ class MyApp extends StatelessWidget {
           CategoryScreen.id: (context) => CategoryScreen(settings.arguments as CategoryScreenArguments),
           ProfileScreen.id: (context) => const ProfileScreen(),
           RequestScreen.id: (context) => RequestScreen(settings.arguments as RequestScreenArguments),
-          LastSeenItemsScreen.id: (context) => const LastSeenItemsScreen(),
+          GridItemsScreen.id: (context) => GridItemsScreen(settings.arguments as GridItemsScreenArguments),
         };
         return MaterialPageRoute(builder: routes[settings.name]!);
       },

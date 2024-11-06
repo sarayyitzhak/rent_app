@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rent_app/screens/grid_items_screen.dart';
 import 'package:rent_app/screens/profile_screen.dart';
 import 'package:rent_app/screens/welcome_screen.dart';
-import 'package:rent_app/screens/wishlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import '../constants.dart';
@@ -73,42 +73,27 @@ class _UserScreenState extends State<UserScreen> {
                   children: [
                     TextButton(
                         onPressed: () => Navigator.pushNamed(context, ProfileScreen.id),
-                        child: IconAboveText(icon:
-                            Icons.person_outline, label: localization.profile, size: 40)),
+                        child: IconAboveText(icon: Icons.person_outline, label: localization.profile, size: 40)),
                     TextButton(
-                        onPressed: () => Navigator.pushNamed(context, WishlistScreen.id),
-                        child: IconAboveText(icon: Icons.receipt_long_outlined,
-                            label: localization.wishlist, size: 40)),
+                        onPressed: () => Navigator.pushNamed(context, GridItemsScreen.id,
+                            arguments: GridItemsScreenArguments(localization.wishlist, getUserFavoriteItems)),
+                        child:
+                            IconAboveText(icon: Icons.receipt_long_outlined, label: localization.wishlist, size: 40)),
                     TextButton(
                         onPressed: () {},
-                        child: IconAboveText(icon: Icons.shopping_cart_outlined,
-                            label: localization.myItems, size: 40)),
+                        child:
+                            IconAboveText(icon: Icons.shopping_cart_outlined, label: localization.myItems, size: 40)),
                   ],
                 ),
               ),
               const SizedBox(
                 height: 20,
               ),
-              buildButton(
-                  label: localization.notifications,
-                  icon: Icons.notifications_none,
-                  onPress: () {}),
-              buildButton(
-                  label: localization.paymentMethod,
-                  icon: Icons.credit_card,
-                  onPress: () {}),
-              buildButton(
-                  label: localization.settings,
-                  icon: Icons.settings_outlined,
-                  onPress: () {}),
-              buildButton(
-                  label: localization.help,
-                  icon: Icons.help_outline,
-                  onPress: () {}),
-              buildButton(
-                  label: localization.privacyPolicy,
-                  icon: Icons.key,
-                  onPress: () {}),
+              buildButton(label: localization.notifications, icon: Icons.notifications_none, onPress: () {}),
+              buildButton(label: localization.paymentMethod, icon: Icons.credit_card, onPress: () {}),
+              buildButton(label: localization.settings, icon: Icons.settings_outlined, onPress: () {}),
+              buildButton(label: localization.help, icon: Icons.help_outline, onPress: () {}),
+              buildButton(label: localization.privacyPolicy, icon: Icons.key, onPress: () {}),
               buildButton(
                   label: localization.logout,
                   icon: Icons.logout,
@@ -139,10 +124,7 @@ Map<String, IconData> buttonsTextAndIcon = {
 
 //models
 
-TextButton buildButton(
-    {required String label,
-    required IconData icon,
-    required VoidCallback onPress}) {
+TextButton buildButton({required String label, required IconData icon, required VoidCallback onPress}) {
   return TextButton.icon(
     onPressed: onPress,
     label: Text(
@@ -155,5 +137,3 @@ TextButton buildButton(
     ),
   );
 }
-
-

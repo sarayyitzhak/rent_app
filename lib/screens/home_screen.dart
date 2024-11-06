@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/models/item.dart';
-import 'package:rent_app/screens/last_seen_items_screen.dart';
+import 'package:rent_app/screens/grid_items_screen.dart';
 import 'package:rent_app/screens/pending_requests_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/services/query_batch.dart';
@@ -246,8 +246,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: kBlackHeaderTextStyle,
                         ),
                         TextButton(
-                            onPressed: () => Navigator.pushNamed(context, LastSeenItemsScreen.id),
-                            child: Text(localization.show_more, style: const TextStyle(color: Colors.black54),))
+                            onPressed: () => Navigator.pushNamed(context, GridItemsScreen.id,
+                                arguments: GridItemsScreenArguments(localization.lastSeen, getUserSeenItems)),
+                            child: Text(
+                              localization.show_more,
+                              style: const TextStyle(color: Colors.black54),
+                            ))
                       ],
                     ),
                     SizedBox(
@@ -259,7 +263,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               QueryBatch<Item> items = snapshot.data!;
                               return ListView(
                                 scrollDirection: Axis.horizontal,
-                                children: items.list.map((Item item) => ItemCard(item: item, isHorizontal: true)).toList(),
+                                children:
+                                    items.list.map((Item item) => ItemCard(item: item, isHorizontal: true)).toList(),
                               );
                             } else {
                               return Container();

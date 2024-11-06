@@ -14,7 +14,7 @@ import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/custom_button.dart';
 import 'package:rent_app/widgets/rating_stars.dart';
-import 'package:rent_app/widgets/wishlist_icon_button.dart';
+import 'package:rent_app/widgets/favorite_button.dart';
 
 import '../services/cloud_services.dart';
 import '../widgets/dial_icon_button.dart';
@@ -107,7 +107,7 @@ class ItemScreen extends StatelessWidget {
                                               color: kPastelYellowOpacity, borderRadius: BorderRadius.circular(10)),
                                           child: ListTile(
                                             title: Text(
-                                              '${item.likesCount} ${localization.peopleLikedTheItem} ',
+                                              '${item.favoriteCount} ${localization.peopleLikedTheItem} ',
                                               style: kSmallBlackTextStyle,
                                             ),
                                             leading: const Icon(Icons.favorite),
@@ -195,7 +195,7 @@ class ItemScreen extends StatelessWidget {
                                   ? Container()
                                   : Row(
                                       children: [
-                                        WishlistIconButton(item: item),
+                                        FavoriteButton(item: item),
                                         const SizedBox(width: 5),
                                         ChatIconButton(item: item),
                                       ],

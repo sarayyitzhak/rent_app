@@ -200,9 +200,6 @@ Future<void> onRegisterButtonPressed(int idx) async {
       name: names[idx],
       email: email,
       phoneNumber: int.parse('54808825$idx'),
-      items: [],
-      wishlist: [],
-      chats: [],
   );
   _messaging.getToken().then((String? token) {
     if (token != null) {
@@ -237,7 +234,7 @@ Future<void> onRegisterButtonPressed(int idx) async {
         condition: Condition.USED_AS_NEW,
         categories: [categories[j]],
         createdAt: Timestamp.now(),
-        likesCount: 0,
+        favoriteCount: 0,
         seenCount: 0,
     );
     newItem.imageRef = imageDownloadUrl;

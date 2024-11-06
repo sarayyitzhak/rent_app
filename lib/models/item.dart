@@ -15,7 +15,7 @@ class Item {
   Condition _condition;
   List<dynamic> _categories;
   final Timestamp _createdAt;
-  int _likesCount;
+  int _favoriteCount;
   int _seenCount;
   int? _reviewCount;
   int? _rateSum;
@@ -32,7 +32,7 @@ class Item {
     required Condition condition,
     required List<dynamic> categories,
     required Timestamp createdAt,
-    required int likesCount,
+    required int favoriteCount,
     required int seenCount,
     int? reviewCount,
     int? rateSum,
@@ -46,7 +46,7 @@ class Item {
         _condition = condition,
         _categories = categories,
         _createdAt = createdAt,
-        _likesCount = likesCount,
+        _favoriteCount = favoriteCount,
         _seenCount = seenCount,
         _reviewCount = reviewCount,
         _rateSum = rateSum;
@@ -62,13 +62,13 @@ class Item {
   List<dynamic> get categories => _categories;
 
   Timestamp get createdAt => _createdAt;
-  int get likesCount => _likesCount;
+  int get favoriteCount => _favoriteCount;
   int get seenCount => _seenCount;
   int? get reviewCount => _reviewCount;
   int? get rateSum => _rateSum;
 
   set imageRef(String value) => _imageRef = value;
-  set likesCount(int value) => _likesCount = value;
+  set favoriteCount(int value) => _favoriteCount = value;
   set seenCount(int value) => _seenCount = value;
   set price(int value) => _price = value;
   set location(AddressInfo value) => _location = value;
@@ -94,7 +94,7 @@ class Item {
       'condition': _condition.idx,
       'categories': _categories.map((c) => c.idx).toList(),
       'createdAt': _createdAt,
-      'likesCount': _likesCount,
+      'favoriteCount': _favoriteCount,
       'seenCount': _seenCount,
       'reviewCount': _reviewCount,
       'rateSum': _rateSum
@@ -121,7 +121,7 @@ Item mapAsItem(Map<String, dynamic> map, DocumentReference itemRef) {
     condition: condition,
     categories: categoryList,
     createdAt: map['createdAt'],
-    likesCount: map['likesCount'],
+    favoriteCount: map['favoriteCount'],
     seenCount: map['seenCount'],
     reviewCount: map['reviewCount'],
     rateSum: map['rateSum']

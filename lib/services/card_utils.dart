@@ -44,15 +44,6 @@ Future<List<ItemCard>> getItemsFilterByContactUser(DocumentReference contactUser
   return getItemCards(items, isHorizontal);
 }
 
-Future<List<ItemCard>> getUserItemsWishlist(UserDetails user, bool isHorizontal, bool reversed) async {
-  return getUserItemsByField(userDetails, 'wishlist', false, false);
-}
-
-Future<List<ItemCard>> getUserItemsByField(UserDetails user, String dataField, bool isHorizontal, bool reversed) async {
-  List<Item> items = await getItemsListByField(user, dataField, reversed);
-  return getItemCards(items, isHorizontal);
-}
-
 List<ItemCard> getItemsByStream(dynamic items, bool isHorizontal){
   List<Item> itemsList = [];
   for (var itemDoc in items) {
