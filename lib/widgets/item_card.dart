@@ -56,7 +56,7 @@ class ItemCard extends StatelessWidget {
         ),
       );
     }
-    bool isMine = item!.contactUser == userDetails.userReference;
+    bool isMine = item!.contactUser == userDetails.docRef;
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, ItemScreen.id, arguments: ItemScreenArguments(item!, isMine)),
       child: Card(

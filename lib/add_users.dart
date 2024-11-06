@@ -196,9 +196,8 @@ Future<void> onRegisterButtonPressed(int idx) async {
   userUidRand = user.user?.uid;
   userReference = _firestore.collection('users').doc(userUidRand);
   userDetailsRand = UserDetails(
-      userReference: userReference,
+      docRef: userReference,
       name: names[idx],
-      email: email,
       phoneNumber: int.parse('54808825$idx'),
   );
   _messaging.getToken().then((String? token) {
@@ -225,7 +224,7 @@ Future<void> onRegisterButtonPressed(int idx) async {
 
     Item newItem = Item(
         itemReference: itemDoc,
-        contactUser: userDetailsRand.userReference,
+        contactUser: userDetailsRand.docRef,
         imageRef: '',
         title: itemsTitles[(idx * 10) + j],
         price: Random().nextInt(1000),
@@ -240,11 +239,11 @@ Future<void> onRegisterButtonPressed(int idx) async {
     newItem.imageRef = imageDownloadUrl;
     itemDoc.set(newItem.itemToMap());
 
-    var userGet = await userDetailsRand.userReference.get();
+    var userGet = await userDetailsRand.docRef.get();
     if (userGet.exists) {
       Map<String, dynamic> userData = userGet.data()! as Map<String, dynamic>;
       var userItems = userData['items'];
-      userDetailsRand.userReference.update({
+      userDetailsRand.docRef.update({
         'items': FieldValue.arrayUnion([itemDoc])
       });
     } else{

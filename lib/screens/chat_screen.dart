@@ -43,14 +43,14 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       chat = widget.args.chat;
       _personName = widget.args.otherParticipantName;
-      _userIndex = chat.participants[userDetails.userReference.id]?.index ?? -1;
+      _userIndex = chat.participants[userDetails.docRef.id]?.index ?? -1;
       activeChatId = chat.docRef.id;
     });
 
     _fetchMessages(20);
     _fetchNewMessages();
 
-    if (chat.participants[userDetails.userReference.id]!.lastMessageSeenTime != chat.lastMessageSentAt) {
+    if (chat.participants[userDetails.docRef.id]!.lastMessageSeenTime != chat.lastMessageSentAt) {
       updateUserLastMessageSeenTime(chat.docRef, chat.lastMessageSentAt);
     }
   }

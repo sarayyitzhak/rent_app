@@ -113,7 +113,7 @@ class _RequestCardState extends State<RequestCard> {
               ),
               Padding(
                 padding: const EdgeInsets.all(10),
-                child: widget.request.applicantID == userDetails.userReference.id ||
+                child: widget.request.applicantID == userDetails.docRef.id ||
                         _status != RequestStatus.WAITING
                     ? Text(_status!.getTitle(localization))
                     : Row(

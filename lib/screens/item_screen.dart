@@ -62,7 +62,7 @@ class ItemScreen extends StatelessWidget {
     double rate = 0;
     TextEditingController commentController = TextEditingController();
 
-    if (userDetails.userReference != item.contactUser) {
+    if (userDetails.docRef != item.contactUser) {
       updateUserItemSeen(item.itemReference);
     }
 

@@ -36,7 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     userDetails.name = nameController.text;
     userDetails.phoneNumber = int.parse(phoneNumberController.text);
     var data = userDetails.userAsMap();
-    userDetails.userReference.update(data);
+    userDetails.docRef.update(data);
   }
 
   @override

@@ -27,7 +27,7 @@ class _ChatIconButtonState extends State<ChatIconButton> {
         ),
         onPressed: () async {
           Chat chat = await sendItemMessage(widget.item.contactUser, widget.item.itemReference);
-          UserDetails userDetails = await getUserDetailsByUid(widget.item.contactUser.id);
+          UserDetails userDetails = await getUserByID(widget.item.contactUser.id);
           if (mounted) {
             Navigator.pushNamed(context, ChatScreen.id, arguments: ChatScreenArguments(chat, userDetails.name));
           }

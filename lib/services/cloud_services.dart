@@ -38,7 +38,7 @@ Future<void> createNewItem(File? image, String title, String price, AddressInfo 
 
   Item newItem = Item(
       itemReference: itemDoc,
-      contactUser: userDetails.userReference,
+      contactUser: userDetails.docRef,
       imageRef: imageDownloadUrl,
       title: title,
       price: int.parse(price),
@@ -52,7 +52,7 @@ Future<void> createNewItem(File? image, String title, String price, AddressInfo 
   );
   itemDoc.set(newItem.itemToMap());
 
-  userDetails.userReference.update({'items': FieldValue.arrayUnion([itemDoc])});
+  userDetails.docRef.update({'items': FieldValue.arrayUnion([itemDoc])});
 }
 
 Future<void> editItem(Item item, bool isImageChanged, File? image, String title, String price, AddressInfo addressValue, String description, Condition condition, List<dynamic> categories) async {
@@ -113,7 +113,7 @@ Future<List<Item>> _getItemsByQuery(Future<QuerySnapshot<Map<String, dynamic>>> 
     for (var itemDoc in itemsDoc) {
       Map<String, dynamic>? itemData = itemDoc.data();
       Item item = mapAsItem(itemData, itemDoc.reference);
-      if (!onlyOthersItems || item.contactUser != userDetails.userReference) {
+      if (!onlyOthersItems || item.contactUser != userDetails.docRef) {
         items.add(item);
       }
     }
@@ -122,13 +122,13 @@ Future<List<Item>> _getItemsByQuery(Future<QuerySnapshot<Map<String, dynamic>>> 
 }
 
 Stream<QuerySnapshot<Map<String, dynamic>>> getUserItemsStream() {
-  return _firestore.collection('items').where('contactUser', isEqualTo: userDetails.userReference).orderBy('createdAt', descending: true).snapshots();
+  return _firestore.collection('items').where('contactUser', isEqualTo: userDetails.docRef).orderBy('createdAt', descending: true).snapshots();
 }
 
 //REQUESTS
 Future<List<ItemRequest>> getUserRequestsStream() {
   return _firestore.collection('requests')
-      .where('ownerID', isEqualTo: userDetails.userReference.id)
+      .where('ownerID', isEqualTo: userDetails.docRef.id)
       .orderBy('requestTime', descending: true)
       .get()
       .then((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => ItemRequest.fromDocumentSnapshot(snapshot)).toList());
@@ -136,7 +136,7 @@ Future<List<ItemRequest>> getUserRequestsStream() {
 
 Future<List<ItemRequest>> getPendingRequestsStream() {
   return _firestore.collection('requests')
-      .where('applicantID', isEqualTo: userDetails.userReference.id)
+      .where('applicantID', isEqualTo: userDetails.docRef.id)
       .orderBy('requestTime', descending: true)
       .get()
       .then((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => ItemRequest.fromDocumentSnapshot(snapshot)).toList());
@@ -169,7 +169,7 @@ Stream<ItemRequest> getItemRequestStream(DocumentReference docRef) {
 void addRequest(Item item, DateTimeRange range){
   _firestore.collection('requests').add({
     'ownerID': item.contactUser.id,
-    'applicantID': userDetails.userReference.id,
+    'applicantID': userDetails.docRef.id,
     'itemID': item.itemReference.id,
     'status': RequestStatus.WAITING.index,
     'time': {
@@ -221,21 +221,21 @@ void sendMessage(DocumentReference chatRef, int userIndex, String text, MessageT
 Future<Chat> sendItemMessage(DocumentReference userRef, DocumentReference itemRef) async {
   Chat? chat;
   QuerySnapshot usersChatsQuery = await _firestore.collection('chats')
-      .where('participants.${userDetails.userReference.id}', isNull: false)
+      .where('participants.${userDetails.docRef.id}', isNull: false)
       .get();
   chat = usersChatsQuery.docs.map((doc) => Chat.fromDocumentSnapshot(doc)).where((chat) => chat.participants.containsKey(userRef.id)).firstOrNull;
   if (chat == null) {
     DocumentReference chatDoc = await _firestore.collection('chats').add({
       'lastMessageSentAt': FieldValue.serverTimestamp(),
       'participants': {
-        userDetails.userReference.id: {'index': 0, 'lastMessageSeenTime': FieldValue.serverTimestamp()},
+        userDetails.docRef.id: {'index': 0, 'lastMessageSeenTime': FieldValue.serverTimestamp()},
         userRef.id: {'index': 1, 'lastMessageSeenTime': Timestamp.fromMillisecondsSinceEpoch(0)},
       }
     });
     DocumentSnapshot chatSnapshot = await chatDoc.get();
     chat = Chat.fromDocumentSnapshot(chatSnapshot);
   }
-  int userIndex = chat.participants[userDetails.userReference.id]?.index ?? -1;
+  int userIndex = chat.participants[userDetails.docRef.id]?.index ?? -1;
   if (userIndex == 0 || userIndex == 1) {
     await chat.docRef.collection('messages').add({
       'sender': userIndex,
@@ -251,14 +251,14 @@ Future<Chat> sendItemMessage(DocumentReference userRef, DocumentReference itemRe
 
 Future<void> updateUserLastMessageSeenTime(DocumentReference chatRef, DateTime dateTime) {
   return chatRef.update({
-    'participants.${userDetails.userReference.id}.lastMessageSeenTime': Timestamp.fromDate(dateTime)
+    'participants.${userDetails.docRef.id}.lastMessageSeenTime': Timestamp.fromDate(dateTime)
   });
 }
 
 Stream<List<Chat>> getUserChatsStream(){
   return _firestore
       .collection('chats')
-      .where('participants.${userDetails.userReference.id}', isNull: false)
+      .where('participants.${userDetails.docRef.id}', isNull: false)
       // .orderBy('lastMessageSentAt', descending: true)
       .snapshots()
       .map((QuerySnapshot query) => query.docs.map((doc) => Chat.fromDocumentSnapshot(doc)).toList());
@@ -275,8 +275,8 @@ Future<Chat> getChatFromChatID(String chatID) async {
 
 Future<String> getOtherParticipantName(Chat chat) async {
   for (String uid in chat.participants.keys) {
-    if (uid != userDetails.userReference.id) {
-      UserDetails otherParticipantUser = await getUserDetailsByUid(uid);
+    if (uid != userDetails.docRef.id) {
+      UserDetails otherParticipantUser = await getUserByID(uid);
       return otherParticipantUser.name;
     }
   }
@@ -313,7 +313,7 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getNewMessagesStream(DocumentReferen
 void addItemReview(DocumentReference itemRef, int rate, String text) {
   WriteBatch batch = _firestore.batch();
   batch.set(itemRef.collection('reviews').doc(), {
-    'userID': userDetails.userReference.id,
+    'userID': userDetails.docRef.id,
     'rate': rate,
     'text': text,
     'createdAt': FieldValue.serverTimestamp()
@@ -360,19 +360,17 @@ User? getCurrentUser() {
 }
 
 Future<UserDetails> getUser() async {
-  userDetails = await getUserDetailsByUid(userUid!);
+  userDetails = await getUserByID(userUid!);
   return userDetails;
 }
 
 Future<void> createNewUser(String email, String password, String name, String phoneNumber) async{
   final newUser = await _auth.createUserWithEmailAndPassword(email: email, password: password);
   userUid = newUser.user?.uid;
-  DocumentReference userReference =
-  _firestore.collection('users').doc(userUid);
+  DocumentReference userRef = _firestore.collection('users').doc(userUid);
   userDetails = UserDetails(
-      userReference: userReference,
+      docRef: userRef,
       name: name,
-      email: email,
       phoneNumber: int.parse(phoneNumber),
   );
   setToken();
@@ -383,15 +381,8 @@ void signOut(){
 }
 
 //USERS
-Future<UserDetails> getUserDetailsByUid(String userUid) async{
-  var userDoc =  await _firestore.collection('users').doc(userUid).get();
-  return mapAsUser(userDoc.data() as Map<String, dynamic>);
-}
-
 Future<UserDetails> getUserByID(String id) async {
-  var userDoc = await _firestore.collection('users').doc(id).get();
-  Map<String, dynamic>? userData = userDoc.data();
-  return mapAsUser(userData!);
+  return _firestore.collection('users').doc(id).get().then(UserDetails.fromDocumentSnapshot);
 }
 
 Future<QueryBatch<Item>> getUserSeenItems([DocumentSnapshot? startAfterDoc]) {
@@ -403,7 +394,7 @@ Future<QueryBatch<Item>> getUserFavoriteItems([DocumentSnapshot? startAfterDoc])
 }
 
 Future<QueryBatch<Item>> _getUserItems(String collectionName, String orderByFieldName, DocumentSnapshot? startAfterDoc) {
-  Query query = userDetails.userReference.collection(collectionName).orderBy(orderByFieldName, descending: true).limit(20);
+  Query query = userDetails.docRef.collection(collectionName).orderBy(orderByFieldName, descending: true).limit(20);
 
   if (startAfterDoc != null) {
     query = query.startAfterDocument(startAfterDoc);
@@ -432,21 +423,21 @@ Future<QueryBatch<Item>> _getUserItems(String collectionName, String orderByFiel
 }
 
 Stream<bool> getUserFavoriteItem(DocumentReference itemRef) {
-  return userDetails.userReference.collection('favorites').doc(itemRef.id).snapshots().map((DocumentSnapshot snapshot) => snapshot.exists);
+  return userDetails.docRef.collection('favorites').doc(itemRef.id).snapshots().map((DocumentSnapshot snapshot) => snapshot.exists);
 }
 
 Future<void> updateUserItemSeen(DocumentReference itemRef) async {
   var batch = _firestore.batch();
-  DocumentSnapshot snapshot = await userDetails.userReference.collection('seen').doc(itemRef.id).get();
+  DocumentSnapshot snapshot = await userDetails.docRef.collection('seen').doc(itemRef.id).get();
   if (!snapshot.exists) {
     batch.update(itemRef, {'seenCount': FieldValue.increment(1)});
   }
-  batch.set(userDetails.userReference.collection('seen').doc(itemRef.id), {'seenTime': FieldValue.serverTimestamp()});
+  batch.set(userDetails.docRef.collection('seen').doc(itemRef.id), {'seenTime': FieldValue.serverTimestamp()});
   return batch.commit();
 }
 
 Future<void> deleteOldUserItemSeen(DateTime dateTime) async {
-  QuerySnapshot querySnapshot = await userDetails.userReference.collection('seen')
+  QuerySnapshot querySnapshot = await userDetails.docRef.collection('seen')
       .where('seenTime', isLessThan: dateTime)
       .limit(100)
       .get();
@@ -458,7 +449,7 @@ Future<void> deleteOldUserItemSeen(DateTime dateTime) async {
 
 Future<void> toggleUserFavoriteItem(DocumentReference itemRef) async {
   var batch = _firestore.batch();
-  DocumentSnapshot snapshot = await userDetails.userReference.collection('favorites').doc(itemRef.id).get();
+  DocumentSnapshot snapshot = await userDetails.docRef.collection('favorites').doc(itemRef.id).get();
   if (snapshot.exists) {
     batch.delete(snapshot.reference);
     batch.update(itemRef, {'favoriteCount': FieldValue.increment(-1)});
@@ -494,7 +485,7 @@ void setToken(){
   _messaging.getToken().then((String? token) {
     if (token != null && token != userDetails.token) {
       userDetails.token = token;
-      userDetails.userReference.update({'token': token});
+      userDetails.docRef.update({'token': token});
     }
   });
 }

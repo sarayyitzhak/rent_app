@@ -14,7 +14,7 @@ class InitialScreen extends StatelessWidget {
       final user = getCurrentUser();
       userUid = user?.uid;
       if (user != null) {
-        userDetails = await getUserDetailsByUid(userUid!);
+        userDetails = await getUserByID(userUid!);
         return MainScreen.id;
       }
     } catch (e) {

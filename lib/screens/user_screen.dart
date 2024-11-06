@@ -56,7 +56,7 @@ class _UserScreenState extends State<UserScreen> {
                       style: kBlackHeaderTextStyle,
                     ), //TODO: add user details
                     Text(
-                      userDetails.email,
+                      getCurrentUser()!.email!,
                       style: kBlackTextStyle,
                     ),
                   ],

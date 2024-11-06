@@ -26,7 +26,7 @@ class _MessageTimeState extends State<MessageTime> {
 
   bool isMessageRead(Chat chat) {
     for (String uid in chat.participants.keys) {
-      if (uid != userDetails.userReference.id) {
+      if (uid != userDetails.docRef.id) {
         DateTime lastMessageSeenTime =
             chat.participants[uid]!.lastMessageSeenTime;
         return !lastMessageSeenTime.isBefore(widget.message.sentAt);
