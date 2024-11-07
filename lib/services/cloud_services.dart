@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rent_app/main.dart';
+import 'package:rent_app/globals.dart';
 import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/models/item_review.dart';
@@ -372,7 +373,6 @@ Future<void> login(String email, String password) async {
       email: email,
       password: password);
   userUid = user.user?.uid;
-  await getUser();
 }
 
 User? getCurrentUser() {
@@ -518,7 +518,7 @@ void setToken(){
 void onTokenRefreshed(){
   _messaging.onTokenRefresh.listen((newToken) {
     userDetails.token = newToken;
-    FirebaseFirestore.instance.collection('users').doc(userUid).update({
+    userDetails.docRef.update({
       'token': newToken,
     });
   });

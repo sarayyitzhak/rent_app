@@ -1,15 +1,15 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
-import 'package:rent_app/main.dart';
+import 'package:rent_app/globals.dart';
 import 'package:rent_app/screens/chat_screen.dart';
 import '../models/chat.dart';
-import '../screens/chats_screen.dart';
 import '../screens/user_items_screen.dart';
 import 'cloud_services.dart';
+
 int counter = 0;
 
-Future<void> showNotification( String? title, String? body, RemoteMessage? message) async {
+Future<void> showNotification(String? title, String? body, RemoteMessage? message) async {
   await flutterLocalNotificationsPlugin.show(
     counter++,
     title,

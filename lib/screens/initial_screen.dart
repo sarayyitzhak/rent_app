@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/screens/welcome_screen.dart';
+import 'package:rent_app/globals.dart';
 import '../main.dart';
 import '../services/cloud_services.dart';
 import 'main_screen.dart';

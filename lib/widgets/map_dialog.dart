@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
-import '../screens/home_screen.dart';
+import 'package:rent_app/globals.dart';
 
 class MapDialog extends StatelessWidget {
   final BuildContext context;

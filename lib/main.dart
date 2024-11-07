@@ -23,7 +23,6 @@ import 'package:rent_app/constants.dart';
 import 'package:rent_app/screens/login_screen.dart';
 import 'package:rent_app/screens/initial_screen.dart';
 import 'package:rent_app/screens/welcome_screen.dart';
-import 'models/user.dart';
 import 'screens/home_screen.dart';
 import 'screens/user_screen.dart';
 import 'screens/registration_screen.dart';
@@ -31,12 +30,7 @@ import 'screens/main_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-String? userUid;
-late UserDetails userDetails;
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-// late String currentScreen;
-String? activeChatId;
+import 'package:rent_app/globals.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

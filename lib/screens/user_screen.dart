@@ -6,6 +6,7 @@ import 'package:rent_app/screens/profile_screen.dart';
 import 'package:rent_app/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
+import 'package:rent_app/globals.dart';
 import '../constants.dart';
 import '../main.dart';
 import '../services/cloud_services.dart';

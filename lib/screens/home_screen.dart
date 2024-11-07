@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rent_app/globals.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/screens/item_grid_screen.dart';
 import 'package:rent_app/screens/pending_requests_screen.dart';
@@ -14,9 +15,6 @@ import 'package:geocoding/geocoding.dart';
 
 import '../widgets/item_widgets/item_card.dart';
 
-Position? currentPosition;
-String? cityName;
-
 class HomeScreen extends StatefulWidget {
   static String id = 'home_screen';
 
@@ -29,6 +27,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   ItemCategory _selectedCategory = ItemCategory.values[0];
   final ScrollController _categoryScrollController = ScrollController();
+  String? cityName;
 
   List<Widget> buildCategoriesList() {
     List<Widget> categoriesCards = [];

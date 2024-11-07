@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:rent_app/main.dart';
+import 'package:rent_app/globals.dart';
 import 'package:rent_app/screens/item_screen.dart';
 import 'package:rent_app/widgets/chat_icon_button.dart';
 import 'package:rent_app/widgets/rating_stars_widget.dart';

@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rent_app/models/chat.dart';
 import 'package:rent_app/main.dart';
+import 'package:rent_app/globals.dart';
 import 'package:rent_app/widgets/chat_bottom_send_bar.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import '../models/message.dart';

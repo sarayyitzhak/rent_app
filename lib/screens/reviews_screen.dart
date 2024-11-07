@@ -25,6 +25,7 @@ class ReviewsScreen extends StatelessWidget {
           } if (snapshot.hasData) {
             List<ItemReview> reviews = snapshot.data!;
             return ListView(
+              physics: const ClampingScrollPhysics(),
               children: reviews.map((r) => ReviewCard(review: r)).toList(),
             );
           } else {

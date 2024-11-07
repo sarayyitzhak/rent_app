@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../main.dart';
+import 'package:rent_app/globals.dart';
 import '../../models/chat.dart';
 import '../../models/message.dart';
 import '../../services/cloud_services.dart';
