@@ -1,8 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/screens/item_screen.dart';
-import 'package:rent_app/widgets/chat_icon_button.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/rating_stars_widget.dart';
 import 'package:rent_app/widgets/favorite_button.dart';
 import 'package:shimmer/shimmer.dart';
@@ -18,6 +19,7 @@ class ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations localization = AppLocalizations.of(context)!;
     if (item == null) {
       return Card(
         elevation: 5,
@@ -57,6 +59,21 @@ class ItemCard extends StatelessWidget {
       );
     }
     bool isMine = item!.contactUser == userDetails.docRef;
+    String? distanceFromMe;
+    if (currentPosition != null) {
+      var itemGeoPoint = item!.location.geoPoint;
+      double distance = Geolocator.distanceBetween(
+          currentPosition!.latitude, currentPosition!.longitude, itemGeoPoint.latitude, itemGeoPoint.longitude);
+      if (distance < kMaxDistance) {
+        if (distance < kMaxDistanceForNearby) {
+          distanceFromMe = localization.nearby;
+        } else if (distance < kMaxDistanceForMeters) {
+          distanceFromMe = localization.metersFromYou(distance.toStringAsFixed(0));
+        } else {
+          distanceFromMe = localization.kmFromYou((distance / 1000).toStringAsFixed(1));
+        }
+      }
+    }
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, ItemScreen.id, arguments: ItemScreenArguments(item!, isMine)),
       child: Card(
@@ -89,6 +106,24 @@ class ItemCard extends StatelessWidget {
                         ),
                       ),
                     ),
+                    if (!isMine && distanceFromMe != null)
+                      PositionedDirectional(
+                        top: 8,
+                        start: 8,
+                        child: Card(
+                          color: Colors.black.withOpacity(0.3),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+                            child: Text(
+                              distanceFromMe,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
                     if (!isMine)
                       PositionedDirectional(
                         top: 8,

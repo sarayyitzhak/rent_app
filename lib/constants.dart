@@ -16,6 +16,10 @@ const kMapTilerApiKey = '90JJ6DPLZWrrH2aGs87z';
 
 const kMapUrl = 'https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=$kMapTilerApiKey';
 
+const kMaxDistance = 5000; /* meters */
+const kMaxDistanceForNearby = 200; /* meters */
+const kMaxDistanceForMeters = 500; /* meters */
+
 const kIconRadius = 12.0;
 
 const kTopHeaderTextStyle = TextStyle(

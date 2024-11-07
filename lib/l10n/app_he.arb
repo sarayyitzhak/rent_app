@@ -100,6 +100,29 @@
   "noReviewsYet": "אין ביקורות",
   "addComment": "הוסף תגובה",
   "publish": "פרסם",
+  "nearby": "בקרבת מקום",
+
+  "metersFromYou": "{meters} מטרים ממך",
+  "@metersFromYou": {
+    "description": "X meters from you",
+    "placeholders": {
+      "meters": {
+        "type": "String",
+        "example": "8.4"
+      }
+    }
+  },
+
+  "kmFromYou": "{km} ק\"מ ממך",
+  "@kmFromYou": {
+    "description": "X km from you",
+    "placeholders": {
+      "km": {
+        "type": "String",
+        "example": "8.4"
+      }
+    }
+  },
 
 
   "waiting": "בהמתנה",

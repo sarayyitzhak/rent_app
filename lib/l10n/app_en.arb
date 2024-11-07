@@ -95,12 +95,34 @@
   "peopleSeenTheItem": "peopleSeenThisItem",
   "today": "Today",
   "yesterday": "Yesterday",
+  "show_more": "Show more",
   "reviews": "Reviews",
   "noReviewsYet": "No reviews yet",
   "addComment": "Add comment",
   "publish": "Publish",
+  "nearby": "Nearby",
 
-  "show_more": "Show more",
+  "metersFromYou": "{meters} meters from you",
+  "@metersFromYou": {
+    "description": "X meters from you",
+    "placeholders": {
+      "meters": {
+        "type": "String",
+        "example": "8.4"
+      }
+    }
+  },
+
+  "kmFromYou": "{km} km from you",
+  "@kmFromYou": {
+    "description": "X km from you",
+    "placeholders": {
+      "km": {
+        "type": "String",
+        "example": "8.4"
+      }
+    }
+  },
 
 
   "waiting": "Waiting",
