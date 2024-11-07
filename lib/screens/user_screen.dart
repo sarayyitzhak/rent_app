@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:rent_app/screens/grid_items_screen.dart';
+import 'package:rent_app/screens/item_grid_screen.dart';
 import 'package:rent_app/screens/profile_screen.dart';
 import 'package:rent_app/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
@@ -75,8 +75,8 @@ class _UserScreenState extends State<UserScreen> {
                         onPressed: () => Navigator.pushNamed(context, ProfileScreen.id),
                         child: IconAboveText(icon: Icons.person_outline, label: localization.profile, size: 40)),
                     TextButton(
-                        onPressed: () => Navigator.pushNamed(context, GridItemsScreen.id,
-                            arguments: GridItemsScreenArguments(localization.wishlist, getUserFavoriteItems)),
+                        onPressed: () => Navigator.pushNamed(context, ItemGridScreen.id,
+                            arguments: ItemGridScreenArguments(localization.wishlist, getUserFavoriteItems)),
                         child:
                             IconAboveText(icon: Icons.receipt_long_outlined, label: localization.wishlist, size: 40)),
                     TextButton(

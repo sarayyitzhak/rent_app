@@ -1,7 +1,13 @@
 
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+import 'models/item.dart';
+import 'services/query_batch.dart';
+
+typedef QueryBatchGetter = Future<QueryBatch<Item>> Function(DocumentSnapshot? startAfterDoc);
 
 const kYellowLogoImage = 'assets/images/handshake_yellow.png';
 const kWhiteLogoImage = 'assets/images/handshake.png';

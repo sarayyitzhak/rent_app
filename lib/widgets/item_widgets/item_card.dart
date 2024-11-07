@@ -6,9 +6,9 @@ import 'package:rent_app/widgets/chat_icon_button.dart';
 import 'package:rent_app/widgets/rating_stars_widget.dart';
 import 'package:rent_app/widgets/favorite_button.dart';
 import 'package:shimmer/shimmer.dart';
-import '../constants.dart';
-import '../models/item.dart';
-import '../utils.dart';
+import '../../constants.dart';
+import '../../models/item.dart';
+import '../../utils.dart';
 
 class ItemCard extends StatelessWidget {
   final Item? item;

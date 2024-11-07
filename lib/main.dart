@@ -5,7 +5,7 @@ import 'package:rent_app/screens/category_screen.dart';
 import 'package:rent_app/screens/chat_screen.dart';
 import 'package:rent_app/screens/chats_screen.dart';
 import 'package:rent_app/screens/item_screen.dart';
-import 'package:rent_app/screens/grid_items_screen.dart';
+import 'package:rent_app/screens/item_grid_screen.dart';
 import 'package:rent_app/screens/pending_requests_screen.dart';
 import 'package:rent_app/screens/profile_screen.dart';
 import 'package:rent_app/screens/rental_screen.dart';
@@ -137,7 +137,7 @@ class MyApp extends StatelessWidget {
           ProfileScreen.id: (context) => const ProfileScreen(),
           RequestScreen.id: (context) => RequestScreen(settings.arguments as RequestScreenArguments),
           ReviewsScreen.id: (context) => ReviewsScreen(settings.arguments as ReviewsScreenArguments),
-          GridItemsScreen.id: (context) => GridItemsScreen(settings.arguments as GridItemsScreenArguments),
+          ItemGridScreen.id: (context) => ItemGridScreen(settings.arguments as ItemGridScreenArguments),
         };
         return MaterialPageRoute(builder: routes[settings.name]!);
       },

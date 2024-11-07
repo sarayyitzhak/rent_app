@@ -3,7 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:rent_app/main.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/models/user.dart';
-import 'package:rent_app/widgets/item_card.dart';
+import 'package:rent_app/widgets/item_widgets/item_card.dart';
 import '../models/category.dart';
 import '../utils.dart';
 import 'cloud_services.dart';
@@ -18,11 +18,6 @@ List<ItemCard> getItemCards(List<Item> items, bool isHorizontal) {
   return itemCards;
 }
 
-Future<List<ItemCard>> getItemsFilterByCategory(ItemCategory category, bool isHorizontal) async {
-  List<Item> items = await getItemsByCategory(category);
-  return getItemCards(items, isHorizontal);
-}
-
 Future<List<ItemCard>> getItemsFilterByLocation(Position position, String cityName, bool isHorizontal) async {
   List<Item> items = await getItemsByLocation(position, cityName);
   return getItemCards(items, isHorizontal);
@@ -31,11 +26,6 @@ Future<List<ItemCard>> getItemsFilterByLocation(Position position, String cityNa
 Future<List<ItemCard>> getItemsFilterByGeoPoint(double lat, double lng, bool isHorizontal) async {
   Map latLng = getLatLngSquare(lat, lng);
   List<Item> items = await getItemsByGeoPoint(latLng['minLat'], latLng['maxLat'], latLng['minLng'], latLng['maxLng']);
-  return getItemCards(items, isHorizontal);
-}
-
-Future<List<ItemCard>> getItemsFilterByTitle(String title, bool isHorizontal) async {
-  List<Item> items = await getItemsByTitle(title);
   return getItemCards(items, isHorizontal);
 }
 

@@ -71,9 +71,21 @@ Future<void> editItem(Item item, bool isImageChanged, File? image, String title,
   _firestore.collection('items').doc(item.itemReference.id).update(item.itemToMap());
 }
 
-Future<List<Item>> getItemsByCategory(ItemCategory category) async {
-  return _getItemsByQuery(_firestore.collection('items').where(
-      'categories', arrayContains: category.idx).get(), true);
+Future<QueryBatch<Item>> getItemsByCategory(ItemCategory category, [DocumentSnapshot? startAfterDoc]) async {
+  Query query = _firestore.collection('items').where('categories', arrayContains: category.idx).limit(20);
+  // TODO: add where by NOT current user (maybe order by createdAt?)
+
+  if (startAfterDoc != null) {
+    query = query.startAfterDocument(startAfterDoc);
+  }
+
+  return query.get().then((QuerySnapshot itemsQuery) {
+    List<Item> list = itemsQuery.docs
+      .map((QueryDocumentSnapshot snapshot) => mapAsItem(snapshot.data() as Map<String, dynamic>, snapshot.reference))
+      .toList();
+
+    return QueryBatch(list, list.length == 20, itemsQuery.docs.isNotEmpty ? itemsQuery.docs.last : null);
+  });
 }
 
 Future<List<Item>> getItemsByLocation(Position position, String cityName) async {
@@ -92,11 +104,24 @@ Future<List<Item>> getItemsByContactUser(DocumentReference contactUser) async {
       'contactUser', isEqualTo: contactUser).orderBy('createdAt', descending: true).get(), false);
 }
 
-Future<List<Item>> getItemsByTitle(String title) async {
-  return _getItemsByQuery(_firestore.collection('items')
+Future<QueryBatch<Item>> getItemsByTitle(String title, [DocumentSnapshot? startAfterDoc]) async {
+  Query query = _firestore.collection('items')
       .where('title', isGreaterThanOrEqualTo: title)
       .where('title', isLessThan: getNextAlphabeticalString(title))
-      .get(), false);
+      .limit(20);
+  // TODO: add where by NOT current user (maybe order by createdAt?)
+
+  if (startAfterDoc != null) {
+    query = query.startAfterDocument(startAfterDoc);
+  }
+
+  return query.get().then((QuerySnapshot itemsQuery) {
+    List<Item> list = itemsQuery.docs
+        .map((QueryDocumentSnapshot snapshot) => mapAsItem(snapshot.data() as Map<String, dynamic>, snapshot.reference))
+        .toList();
+
+    return QueryBatch(list, list.length == 20, itemsQuery.docs.isNotEmpty ? itemsQuery.docs.last : null);
+  });
 }
 
 Future<Item?> getItemById(String id) async {

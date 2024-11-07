@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/models/item.dart';
-import 'package:rent_app/screens/grid_items_screen.dart';
+import 'package:rent_app/screens/item_grid_screen.dart';
 import 'package:rent_app/screens/pending_requests_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/services/query_batch.dart';
@@ -12,7 +12,7 @@ import '../services/card_utils.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
-import '../widgets/item_card.dart';
+import '../widgets/item_widgets/item_card.dart';
 
 Position? currentPosition;
 String? cityName;
@@ -182,13 +182,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(
                       height: 250,
                       child: FutureBuilder(
-                          future: getItemsFilterByCategory(_selectedCategory, true),
+                          future: getItemsByCategory(_selectedCategory),
                           builder: (context, snapshot) {
-                            if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
-                              List? itemCards = snapshot.data;
+                            if (snapshot.hasData) {
+                              QueryBatch<Item> items = snapshot.data!;
                               return ListView(
                                 scrollDirection: Axis.horizontal,
-                                children: itemCards as List<Widget>,
+                                children: items.list.map((Item item) => ItemCard(item: item, isHorizontal: true)).toList(),
                               );
                             } else {
                               return Container();
@@ -246,8 +246,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: kBlackHeaderTextStyle,
                         ),
                         TextButton(
-                            onPressed: () => Navigator.pushNamed(context, GridItemsScreen.id,
-                                arguments: GridItemsScreenArguments(localization.lastSeen, getUserSeenItems)),
+                            onPressed: () => Navigator.pushNamed(context, ItemGridScreen.id,
+                                arguments: ItemGridScreenArguments(localization.lastSeen, getUserSeenItems)),
                             child: Text(
                               localization.show_more,
                               style: const TextStyle(color: Colors.black54),

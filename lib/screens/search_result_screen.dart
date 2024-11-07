@@ -1,14 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
-import 'package:rent_app/widgets/scrollable_item_grid.dart';
+import 'package:rent_app/widgets/item_widgets/item_grid.dart';
 import '../constants.dart';
-import '../services/card_utils.dart';
 
 class SearchResultScreen extends StatefulWidget {
   static String id = 'search_result_screen';
 
   final SearchResultScreenArguments args;
+
   const SearchResultScreen(this.args, {super.key});
 
   @override
@@ -17,24 +19,23 @@ class SearchResultScreen extends StatefulWidget {
 
 class _SearchResultScreenState extends State<SearchResultScreen> {
   late TextEditingController searchTextController;
-  late ScrollableItemGrid itemGrid;
+  final QueryBatchGetterNotifier notifier = QueryBatchGetterNotifier();
 
   @override
   void initState() {
     super.initState();
 
     searchTextController = TextEditingController(text: widget.args.text);
-    itemGrid = ScrollableItemGrid(future: getItemsFilterByTitle(searchTextController.text, false));
   }
 
-  Future<ScrollableItemGrid?> onSearchPressed() async {
+  Future<void> onSearchPressed() async {
     FocusScope.of(context).requestFocus(FocusNode());
     if (searchTextController.text.isNotEmpty) {
       setState(() {
-        itemGrid = ScrollableItemGrid(future: getItemsFilterByTitle(searchTextController.text, false));
+        notifier.updateQueryBatchGetter(
+            (DocumentSnapshot? startAfterDoc) => getItemsByTitle(searchTextController.text, startAfterDoc));
       });
     }
-    return null;
   }
 
   @override
@@ -54,8 +55,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                 children: [
                   Expanded(
                     child: TextField(
-                      decoration: kTextFieldDecorationOnlyBorder.copyWith(
-                          hintText: localization.search),
+                      decoration: kTextFieldDecorationOnlyBorder.copyWith(hintText: localization.search),
                       textInputAction: TextInputAction.search,
                       onEditingComplete: onSearchPressed,
                       controller: searchTextController,
@@ -87,8 +87,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                             color: kPastelYellowOpacity,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: TextButton(
-                              onPressed: () {}, child: Text(localization.sort)),
+                          child: TextButton(onPressed: () {}, child: Text(localization.sort)),
                         ),
                       ),
                       const SizedBox(
@@ -101,15 +100,16 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                             color: kPastelYellowOpacity,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: TextButton(
-                              onPressed: () {},
-                              child: Text(localization.filter)),
+                          child: TextButton(onPressed: () {}, child: Text(localization.filter)),
                         ),
                       ),
                     ],
                   ),
                   Expanded(
-                    child: itemGrid,
+                    child: ItemGrid(
+                      (DocumentSnapshot? startAfterDoc) => getItemsByTitle(searchTextController.text, startAfterDoc),
+                      notifier: notifier,
+                    ),
                   ),
                 ],
               ),

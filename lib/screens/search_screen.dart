@@ -4,7 +4,6 @@ import 'package:rent_app/screens/search_result_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/category_list_tile.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
-import 'package:rent_app/widgets/scrollable_item_grid.dart';
 import '../constants.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -25,7 +24,7 @@ class _SearchScreenState extends State<SearchScreen> {
     searchTextController = TextEditingController();
   }
 
-  Future<ScrollableItemGrid?> onSearchPressed() async {
+  Future<void> onSearchPressed() async {
     FocusScope.of(context).requestFocus(FocusNode());
     if (searchTextController.text.isNotEmpty) {
       String text = searchTextController.text;
@@ -33,7 +32,6 @@ class _SearchScreenState extends State<SearchScreen> {
       Navigator.pushNamed(context, SearchResultScreen.id,
           arguments: SearchResultScreenArguments(text));
     }
-    return null;
   }
 
   Column buildCategoryListTiles(AppLocalizations localization) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rent_app/widgets/item_card.dart';
+import 'package:rent_app/widgets/item_widgets/item_card.dart';
 import '../constants.dart';
 import '../services/card_utils.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
