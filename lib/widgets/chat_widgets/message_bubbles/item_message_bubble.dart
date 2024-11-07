@@ -34,7 +34,7 @@ class ItemMessageBubble extends StatelessWidget {
                   Item item = snapshot.data!;
                   return GestureDetector(
                     onTap: () => Navigator.pushNamed(context, ItemScreen.id,
-                        arguments: ItemScreenArguments(item, item.contactUser == userDetails.docRef)),
+                        arguments: ItemScreenArguments(item, item.contactUserID == userDetails.docRef.id)),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [

@@ -138,31 +138,40 @@ List itemsTitles = [
 List<AddressInfo> addressValues = [
   AddressInfo(
       geoPoint: const GeoPoint(32.784809, 35.023056),
-      addressData: {'city': 'חיפה', 'road': 'הרב מימון'}),
+      city: 'חיפה',
+      road: 'הרב מימון'),
   AddressInfo(
       geoPoint: const GeoPoint(32.776475, 35.036188),
-      addressData: {'city': 'נשר', 'road': 'מעלה הגיבורים'}),
+      city: 'נשר',
+      road: 'מעלה הגיבורים'),
   AddressInfo(
       geoPoint: const GeoPoint(31.795468, 35.153486),
-      addressData: {'city': 'מוצא עילית', 'road': 'ארזה'}),
+      city: 'מוצא עילית',
+      road: 'ארזה'),
   AddressInfo(
       geoPoint: const GeoPoint(32.026828, 34.872005),
-      addressData: {'city': 'אור יהודה', 'road': 'ניצן'}),
+      city: 'אור יהודה',
+      road: 'ניצן'),
   AddressInfo(
       geoPoint: const GeoPoint(31.762280, 35.174503),
-      addressData: {'city': 'ירושלים', 'road': 'קרית יובל'}),
+      city: 'ירושלים',
+      road: 'קרית יובל'),
   AddressInfo(
       geoPoint: const GeoPoint(31.746798, 35.220745),
-      addressData: {'city': 'ירושלים', 'road': 'ארנונה'}),
+      city: 'ירושלים',
+      road: 'ארנונה'),
   AddressInfo(
       geoPoint: const GeoPoint(32.815981, 35.002303),
-      addressData: {'city': 'חיפה', 'road': 'עיר תחתית'}),
+      city: 'חיפה',
+      road: 'עיר תחתית'),
   AddressInfo(
       geoPoint: const GeoPoint(31.781190, 35.309961),
-      addressData: {'city': 'מעלה אדומים', 'road': 'החלמיש'}),
+      city: 'מעלה אדומים',
+      road: 'החלמיש'),
   AddressInfo(
       geoPoint: const GeoPoint(31.767112, 35.303640),
-      addressData: {'city': 'מעלה אדומים', 'road': 'צמח השדה'}),
+      city: 'מעלה אדומים',
+      road: 'צמח השדה'),
 ];
 List categories = ItemCategory.values;
 List images = [];
@@ -222,22 +231,19 @@ Future<void> onRegisterButtonPressed(int idx) async {
     TaskSnapshot taskSnapshot = await uploadTask;
     var imageDownloadUrl = await taskSnapshot.ref.getDownloadURL();
 
-    Item newItem = Item(
-        itemReference: itemDoc,
-        contactUser: userDetailsRand.docRef,
-        imageRef: '',
-        title: itemsTitles[(idx * 10) + j],
-        price: Random().nextInt(1000),
-        location: addressValues[idx],
-        description: 'מוצר נדיר מהמם הכי טוב שיש. מומלץ לכל אחד להשכיר.',
-        condition: Condition.USED_AS_NEW,
-        categories: [categories[j]],
-        createdAt: Timestamp.now(),
-        favoriteCount: 0,
-        seenCount: 0,
-    );
-    newItem.imageRef = imageDownloadUrl;
-    itemDoc.set(newItem.itemToMap());
+    itemDoc.set({
+      'contactUserID': userDetailsRand.docRef.id,
+      'imageRef': imageDownloadUrl,
+      'title': itemsTitles[(idx * 10) + j],
+      'price': Random().nextInt(1000),
+      'location': addressValues[idx].toMap(),
+      'description': 'מוצר נדיר מהמם הכי טוב שיש. מומלץ לכל אחד להשכיר.',
+      'condition': Condition.USED_AS_NEW.index,
+      'categories': [categories[j]].map((c) => c.index).toList(),
+      'createdAt': FieldValue.serverTimestamp(),
+      'favoriteCount': 0,
+      'seenCount': 0,
+    });
 
     var userGet = await userDetailsRand.docRef.get();
     if (userGet.exists) {

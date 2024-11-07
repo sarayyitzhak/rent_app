@@ -29,17 +29,10 @@ Future<List<ItemCard>> getItemsFilterByGeoPoint(double lat, double lng, bool isH
   return getItemCards(items, isHorizontal);
 }
 
-Future<List<ItemCard>> getItemsFilterByContactUser(DocumentReference contactUser, bool isHorizontal) async {
-  List<Item> items = await getItemsByContactUser(contactUser);
-  return getItemCards(items, isHorizontal);
-}
-
 List<ItemCard> getItemsByStream(dynamic items, bool isHorizontal){
   List<Item> itemsList = [];
   for (var itemDoc in items) {
-    Map<String, dynamic>? itemData = itemDoc.data();
-    var item = mapAsItem(itemData!, itemDoc.reference);
-    itemsList.add(item);
+    itemsList.add(Item.fromDocumentSnapshot(itemDoc));
   }
   return getItemCards(itemsList, isHorizontal);
 }

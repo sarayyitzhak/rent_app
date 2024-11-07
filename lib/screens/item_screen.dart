@@ -46,7 +46,7 @@ class ItemScreen extends StatelessWidget {
         ElevatedButton(
             onPressed: () {
               if(rate == 0){
-                addItemReview(item.itemReference, rate.toInt(), commentController.text);
+                addItemReview(item.docRef, rate.toInt(), commentController.text);
                 commentController.clear();
               }
             },
@@ -62,8 +62,8 @@ class ItemScreen extends StatelessWidget {
     double rate = 0;
     TextEditingController commentController = TextEditingController();
 
-    if (userDetails.docRef != item.contactUser) {
-      updateUserItemSeen(item.itemReference);
+    if (userDetails.docRef.id != item.contactUserID) {
+      updateUserItemSeen(item.docRef);
     }
 
     return Scaffold(
@@ -73,7 +73,7 @@ class ItemScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: FutureBuilder(
-            future: getUserByID(item.contactUser.id),
+            future: getUserByID(item.contactUserID),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());

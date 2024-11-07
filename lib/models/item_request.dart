@@ -77,7 +77,7 @@ class ItemRequest {
       time: DateTimeRange(start: start.toDate(), end: end.toDate()),
       extensionRequest: data['extensionRequest'] != null ? ItemExtensionRequest.fromMap(data['extensionRequest']) : null,
       price: data['price'],
-      pickUpLocation: mapToAddressInfo(data['pickUpLocation']),
+      pickUpLocation: AddressInfo.fromMap(data['pickUpLocation']),
       requestTime: data['requestTime']
     );
   }

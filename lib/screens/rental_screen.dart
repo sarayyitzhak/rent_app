@@ -93,7 +93,7 @@ class _RentalScreenState extends State<RentalScreen> {
   }
 
   void _updateDates() async {
-    _itemRequestsSubscription = getFutureItemRequestsStream(widget.args.item.itemReference).listen((List<ItemRequest> itemRequests) {
+    _itemRequestsSubscription = getFutureItemRequestsStream(widget.args.item.docRef).listen((List<ItemRequest> itemRequests) {
       List<DateTime> blackoutDates = [];
       List<DateTime> waitingDates = [];
 

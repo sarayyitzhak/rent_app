@@ -58,7 +58,7 @@ class ItemCard extends StatelessWidget {
         ),
       );
     }
-    bool isMine = item!.contactUser == userDetails.docRef;
+    bool isMine = item!.contactUserID == userDetails.docRef.id;
     String? distanceFromMe;
     if (currentPosition != null) {
       var itemGeoPoint = item!.location.geoPoint;

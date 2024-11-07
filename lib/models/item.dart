@@ -1,43 +1,41 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rent_app/models/address_info.dart';
 import 'category.dart';
 import 'condition.dart';
 
 class Item {
-  final DocumentReference _itemReference;
-  final DocumentReference _contactUser;
-  String _imageRef;
-  String _title;
-  int _price;
-  AddressInfo _location;
-  String _description;
-  Condition _condition;
-  List<dynamic> _categories;
-  final Timestamp _createdAt;
-  int _favoriteCount;
-  int _seenCount;
-  int? _reviewCount;
-  int? _rateSum;
+  final DocumentReference _docRef;
+  final String _contactUserID;
+  final String _imageRef;
+  final String _title;
+  final int _price;
+  final AddressInfo _location;
+  final String _description;
+  final Condition _condition;
+  final List<ItemCategory> _categories;
+  final DateTime _createdAt;
+  final int _favoriteCount;
+  final int _seenCount;
+  final int? _reviewCount;
+  final int? _rateSum;
 
-  // Constructor
   Item({
-    required DocumentReference itemReference,
-    required DocumentReference contactUser,
+    required DocumentReference docRef,
+    required String contactUserID,
     required String imageRef,
     required String title,
     required int price,
     required AddressInfo location,
     required String description,
     required Condition condition,
-    required List<dynamic> categories,
-    required Timestamp createdAt,
+    required List<ItemCategory> categories,
+    required DateTime createdAt,
     required int favoriteCount,
     required int seenCount,
     int? reviewCount,
     int? rateSum,
-  })  : _itemReference = itemReference,
-        _contactUser = contactUser,
+  })  : _docRef = docRef,
+        _contactUserID = contactUserID,
         _imageRef = imageRef,
         _title = title,
         _price = price,
@@ -51,80 +49,56 @@ class Item {
         _reviewCount = reviewCount,
         _rateSum = rateSum;
 
-  DocumentReference get itemReference => _itemReference;
-  DocumentReference get contactUser => _contactUser;
-  String get imageRef => _imageRef;
-  String get title => _title;
-  int get price => _price;
-  AddressInfo get location => _location;
-  String get description => _description;
-  Condition get condition => _condition;
-  List<dynamic> get categories => _categories;
+  DocumentReference get docRef => _docRef;
 
-  Timestamp get createdAt => _createdAt;
+  String get contactUserID => _contactUserID;
+
+  String get imageRef => _imageRef;
+
+  String get title => _title;
+
+  int get price => _price;
+
+  AddressInfo get location => _location;
+
+  String get description => _description;
+
+  Condition get condition => _condition;
+
+  List<ItemCategory> get categories => _categories;
+
+  DateTime get createdAt => _createdAt;
+
   int get favoriteCount => _favoriteCount;
+
   int get seenCount => _seenCount;
+
   int? get reviewCount => _reviewCount;
+
   int? get rateSum => _rateSum;
 
-  set imageRef(String value) => _imageRef = value;
-  set favoriteCount(int value) => _favoriteCount = value;
-  set seenCount(int value) => _seenCount = value;
-  set price(int value) => _price = value;
-  set location(AddressInfo value) => _location = value;
-  set description(String value) => _description = value;
-  set title(String value) => _title = value;
-  set condition(Condition value) => _condition = value;
-  set categories(List<dynamic> value) => _categories = value;
-  set reviewCount(int? value) => _reviewCount = value;
-  set rateSum(int? value) => _rateSum = value;
-
-  double? getRate(){
-    return reviewCount != null ? (rateSum! / reviewCount!) : null;
+  double? getRate() {
+    return (reviewCount != null && reviewCount != 0) ? (rateSum! / reviewCount!) : null;
   }
 
-  Map<String, dynamic> itemToMap() {
-    return {
-      'contactUser': _contactUser,
-      'imageRef': _imageRef,
-      'title': _title,
-      'price': _price,
-      'location': _location.toMap(),
-      'description': _description,
-      'condition': _condition.idx,
-      'categories': _categories.map((c) => c.idx).toList(),
-      'createdAt': _createdAt,
-      'favoriteCount': _favoriteCount,
-      'seenCount': _seenCount,
-      'reviewCount': _reviewCount,
-      'rateSum': _rateSum
-    };
+  factory Item.fromDocumentSnapshot(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+    return Item(
+      docRef: doc.reference,
+      contactUserID: data['contactUserID'],
+      imageRef: data['imageRef'],
+      title: data['title'],
+      price: data['price'],
+      location: AddressInfo.fromMap(data['location']),
+      description: data['description'],
+      condition: Condition.values[data['condition']],
+      categories: (data['categories'] as List<dynamic>).map((idx) => ItemCategory.values[idx]).toList(),
+      createdAt: data['createdAt'].toDate(),
+      favoriteCount: data['favoriteCount'],
+      seenCount: data['seenCount'],
+      reviewCount: data['reviewCount'],
+      rateSum: data['rateSum']
+    );
   }
-}
-
-Item mapAsItem(Map<String, dynamic> map, DocumentReference itemRef) {
-  var categoryTitlesList = map['categories'];
-  List<ItemCategory> categoryList = [];
-  for (int idx in categoryTitlesList) {
-    categoryList.add(getCategoryByIdx(idx));
-  }
-
-  Condition condition = getCondFromIdx(map['condition']);
-  return Item(
-    itemReference: itemRef,
-    contactUser: map['contactUser'],
-    imageRef: map['imageRef'],
-    title: map['title'],
-    price: map['price'],
-    location: mapToAddressInfo(map['location']),
-    description: map['description'],
-    condition: condition,
-    categories: categoryList,
-    createdAt: map['createdAt'],
-    favoriteCount: map['favoriteCount'],
-    seenCount: map['seenCount'],
-    reviewCount: map['reviewCount'],
-    rateSum: map['rateSum']
-  );
-
 }

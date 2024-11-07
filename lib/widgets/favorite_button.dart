@@ -18,7 +18,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: getUserFavoriteItem(widget.item.itemReference),
+      stream: getUserFavoriteItem(widget.item.docRef),
       builder: (context, snapshot) {
         bool isFavorite = snapshot.hasData && snapshot.data!;
         return IconButton(
@@ -28,7 +28,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
           onPressed: () {
-            toggleUserFavoriteItem(widget.item.itemReference);
+            toggleUserFavoriteItem(widget.item.docRef);
           },
           icon: Icon(
             isFavorite ? Icons.favorite : Icons.favorite_outline,

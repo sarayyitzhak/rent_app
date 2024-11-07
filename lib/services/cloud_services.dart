@@ -6,7 +6,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:rent_app/main.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/models/item.dart';
@@ -30,46 +29,44 @@ final storageRef = FirebaseStorage.instance.ref();
 
 
 //ITEMS
-Future<void> createNewItem(File? image, String title, String price, AddressInfo addressValue, String description, Condition condition, List<dynamic> categories) async {
-  var itemDoc = _firestore.collection('items').doc();
+Future<void> createNewItem(File? image, String title, String price, AddressInfo addressValue, String description, Condition condition, List<ItemCategory> categories) async {
+  DocumentReference itemDoc = _firestore.collection('items').doc();
   final itemRef = storageRef.child(itemDoc.id);
-  UploadTask uploadTask = itemRef.putFile(image!);
-  TaskSnapshot taskSnapshot = await uploadTask;
+  TaskSnapshot taskSnapshot = await itemRef.putFile(image!);
   var imageDownloadUrl = await taskSnapshot.ref.getDownloadURL();
 
-  Item newItem = Item(
-      itemReference: itemDoc,
-      contactUser: userDetails.docRef,
-      imageRef: imageDownloadUrl,
-      title: title,
-      price: int.parse(price),
-      location: addressValue,
-      description: description,
-      condition: condition,
-      categories: categories,
-      createdAt: Timestamp.now(),
-      favoriteCount: 0,
-      seenCount: 0,
-  );
-  itemDoc.set(newItem.itemToMap());
-
-  userDetails.docRef.update({'items': FieldValue.arrayUnion([itemDoc])});
+  itemDoc.set({
+    'contactUserID': userDetails.docRef.id,
+    'imageRef': imageDownloadUrl,
+    'title': title,
+    'price': int.parse(price),
+    'location': addressValue.toMap(),
+    'description': description,
+    'condition': condition.index,
+    'categories': categories.map((c) => c.index).toList(),
+    'createdAt': FieldValue.serverTimestamp(),
+    'favoriteCount': 0,
+    'seenCount': 0,
+  });
 }
 
 Future<void> editItem(Item item, bool isImageChanged, File? image, String title, String price, AddressInfo addressValue, String description, Condition condition, List<dynamic> categories) async {
+  String? imageUrl;
   if(isImageChanged){
-    final itemRef = storageRef.child('${item.itemReference.id}/${Timestamp.now()}');
+    final itemRef = storageRef.child('${item.docRef.id}/${Timestamp.now()}');
     UploadTask uploadTask = itemRef.putFile(image!);
     TaskSnapshot taskSnapshot = await uploadTask;
-    item.imageRef = await taskSnapshot.ref.getDownloadURL();
+    imageUrl = await taskSnapshot.ref.getDownloadURL();
   }
-  item.title = title;
-  item.price = int.parse(price);
-  item.location = addressValue;
-  item.description = description;
-  item.condition = condition;
-  item.categories = categories;
-  _firestore.collection('items').doc(item.itemReference.id).update(item.itemToMap());
+  _firestore.collection('items').doc(item.docRef.id).update({
+    'title': title,
+    'price': int.parse(price),
+    'location': addressValue.toMap(),
+    'description': description,
+    'condition': condition.index,
+    'categories': categories.map((c) => c.idx).toList(),
+    if (imageUrl != null) 'imageRef': imageUrl
+  });
 }
 
 Future<QueryBatch<Item>> getItemsByCategory(ItemCategory category, [DocumentSnapshot? startAfterDoc]) async {
@@ -81,9 +78,7 @@ Future<QueryBatch<Item>> getItemsByCategory(ItemCategory category, [DocumentSnap
   }
 
   return query.get().then((QuerySnapshot itemsQuery) {
-    List<Item> list = itemsQuery.docs
-      .map((QueryDocumentSnapshot snapshot) => mapAsItem(snapshot.data() as Map<String, dynamic>, snapshot.reference))
-      .toList();
+    List<Item> list = itemsQuery.docs.map(Item.fromDocumentSnapshot).toList();
 
     return QueryBatch(list, list.length == 20, itemsQuery.docs.isNotEmpty ? itemsQuery.docs.last : null);
   });
@@ -100,11 +95,6 @@ Future<List<Item>> getItemsByGeoPoint(double minLat, double maxLat, double minLn
       'location.geoPoint', isLessThanOrEqualTo: GeoPoint(maxLat, maxLng)).get(), true);
 }
 
-Future<List<Item>> getItemsByContactUser(DocumentReference contactUser) async {
-  return _getItemsByQuery(_firestore.collection('items').where(
-      'contactUser', isEqualTo: contactUser).orderBy('createdAt', descending: true).get(), false);
-}
-
 Future<QueryBatch<Item>> getItemsByTitle(String title, [DocumentSnapshot? startAfterDoc]) async {
   Query query = _firestore.collection('items')
       .where('title', isGreaterThanOrEqualTo: title)
@@ -117,38 +107,31 @@ Future<QueryBatch<Item>> getItemsByTitle(String title, [DocumentSnapshot? startA
   }
 
   return query.get().then((QuerySnapshot itemsQuery) {
-    List<Item> list = itemsQuery.docs
-        .map((QueryDocumentSnapshot snapshot) => mapAsItem(snapshot.data() as Map<String, dynamic>, snapshot.reference))
-        .toList();
+    List<Item> list = itemsQuery.docs.map(Item.fromDocumentSnapshot).toList();
 
     return QueryBatch(list, list.length == 20, itemsQuery.docs.isNotEmpty ? itemsQuery.docs.last : null);
   });
 }
 
 Future<Item?> getItemById(String id) async {
-  DocumentSnapshot<Map<String, dynamic>> itemSnapshot = await _firestore.collection('items').doc(id).get();
-  Map<String, dynamic>? data = itemSnapshot.data();
-  return data != null ? mapAsItem(data, itemSnapshot.reference) : null;
+  return _firestore.collection('items').doc(id).get().then(Item.fromDocumentSnapshot);
 }
 
 Future<List<Item>> _getItemsByQuery(Future<QuerySnapshot<Map<String, dynamic>>> query, bool onlyOthersItems) async {
   List<Item> items = [];
-  QuerySnapshot<Map<String, dynamic>> getItems = await query;
+  QuerySnapshot getItems = await query;
   var itemsDoc = getItems.docs;
-  if (itemsDoc.isNotEmpty) {
-    for (var itemDoc in itemsDoc) {
-      Map<String, dynamic>? itemData = itemDoc.data();
-      Item item = mapAsItem(itemData, itemDoc.reference);
-      if (!onlyOthersItems || item.contactUser != userDetails.docRef) {
-        items.add(item);
-      }
+  for (var itemDoc in itemsDoc) {
+    Item item = Item.fromDocumentSnapshot(itemDoc);
+    if (!onlyOthersItems || item.contactUserID != userDetails.docRef.id) {
+      items.add(item);
     }
   }
   return items;
 }
 
 Stream<QuerySnapshot<Map<String, dynamic>>> getUserItemsStream() {
-  return _firestore.collection('items').where('contactUser', isEqualTo: userDetails.docRef).orderBy('createdAt', descending: true).snapshots();
+  return _firestore.collection('items').where('contactUserID', isEqualTo: userDetails.docRef.id).orderBy('createdAt', descending: true).snapshots();
 }
 
 //REQUESTS
@@ -157,7 +140,7 @@ Future<List<ItemRequest>> getUserRequestsStream() {
       .where('ownerID', isEqualTo: userDetails.docRef.id)
       .orderBy('requestTime', descending: true)
       .get()
-      .then((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => ItemRequest.fromDocumentSnapshot(snapshot)).toList());
+      .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
 }
 
 Future<List<ItemRequest>> getPendingRequestsStream() {
@@ -165,7 +148,7 @@ Future<List<ItemRequest>> getPendingRequestsStream() {
       .where('applicantID', isEqualTo: userDetails.docRef.id)
       .orderBy('requestTime', descending: true)
       .get()
-      .then((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => ItemRequest.fromDocumentSnapshot(snapshot)).toList());
+      .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
 }
 
 Stream<List<ItemRequest>> getFutureItemRequestsStream(DocumentReference itemRef) {
@@ -174,7 +157,7 @@ Stream<List<ItemRequest>> getFutureItemRequestsStream(DocumentReference itemRef)
       .where('time.end', isGreaterThan: Timestamp.now())
       .where('status', isNotEqualTo: RequestStatus.REJECTED.index)
       .snapshots()
-      .map((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => ItemRequest.fromDocumentSnapshot(snapshot)).toList());
+      .map((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
 }
 
 Future<List<ItemRequest>> getFutureItemRequests(String itemID) {
@@ -183,20 +166,18 @@ Future<List<ItemRequest>> getFutureItemRequests(String itemID) {
       .where('time.end', isGreaterThan: Timestamp.now())
       .where('status', isNotEqualTo: RequestStatus.REJECTED.index)
       .get()
-      .then((QuerySnapshot query) => query.docs.map((QueryDocumentSnapshot snapshot) => ItemRequest.fromDocumentSnapshot(snapshot)).toList());
+      .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
 }
 
 Stream<ItemRequest> getItemRequestStream(DocumentReference docRef) {
-  return docRef
-      .snapshots()
-      .map((DocumentSnapshot snapshot) => ItemRequest.fromDocumentSnapshot(snapshot));
+  return docRef.snapshots().map(ItemRequest.fromDocumentSnapshot);
 }
 
 void addRequest(Item item, DateTimeRange range){
   _firestore.collection('requests').add({
-    'ownerID': item.contactUser.id,
+    'ownerID': item.contactUserID,
     'applicantID': userDetails.docRef.id,
-    'itemID': item.itemReference.id,
+    'itemID': item.docRef.id,
     'status': RequestStatus.WAITING.index,
     'time': {
       'start': range.start,
@@ -244,18 +225,18 @@ void sendMessage(DocumentReference chatRef, int userIndex, String text, MessageT
   chatRef.update({'lastMessageSentAt': FieldValue.serverTimestamp()});
 }
 
-Future<Chat> sendItemMessage(DocumentReference userRef, DocumentReference itemRef) async {
+Future<Chat> sendItemMessage(String userID, DocumentReference itemRef) async {
   Chat? chat;
   QuerySnapshot usersChatsQuery = await _firestore.collection('chats')
       .where('participants.${userDetails.docRef.id}', isNull: false)
       .get();
-  chat = usersChatsQuery.docs.map((doc) => Chat.fromDocumentSnapshot(doc)).where((chat) => chat.participants.containsKey(userRef.id)).firstOrNull;
+  chat = usersChatsQuery.docs.map(Chat.fromDocumentSnapshot).where((chat) => chat.participants.containsKey(userID)).firstOrNull;
   if (chat == null) {
     DocumentReference chatDoc = await _firestore.collection('chats').add({
       'lastMessageSentAt': FieldValue.serverTimestamp(),
       'participants': {
         userDetails.docRef.id: {'index': 0, 'lastMessageSeenTime': FieldValue.serverTimestamp()},
-        userRef.id: {'index': 1, 'lastMessageSeenTime': Timestamp.fromMillisecondsSinceEpoch(0)},
+        userID: {'index': 1, 'lastMessageSeenTime': Timestamp.fromMillisecondsSinceEpoch(0)},
       }
     });
     DocumentSnapshot chatSnapshot = await chatDoc.get();
@@ -287,16 +268,15 @@ Stream<List<Chat>> getUserChatsStream(){
       .where('participants.${userDetails.docRef.id}', isNull: false)
       // .orderBy('lastMessageSentAt', descending: true)
       .snapshots()
-      .map((QuerySnapshot query) => query.docs.map((doc) => Chat.fromDocumentSnapshot(doc)).toList());
+      .map((QuerySnapshot query) => query.docs.map(Chat.fromDocumentSnapshot).toList());
 }
 
 Stream<Chat> getChatStream(DocumentReference chatRef) {
-  return chatRef.snapshots().map((DocumentSnapshot snapshot) => Chat.fromDocumentSnapshot(snapshot));
+  return chatRef.snapshots().map(Chat.fromDocumentSnapshot);
 }
 
 Future<Chat> getChatFromChatID(String chatID) async {
-  DocumentSnapshot<Map<String, dynamic>> chatDoc = await _firestore.collection('chats').doc(chatID).get();
-  return Chat.fromDocumentSnapshot(chatDoc);
+  return _firestore.collection('chats').doc(chatID).get().then(Chat.fromDocumentSnapshot);
 }
 
 Future<String> getOtherParticipantName(Chat chat) async {
@@ -349,7 +329,7 @@ void addItemReview(DocumentReference itemRef, int rate, String text) {
 }
 
 Future<List<ItemReview>> getItemReviews(DocumentReference itemRef) async {
-  return await itemRef.collection('reviews').orderBy('createdAt', descending: true).get().then((QuerySnapshot query) => query.docs.map((doc) => ItemReview.fromDocumentSnapshot(doc)).toList());
+  return await itemRef.collection('reviews').orderBy('createdAt', descending: true).get().then((QuerySnapshot query) => query.docs.map(ItemReview.fromDocumentSnapshot).toList());
 }
 
 // Future<void> addRateField() async {
@@ -433,11 +413,9 @@ Future<QueryBatch<Item>> _getUserItems(String collectionName, String orderByFiel
         .where(FieldPath.documentId, whereIn: itemIds)
         .get()
         .then((QuerySnapshot itemsQuery) {
-      List<Item> items = itemsQuery.docs
-          .map((QueryDocumentSnapshot snapshot) => mapAsItem(snapshot.data() as Map<String, dynamic>, snapshot.reference))
-          .toList();
+      List<Item> items = itemsQuery.docs.map(Item.fromDocumentSnapshot).toList();
 
-      Map<String, Item> itemMap = {for (Item item in items) item.itemReference.id: item};
+      Map<String, Item> itemMap = {for (Item item in items) item.docRef.id: item};
 
       List<Item?> list = itemIds.map((String id) => itemMap[id]).toList();
       list.removeWhere((item) => item == null);

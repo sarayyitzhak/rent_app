@@ -18,7 +18,7 @@ class ReviewsScreen extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(title: localization.reviews),
       body: FutureBuilder(
-        future: getItemReviews(item.itemReference),
+        future: getItemReviews(item.docRef),
         builder: (BuildContext context, AsyncSnapshot<List<ItemReview>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

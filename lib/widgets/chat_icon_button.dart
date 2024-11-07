@@ -26,8 +26,8 @@ class _ChatIconButtonState extends State<ChatIconButton> {
           tapTargetSize: MaterialTapTargetSize.shrinkWrap, // the '2023' part
         ),
         onPressed: () async {
-          Chat chat = await sendItemMessage(widget.item.contactUser, widget.item.itemReference);
-          UserDetails userDetails = await getUserByID(widget.item.contactUser.id);
+          Chat chat = await sendItemMessage(widget.item.contactUserID, widget.item.docRef);
+          UserDetails userDetails = await getUserByID(widget.item.contactUserID);
           if (mounted) {
             Navigator.pushNamed(context, ChatScreen.id, arguments: ChatScreenArguments(chat, userDetails.name));
           }

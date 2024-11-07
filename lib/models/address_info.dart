@@ -1,28 +1,34 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AddressInfo{
-  GeoPoint geoPoint;
-  Map addressData;
-  AddressInfo({required this.geoPoint, required this.addressData});
+class AddressInfo {
+  final GeoPoint _geoPoint;
+  final String? _city;
+  final String? _road;
 
-  String addressDataToString(){
-    return '${addressData['city']}${(addressData['road'] != '' && addressData['road'] != null) ? ',  ${addressData['road']}' : ''}';
+  AddressInfo({required GeoPoint geoPoint, required String? city, required String? road})
+      : _geoPoint = geoPoint,
+        _city = city,
+        _road = road;
+
+  GeoPoint get geoPoint => _geoPoint;
+
+  String? get city => _city;
+
+  String? get road => _road;
+
+  String addressDataToString() {
+    return '${_city ?? ''}${(_road != null && _road != '') ? ',  $_road' : ''}';
   }
 
-  Map<String, dynamic> toMap(){
+  Map<String, dynamic> toMap() {
     return {
-      'geoPoint': geoPoint,
-      'city': addressData['city'],
-      'road': addressData['road'] ?? '',
+      'geoPoint': _geoPoint,
+      'city': _city ?? '',
+      'road': _road ?? '',
     };
   }
+
+  factory AddressInfo.fromMap(Map<String, dynamic> map) {
+    return AddressInfo(geoPoint: map['geoPoint'], city: map['city'], road: map['road']);
+  }
 }
-
-AddressInfo mapToAddressInfo(Map<String, dynamic> map){
-  return AddressInfo(geoPoint: map['geoPoint'], addressData: {'city': map['city'], 'road': map['road']});
-}
-
-
-
-

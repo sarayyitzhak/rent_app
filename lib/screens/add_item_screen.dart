@@ -41,8 +41,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
   late TextEditingController priceController;
   late TextEditingController descriptionController;
   Condition? conditionValue;
-  late AddressInfo addressValue = AddressInfo(geoPoint: GeoPoint(currentPosition!.latitude, currentPosition!.longitude), addressData: {});
-  var _selectedCategories = [];
+  late AddressInfo addressValue = AddressInfo(geoPoint: GeoPoint(currentPosition!.latitude, currentPosition!.longitude), city: '', road: '');
+  List<ItemCategory> _selectedCategories = [];
 
   @override
   void initState() {
@@ -76,8 +76,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         return MapDialog(localization: localization, context: context,
           onPicked: (PickedData pickedData) {
             setState(() {
-              addressValue.geoPoint = GeoPoint(pickedData.latLong.latitude, pickedData.latLong.longitude);
-              addressValue.addressData = pickedData.addressData;
+              addressValue = AddressInfo(geoPoint: GeoPoint(pickedData.latLong.latitude, pickedData.latLong.longitude), city: pickedData.addressData['city'], road: pickedData.addressData['road']);
             });
           });
       },
@@ -132,7 +131,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       initialChildSize: 0.6,
       initialValue: _selectedCategories,
       onConfirm: (values) {
-        _selectedCategories = values;
+        _selectedCategories = values.map((val) => val as ItemCategory).toList();
         FocusScope.of(context).requestFocus(FocusNode());
       },
     );
