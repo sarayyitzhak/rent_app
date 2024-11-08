@@ -6,7 +6,7 @@ import 'condition.dart';
 class Item {
   final DocumentReference _docRef;
   final String _contactUserID;
-  final String _imageRef;
+  final String _mainImage;
   final String _title;
   final int _price;
   final AddressInfo _location;
@@ -22,7 +22,7 @@ class Item {
   Item({
     required DocumentReference docRef,
     required String contactUserID,
-    required String imageRef,
+    required String mainImage,
     required String title,
     required int price,
     required AddressInfo location,
@@ -36,7 +36,7 @@ class Item {
     int? rateSum,
   })  : _docRef = docRef,
         _contactUserID = contactUserID,
-        _imageRef = imageRef,
+        _mainImage = mainImage,
         _title = title,
         _price = price,
         _location = location,
@@ -53,7 +53,7 @@ class Item {
 
   String get contactUserID => _contactUserID;
 
-  String get imageRef => _imageRef;
+  String get mainImage => _mainImage;
 
   String get title => _title;
 
@@ -87,7 +87,7 @@ class Item {
     return Item(
       docRef: doc.reference,
       contactUserID: data['contactUserID'],
-      imageRef: data['imageRef'],
+      mainImage: data['mainImage'],
       title: data['title'],
       price: data['price'],
       location: AddressInfo.fromMap(data['location']),

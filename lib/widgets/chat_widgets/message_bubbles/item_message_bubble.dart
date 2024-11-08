@@ -9,6 +9,7 @@ import '../../../models/chat.dart';
 import '../../../models/item.dart';
 import '../../../models/message.dart';
 import '../../../screens/item_screen.dart';
+import '../../cached_image.dart';
 import '../message_time.dart';
 import '../../../utils.dart';
 
@@ -38,20 +39,11 @@ class ItemMessageBubble extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        CachedNetworkImage(
+                        CachedImage(
                           width: 100,
                           height: 100,
-                          imageUrl: item.imageRef,
-                          errorWidget: (context, url, error) => const Icon(Icons.error),
-                          imageBuilder: (context, imageProvider) => Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              image: DecorationImage(
-                                image: imageProvider,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
+                          imageRef: getItemMainImageRef(item.docRef, item.mainImage),
+                          borderRadius: BorderRadius.circular(20),
                         ),
                         const SizedBox(width: 10),
                         Expanded(

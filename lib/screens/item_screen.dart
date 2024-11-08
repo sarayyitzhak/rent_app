@@ -19,6 +19,7 @@ import 'package:rent_app/widgets/rating_stars_widget.dart';
 import 'package:rent_app/widgets/favorite_button.dart';
 
 import '../services/cloud_services.dart';
+import '../widgets/cached_image.dart';
 import '../widgets/dial_icon_button.dart';
 
 class ItemScreen extends StatelessWidget {
@@ -58,15 +59,9 @@ class ItemScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: kLightYellow,
-                        image: DecorationImage(
-                          image: NetworkImage(item.imageRef),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                    CachedImage(
                       height: 300,
+                      imageRef: getItemMainImageRef(item.docRef, item.mainImage),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),

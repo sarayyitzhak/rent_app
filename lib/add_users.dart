@@ -222,18 +222,17 @@ Future<void> onRegisterButtonPressed(int idx) async {
     File image = await getImageFileFromAssets(
         'assets/images/usersImages/${categories[j].title}/$idx.jpeg'); //File('C:/Users/Sarai/StudioProjects/rent_app/images/usersImages/${categories[j].title}/$idx.jpeg');
     var itemDoc = _firestore.collection('items').doc();
-    final itemRef = storageRef.child(itemDoc.id);
+    final itemRef = storageRef.child('items').child(itemDoc.id).child('0.jpg');
     if (!image.existsSync()) {
       print("File does not exist: ${image.path}");
       continue; // Skip to the next iteration if file doesn't exist
     }
     UploadTask uploadTask = itemRef.putFile(image);
-    TaskSnapshot taskSnapshot = await uploadTask;
-    var imageDownloadUrl = await taskSnapshot.ref.getDownloadURL();
+    await uploadTask;
 
     itemDoc.set({
       'contactUserID': userDetailsRand.docRef.id,
-      'imageRef': imageDownloadUrl,
+      'mainImage': '0.jpg',
       'title': itemsTitles[(idx * 10) + j],
       'price': Random().nextInt(1000),
       'location': addressValues[idx].toMap(),

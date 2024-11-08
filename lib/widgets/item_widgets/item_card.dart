@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/screens/item_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rent_app/services/cloud_services.dart';
+import 'package:rent_app/widgets/cached_image.dart';
 import 'package:rent_app/widgets/rating_stars_widget.dart';
 import 'package:rent_app/widgets/favorite_button.dart';
 import 'package:shimmer/shimmer.dart';
@@ -90,21 +92,9 @@ class ItemCard extends StatelessWidget {
               Expanded(
                 child: Stack(
                   children: [
-                    CachedNetworkImage(
-                      imageUrl: item!.imageRef,
-                      placeholder: (context, url) => Container(
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                          color: Colors.grey[200],
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => const Icon(Icons.error),
-                      imageBuilder: (context, imageProvider) => Container(
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                          image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                        ),
-                      ),
+                    CachedImage(
+                      imageRef: getItemMainImageRef(item!.docRef, item!.mainImage),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                     ),
                     if (!isMine && distanceFromMe != null)
                       PositionedDirectional(

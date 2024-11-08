@@ -17,6 +17,7 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import '../models/request_status.dart';
 import '../services/cloud_services.dart';
 import '../utils.dart';
+import '../widgets/cached_image.dart';
 
 class RentalScreen extends StatefulWidget {
   static String id = 'rental_screen';
@@ -157,16 +158,11 @@ class _RentalScreenState extends State<RentalScreen> {
               height: 90,
               child: Row(
                 children: [
-                  Container(
+                  CachedImage(
                     height: 90,
                     width: 90,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      image: DecorationImage(
-                        image: NetworkImage(widget.args.item.imageRef),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                    imageRef: getItemMainImageRef(widget.args.item.docRef, widget.args.item.mainImage),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   const SizedBox(
                     width: 10,

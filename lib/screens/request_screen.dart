@@ -13,6 +13,7 @@ import 'package:rent_app/widgets/request_widgets/extension_request_dialog.dart';
 
 import '../models/item_request.dart';
 import '../utils.dart';
+import '../widgets/cached_image.dart';
 
 class RequestScreen extends StatefulWidget {
   static String id = 'request_screen';
@@ -103,25 +104,17 @@ class _RequestScreenState extends State<RequestScreen> {
               height: 90,
               child: Row(
                 children: [
-                  CachedNetworkImage(
-                    width: 100,
-                    height: 100,
-                    imageUrl: _item?.imageRef ?? '',
-                    errorWidget: (context, url, error) => const Icon(Icons.error),
-                    imageBuilder: (context, imageProvider) => Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        image: DecorationImage(
-                          image: imageProvider,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
+                  CachedImage(
+                    width: 90,
+                    height: 90,
+                    imageRef: _item != null ? getItemMainImageRef(_item!.docRef, _item!.mainImage) : null,
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   const SizedBox(
                     width: 10,
                   ),
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         _item?.title ?? '',

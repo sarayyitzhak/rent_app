@@ -17,15 +17,16 @@ import 'package:rent_app/widgets/text_and_text_field.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 import '../models/item.dart';
+import '../widgets/cached_image.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/map_dialog.dart';
 import '../widgets/pick_image_button.dart';
-
 
 class AddItemScreen extends StatefulWidget {
   static String id = 'add_item_screen';
 
   final AddItemScreenArguments args;
+
   const AddItemScreen(this.args, {super.key});
 
   @override
@@ -35,13 +36,13 @@ class AddItemScreen extends StatefulWidget {
 class _AddItemScreenState extends State<AddItemScreen> {
   Item? item;
   File? image;
-  String? imageURLOnEditMode;
   bool isImageChangedOnEditMode = false;
   late TextEditingController titleController;
   late TextEditingController priceController;
   late TextEditingController descriptionController;
   Condition? conditionValue;
-  late AddressInfo addressValue = AddressInfo(geoPoint: GeoPoint(currentPosition!.latitude, currentPosition!.longitude), city: '', road: '');
+  late AddressInfo addressValue =
+      AddressInfo(geoPoint: GeoPoint(currentPosition!.latitude, currentPosition!.longitude), city: '', road: '');
   List<ItemCategory> _selectedCategories = [];
 
   @override
@@ -57,10 +58,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
     }
   }
 
-  void initOnEditMode(Item? item){
+  void initOnEditMode(Item? item) {
     setState(() {
-      imageURLOnEditMode = item!.imageRef;
-      titleController.text = item.title;
+      titleController.text = item!.title;
       priceController.text = item.price.toString();
       descriptionController.text = item.description;
       conditionValue = item.condition;
@@ -73,12 +73,17 @@ class _AddItemScreenState extends State<AddItemScreen> {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return MapDialog(localization: localization, context: context,
-          onPicked: (PickedData pickedData) {
-            setState(() {
-              addressValue = AddressInfo(geoPoint: GeoPoint(pickedData.latLong.latitude, pickedData.latLong.longitude), city: pickedData.addressData['city'], road: pickedData.addressData['road']);
+        return MapDialog(
+            localization: localization,
+            context: context,
+            onPicked: (PickedData pickedData) {
+              setState(() {
+                addressValue = AddressInfo(
+                    geoPoint: GeoPoint(pickedData.latLong.latitude, pickedData.latLong.longitude),
+                    city: pickedData.addressData['city'],
+                    road: pickedData.addressData['road']);
+              });
             });
-          });
       },
     );
   }
@@ -95,39 +100,42 @@ class _AddItemScreenState extends State<AddItemScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            isEditMode && !isImageChangedOnEditMode ? CachedNetworkImage(imageUrl: imageURLOnEditMode.toString(), width: 150, height: 150,
-              fit: BoxFit.fill,) :
-            image != null
-                ? Image.file(
-                    image!,
-                    width: 150, 
+            isEditMode && !isImageChangedOnEditMode
+                ? CachedImage(
+                    width: 150,
                     height: 150,
-                    fit: BoxFit.fill,
+                    imageRef: getItemMainImageRef(item!.docRef, item!.mainImage),
                   )
-                : Text(localization.noImageSelected),
-
-            PickImageButton(onImagePicked: (newImage){
-              setState(() {
-                image = newImage;
-              });
-              if(isEditMode){
-                isImageChangedOnEditMode = true;
-              }
-            },),
+                : image != null
+                    ? Image.file(
+                        image!,
+                        width: 150,
+                        height: 150,
+                        fit: BoxFit.fill,
+                      )
+                    : Text(localization.noImageSelected),
+            PickImageButton(
+              onImagePicked: (newImage) {
+                setState(() {
+                  image = newImage;
+                });
+                if (isEditMode) {
+                  isImageChangedOnEditMode = true;
+                }
+              },
+            ),
           ],
         ));
   }
 
-  MultiSelectBottomSheetField categorySelection(AppLocalizations localization){
+  MultiSelectBottomSheetField categorySelection(AppLocalizations localization) {
     return MultiSelectBottomSheetField(
       decoration: BoxDecoration(
         color: kPastelYellowOpacity,
         shape: BoxShape.rectangle,
         borderRadius: BorderRadius.circular(20),
       ),
-      items: ItemCategory.values
-          .map((c) => MultiSelectItem(c, c.getTitle(localization)))
-          .toList(),
+      items: ItemCategory.values.map((c) => MultiSelectItem(c, c.getTitle(localization))).toList(),
       initialChildSize: 0.6,
       initialValue: _selectedCategories,
       onConfirm: (values) {
@@ -137,7 +145,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     );
   }
 
-  DropdownMenu<Condition> conditionSelection(AppLocalizations localization){
+  DropdownMenu<Condition> conditionSelection(AppLocalizations localization) {
     return DropdownMenu(
       width: double.infinity,
       onSelected: (value) {
@@ -146,9 +154,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
         });
       },
       initialSelection: conditionValue,
-      dropdownMenuEntries: Condition.values
-          .map((c) =>  DropdownMenuEntry<Condition>(value: c, label: c.getTitle(localization)))
-          .toList(),
+      dropdownMenuEntries:
+          Condition.values.map((c) => DropdownMenuEntry<Condition>(value: c, label: c.getTitle(localization))).toList(),
       inputDecorationTheme: const InputDecorationTheme(
         fillColor: kPastelYellowOpacity,
         hoverColor: kPastelYellowOpacity,
@@ -160,9 +167,13 @@ class _AddItemScreenState extends State<AddItemScreen> {
     showDialog(
       context: context,
       barrierDismissible: false, // Prevent user from closing the dialog
-      builder: (context) => const Center(child: CircularProgressIndicator(color: kPastelYellow,)),
+      builder: (context) => const Center(
+          child: CircularProgressIndicator(
+        color: kPastelYellow,
+      )),
     );
-    createNewItem(image, titleController.text, priceController.text, addressValue, descriptionController.text, conditionValue!, _selectedCategories);
+    createNewItem(image, titleController.text, priceController.text, addressValue, descriptionController.text,
+        conditionValue!, _selectedCategories);
     Navigator.pop(context);
     Navigator.pop(context);
   }
@@ -171,10 +182,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
     showDialog(
       context: context,
       barrierDismissible: false, // Prevent user from closing the dialog
-      builder: (context) => const Center(child: CircularProgressIndicator(color: kPastelYellow,)),
+      builder: (context) => const Center(
+          child: CircularProgressIndicator(
+        color: kPastelYellow,
+      )),
     );
 
-    await editItem(item!, isImageChangedOnEditMode, image, titleController.text, priceController.text, addressValue, descriptionController.text, conditionValue!, _selectedCategories);
+    await editItem(item!, isImageChangedOnEditMode, image, titleController.text, priceController.text, addressValue,
+        descriptionController.text, conditionValue!, _selectedCategories);
     Navigator.pop(context);
     Navigator.pop(context);
     Navigator.popAndPushNamed(context, ItemScreen.id, arguments: ItemScreenArguments(item!, true));
@@ -201,14 +216,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 imageContainer(localization, widget.args.isEditMode),
-                TextAndTextField(
-                    title: localization.title, controller: titleController),
+                TextAndTextField(title: localization.title, controller: titleController),
                 TextAndTextField(
                   title: localization.price,
                   controller: priceController,
                   keyboardType: TextInputType.number,
                 ),
-
                 Align(
                     alignment: Alignment.bottomRight,
                     child: Text(
@@ -219,7 +232,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 const SizedBox(
                   height: 20,
                 ),
-
                 Align(
                     alignment: Alignment.bottomRight,
                     child: Text(
@@ -240,7 +252,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 const SizedBox(
                   height: 20,
                 ),
-
                 TextAndTextField(
                   title: localization.description,
                   controller: descriptionController,
@@ -249,7 +260,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   textInputAction: TextInputAction.newline,
                   textCapitalization: true,
                 ),
-
                 Align(
                   alignment: Alignment.bottomRight,
                   child: Text(
@@ -263,15 +273,15 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   child: Text(
                     addressValue.addressDataToString(),
                     // addressValue.addressDataToString(),
-                    style: kBlackTextStyle,),
+                    style: kBlackTextStyle,
+                  ),
                 ),
-
                 const SizedBox(
                   height: 15,
                 ),
                 widget.args.isEditMode
-                    ?  CustomButton(title: localization.edit, onPress: onEditItemButtonPressed)
-                    :  CustomButton(title: localization.addItem, onPress: onAddItemButtonPressed),
+                    ? CustomButton(title: localization.edit, onPress: onEditItemButtonPressed)
+                    : CustomButton(title: localization.addItem, onPress: onAddItemButtonPressed),
               ],
             ),
           ),
@@ -284,5 +294,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
 class AddItemScreenArguments {
   Item? item;
   bool isEditMode;
+
   AddItemScreenArguments({this.item, required this.isEditMode});
 }

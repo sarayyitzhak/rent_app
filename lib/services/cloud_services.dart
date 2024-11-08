@@ -32,13 +32,12 @@ final storageRef = FirebaseStorage.instance.ref();
 //ITEMS
 Future<void> createNewItem(File? image, String title, String price, AddressInfo addressValue, String description, Condition condition, List<ItemCategory> categories) async {
   DocumentReference itemDoc = _firestore.collection('items').doc();
-  final itemRef = storageRef.child(itemDoc.id);
-  TaskSnapshot taskSnapshot = await itemRef.putFile(image!);
-  var imageDownloadUrl = await taskSnapshot.ref.getDownloadURL();
+  final itemRef = storageRef.child('items').child(itemDoc.id).child('0.jpg');
+  await itemRef.putFile(image!);
 
-  itemDoc.set({
+  return itemDoc.set({
     'contactUserID': userDetails.docRef.id,
-    'imageRef': imageDownloadUrl,
+    'mainImage': '0.jpg',
     'title': title,
     'price': int.parse(price),
     'location': addressValue.toMap(),
@@ -52,22 +51,22 @@ Future<void> createNewItem(File? image, String title, String price, AddressInfo 
 }
 
 Future<void> editItem(Item item, bool isImageChanged, File? image, String title, String price, AddressInfo addressValue, String description, Condition condition, List<dynamic> categories) async {
-  String? imageUrl;
   if(isImageChanged){
-    final itemRef = storageRef.child('${item.docRef.id}/${Timestamp.now()}');
-    UploadTask uploadTask = itemRef.putFile(image!);
-    TaskSnapshot taskSnapshot = await uploadTask;
-    imageUrl = await taskSnapshot.ref.getDownloadURL();
+    final itemRef = storageRef.child('items').child(item.docRef.id).child('0.jpg');
+    await itemRef.putFile(image!);
   }
-  _firestore.collection('items').doc(item.docRef.id).update({
+  return _firestore.collection('items').doc(item.docRef.id).update({
     'title': title,
     'price': int.parse(price),
     'location': addressValue.toMap(),
     'description': description,
     'condition': condition.index,
     'categories': categories.map((c) => c.idx).toList(),
-    if (imageUrl != null) 'imageRef': imageUrl
   });
+}
+
+Reference getItemMainImageRef(DocumentReference itemRef, String mainImage) {
+  return storageRef.child('items').child(itemRef.id).child(mainImage);
 }
 
 Future<QueryBatch<Item>> getItemsByCategory(ItemCategory category, [DocumentSnapshot? startAfterDoc]) async {
@@ -98,8 +97,7 @@ Future<List<Item>> getItemsByGeoPoint(double minLat, double maxLat, double minLn
 
 Future<QueryBatch<Item>> getItemsByTitle(String title, [DocumentSnapshot? startAfterDoc]) async {
   Query query = _firestore.collection('items')
-      .where('title', isGreaterThanOrEqualTo: title)
-      .where('title', isLessThan: getNextAlphabeticalString(title))
+      .where('title', isGreaterThanOrEqualTo: title, isLessThan: getNextAlphabeticalString(title))
       .limit(20);
   // TODO: add where by NOT current user (maybe order by createdAt?)
 
@@ -363,10 +361,30 @@ Future<List<UserReview>> getUserReviews(DocumentReference userRef) async {
 //   var snapshot = await _firestore.collection('items').get();
 //   WriteBatch batch = _firestore.batch();
 //   for (var doc in snapshot.docs) {
-//     batch.update(doc.reference, {'rate': 0});
+//     // batch.update(doc.reference, {'mainImage': '0.jpg'});
+//
+//     // Step 1: Download the file data from the original path
+//     final oldFileRef = storageRef.child(doc.reference.id);
+//     Uint8List? fileData;
+//     try {
+//       fileData = await oldFileRef.getData();
+//     } catch (e) {
+//       print('Failed to retrieve file path: ${doc.reference.id}');
+//     }
+//
+//     if (fileData != null) {
+//       // Step 2: Upload the file data to the new path
+//       final newFileRef = storageRef.child('items').child(doc.reference.id).child('0.jpg');
+//       await newFileRef.putData(fileData);
+//
+//       print('File copied successfully: ${doc.reference.id}');
+//     } else {
+//       print('Failed to retrieve file data: ${doc.reference.id}');
+//     }
+//
 //   }
 //   try {
-//     await batch.commit();
+//     // await batch.commit();
 //     print('All documents updated successfully!');
 //   } catch (e) {
 //     print('Error updating documents: $e');
