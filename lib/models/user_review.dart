@@ -1,45 +1,36 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:rent_app/models/condition.dart';
 
-class ItemReview {
+class UserReview {
   final DocumentReference _docRef;
   final String _userID;
   final int? _overallRate;
-  final int? _valueForPrice;
-  final int? _compatibility;
+  final int? _serviceLevel;
   final String _text;
-  final Condition _condition;
   final DateTime _createdAt;
 
-  ItemReview({
+  UserReview({
     required DocumentReference docRef,
     required String userID,
     int? overallRate,
-    int? valueForPrice,
-    int? compatibility,
+    int? serviceLevel,
     required String text,
-    required Condition condition,
     required DateTime createdAt,
   })  : _docRef = docRef,
         _userID = userID,
         _overallRate = overallRate,
-        _valueForPrice = valueForPrice,
-        _compatibility = compatibility,
+        _serviceLevel = serviceLevel,
         _text = text,
-        _condition = condition,
         _createdAt = createdAt;
 
-  factory ItemReview.fromDocumentSnapshot(DocumentSnapshot doc) {
+  factory UserReview.fromDocumentSnapshot(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    return ItemReview(
+    return UserReview(
         docRef: doc.reference,
         userID: data['userID'],
         overallRate: data['overallRate'],
-        valueForPrice: data['valueForPrice'],
-        compatibility: data['compatibility'],
+        serviceLevel: data['serviceLevel'],
         text: data['text'],
-        condition: data['condition'],
         createdAt: data['createdAt'].toDate()
     );
   }
@@ -50,13 +41,9 @@ class ItemReview {
 
   int? get overallRate => _overallRate;
 
-  int? get valueForPrice => _valueForPrice;
-
-  int? get compatibility => _compatibility;
+  int? get serviceLevel => _serviceLevel;
 
   String get text => _text;
-
-  Condition get condition => _condition;
 
   DateTime get createdAt => _createdAt;
 }

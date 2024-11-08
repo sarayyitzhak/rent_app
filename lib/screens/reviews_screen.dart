@@ -29,7 +29,7 @@ class ReviewsScreen extends StatelessWidget {
               children: reviews.map((r) => ReviewCard(review: r)).toList(),
             );
           } else {
-            return Center(child: Text('error'));
+            return const Center(child: Text('error'));
           }
         },
       ),

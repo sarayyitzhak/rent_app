@@ -18,6 +18,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
         },
         icon: const Icon(Icons.arrow_back),
       ) : null,
+      automaticallyImplyLeading: this.isBackButton,
     );
   }
   @override

@@ -28,33 +28,6 @@ class ItemScreen extends StatelessWidget {
 
   const ItemScreen(this.args, {super.key});
 
-  Row commentWidget(BuildContext context, double rate, TextEditingController commentController, Item item) {
-    var localization = AppLocalizations.of(context)!;
-    return Row(
-      children: [
-        TextButton(onPressed: () {}, child: Text(localization.addComment)),
-        Expanded(
-          child: Column(
-            children: [
-              TextField(
-                controller: commentController,
-              ),
-              RatingStarsRow(onChanged: (v) => rate = v),
-            ],
-          ),
-        ),
-        ElevatedButton(
-            onPressed: () {
-              if(rate == 0){
-                addItemReview(item.docRef, rate.toInt(), commentController.text);
-                commentController.clear();
-              }
-            },
-            child: Text('הגב')),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     Item item = args.item;
@@ -219,7 +192,6 @@ class ItemScreen extends StatelessWidget {
                                   ],
                                 )
                               : Text(localization.noReviewsYet),
-                          commentWidget(context, rate, commentController, item),
                         ],
                       ),
                     ),

@@ -4,6 +4,8 @@ import 'package:rent_app/screens/add_item_screen.dart';
 import 'package:rent_app/screens/category_screen.dart';
 import 'package:rent_app/screens/chat_screen.dart';
 import 'package:rent_app/screens/chats_screen.dart';
+import 'package:rent_app/screens/final_review_screen.dart';
+import 'package:rent_app/screens/item_review_screen.dart';
 import 'package:rent_app/screens/item_screen.dart';
 import 'package:rent_app/screens/item_grid_screen.dart';
 import 'package:rent_app/screens/pending_requests_screen.dart';
@@ -16,6 +18,7 @@ import 'package:rent_app/screens/search_result_screen.dart';
 import 'package:rent_app/screens/search_screen.dart';
 import 'package:rent_app/screens/user_items_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:rent_app/screens/user_review_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -131,6 +134,9 @@ class MyApp extends StatelessWidget {
           ProfileScreen.id: (context) => const ProfileScreen(),
           RequestScreen.id: (context) => RequestScreen(settings.arguments as RequestScreenArguments),
           ReviewsScreen.id: (context) => ReviewsScreen(settings.arguments as ReviewsScreenArguments),
+          ItemReviewScreen.id: (context) => ItemReviewScreen(settings.arguments as ItemReviewScreenArguments),
+          UserReviewScreen.id: (context) => UserReviewScreen(settings.arguments as UserReviewScreenArguments),
+          FinalReviewScreen.id: (context) => const FinalReviewScreen(),
           ItemGridScreen.id: (context) => ItemGridScreen(settings.arguments as ItemGridScreenArguments),
         };
         return MaterialPageRoute(builder: routes[settings.name]!);

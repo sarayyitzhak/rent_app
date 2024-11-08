@@ -26,9 +26,10 @@ class _RatingStarsRowState extends State<RatingStarsRow> {
       starBuilder: (index, color) => Icon(
         Icons.star,
         color: color,
+        size: 40,
       ),
       starCount: 5,
-      starSize: 20,
+      starSize: 40,
       valueLabelVisibility: false,
       // valueLabelColor: kActiveButtonColor,
       // valueLabelTextStyle: const TextStyle(

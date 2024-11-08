@@ -61,7 +61,8 @@ class ReviewCard extends StatelessWidget {
                 padding: const EdgeInsets.all(8),
                 child: Text(getDifferenceInTimeAsString(context, review.createdAt), style: TextStyle(color: Colors.black45),),
               ),
-              RatingStarsWidget(rate: review.rate.toDouble()),
+              if(review.overallRate != null)
+                RatingStarsWidget(rate: review.overallRate!.toDouble())
             ],
           ),
         ],

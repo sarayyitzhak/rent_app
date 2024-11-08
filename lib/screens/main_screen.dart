@@ -61,7 +61,7 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: PopScope(
         canPop: _selectedBottomBarIndex == 0,
-        onPopInvokedWithResult: (didPop, result) async {
+        onPopInvokedWithResult: (didPop, result) {
           setState(() {
             _selectedBottomBarIndex = 0;
           });

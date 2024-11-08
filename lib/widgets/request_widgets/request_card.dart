@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/models/item_request.dart';
+import 'package:rent_app/screens/item_review_screen.dart';
 import 'package:rent_app/screens/request_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import '../../constants.dart';
@@ -61,7 +62,9 @@ class _RequestCardState extends State<RequestCard> {
   Widget build(BuildContext context) {
     var localization = AppLocalizations.of(context)!;
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, RequestScreen.id,
+      onTap: widget.request.status == RequestStatus.APPROVED ? () async => Navigator.pushNamed(context, ItemReviewScreen.id,
+          arguments: ItemReviewScreenArguments(await getItemById(widget.request.itemID) as Item))
+       : () => Navigator.pushNamed(context, RequestScreen.id,
           arguments: RequestScreenArguments(itemRequest: widget.request)),
       child: Card(
         elevation: 5,

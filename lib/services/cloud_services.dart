@@ -12,6 +12,7 @@ import 'package:rent_app/models/item.dart';
 import 'package:rent_app/models/item_review.dart';
 import 'package:rent_app/models/message.dart';
 import 'package:rent_app/models/user.dart';
+import 'package:rent_app/models/user_review.dart';
 import 'package:rent_app/services/query_batch.dart';
 import 'package:rent_app/utils.dart';
 import '../models/address_info.dart';
@@ -316,20 +317,46 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getNewMessagesStream(DocumentReferen
 
 //REVIEWS
 
-void addItemReview(DocumentReference itemRef, int rate, String text) {
+void addItemReview(DocumentReference itemRef, int? overallRate, int? valueForPrice, int? compatibility, Condition? condition, String? text) {
   WriteBatch batch = _firestore.batch();
   batch.set(itemRef.collection('reviews').doc(), {
     'userID': userDetails.docRef.id,
-    'rate': rate,
-    'text': text,
+    if(overallRate != null) 'overallRate': overallRate,
+    if(valueForPrice != null) 'valueForPrice': valueForPrice,
+    if(compatibility != null) 'compatibility': compatibility,
+    if(text != null) 'text': text,
+    if(condition != null) 'condition': condition,
     'createdAt': FieldValue.serverTimestamp()
   });
-  batch.update(itemRef, {'reviewCount': FieldValue.increment(1), 'rateSum': FieldValue.increment(rate)});
+  if(overallRate != null) {
+    batch.update(
+        itemRef, {'overallRateCount': FieldValue.increment(1), 'overallRateSum': FieldValue.increment(overallRate)});
+  }
   batch.commit();
 }
 
 Future<List<ItemReview>> getItemReviews(DocumentReference itemRef) async {
   return await itemRef.collection('reviews').orderBy('createdAt', descending: true).get().then((QuerySnapshot query) => query.docs.map(ItemReview.fromDocumentSnapshot).toList());
+}
+
+void addUserReview(DocumentReference userRef, int? overallRate, int? serviceLevel, String? text) {
+  WriteBatch batch = _firestore.batch();
+  batch.set(userRef.collection('reviews').doc(), {
+    'userID': userDetails.docRef.id,
+    if(overallRate != null) 'overallRate': overallRate,
+    if(serviceLevel != null) 'valueForPrice': serviceLevel,
+    if(text != null) 'text': text,
+    'createdAt': FieldValue.serverTimestamp()
+  });
+  if(overallRate != null) {
+    batch.update(
+        userRef, {'overallRateCount': FieldValue.increment(1), 'overallRateSum': FieldValue.increment(overallRate)});
+  }
+  batch.commit();
+}
+
+Future<List<UserReview>> getUserReviews(DocumentReference userRef) async {
+  return await userRef.collection('reviews').orderBy('createdAt', descending: true).get().then((QuerySnapshot query) => query.docs.map(UserReview.fromDocumentSnapshot).toList());
 }
 
 // Future<void> addRateField() async {
