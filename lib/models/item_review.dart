@@ -39,7 +39,7 @@ class ItemReview {
         valueForPrice: data['valueForPrice'],
         compatibility: data['compatibility'],
         text: data['text'],
-        condition: data['condition'],
+        condition: data['condition'] != null ? Condition.values[data['condition']] : null,
         createdAt: data['createdAt'].toDate()
     );
   }
