@@ -1,8 +1,12 @@
 import 'dart:math';
+import 'dart:typed_data';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:rent_app/models/message.dart';
+import 'package:rent_app/services/cloud_services.dart';
 
 import '../../../constants.dart';
 import '../../../models/chat.dart';
@@ -27,18 +31,42 @@ class _RecordMessageBubbleState extends State<RecordMessageBubble> {
   bool isPlaying = false;
   bool isPauseAuto = false;
 
+  Future<Uint8List?> _fetchSoundData() async {
+    try {
+      Reference soundRef = getMessageFileRef(widget.message.cloudKey!, 'aac');
+
+      String path = soundRef.fullPath;
+
+      FileInfo? cachedFile = await DefaultCacheManager().getFileFromMemory(path);
+
+      if (cachedFile != null) {
+        return await cachedFile.file.readAsBytes();
+      } else {
+        cachedFile = await DefaultCacheManager().getFileFromCache(path);
+
+        if (cachedFile != null) {
+          return await cachedFile.file.readAsBytes();
+        } else {
+          return await readFile(soundRef, 'aac');
+        }
+      }
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<void> _playPauseAudio() async {
     if (isPlaying) {
       await player.pause();
-      setState(() {
-        isPlaying = false;
-      });
     } else {
-      await player.play(UrlSource(widget.message.fileRef!), position: Duration(seconds: _position.toInt()));
-      setState(() {
-        isPlaying = true;
-      });
+      Uint8List? data = await _fetchSoundData();
+      if (data != null) {
+        await player.play(BytesSource(data), position: Duration(seconds: _position.toInt()));
+      }
     }
+    setState(() {
+      isPlaying = !isPlaying;
+    });
   }
 
   String _formatDuration(double seconds) {
@@ -47,12 +75,17 @@ class _RecordMessageBubbleState extends State<RecordMessageBubble> {
     return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
+  Future<void> _initPlayer() async {
+    Uint8List? data = await _fetchSoundData();
+    if (data != null) {
+      player.setSourceBytes(data);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    if (widget.message.fileRef != null && widget.message.fileRef!.isNotEmpty) {
-      player.setSourceUrl(widget.message.fileRef!);
-    }
+    _initPlayer();
     player.onDurationChanged.listen((duration) {
       setState(() {
         _duration = duration.inSeconds.toDouble();

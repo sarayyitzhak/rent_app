@@ -41,7 +41,7 @@ class CachedImage extends StatelessWidget {
         if (cachedFile != null) {
           return await cachedFile.file.readAsBytes();
         } else {
-          return await readImage(imageRef!);
+          return await readFile(imageRef!);
         }
       }
     } catch (e) {

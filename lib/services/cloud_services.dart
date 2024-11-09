@@ -31,25 +31,25 @@ final _messaging = FirebaseMessaging.instance;
 final storageRef = FirebaseStorage.instance.ref();
 
 
-//IMAGES
+//FILES
 
-Future<Uint8List?> readImage(Reference imageRef) async {
-  Uint8List? data = await imageRef.getData();
+Future<Uint8List?> readFile(Reference fileRef, [String fileExtension = 'jpg']) async {
+  Uint8List? data = await fileRef.getData();
   if (data != null) {
-    DefaultCacheManager().putFile(imageRef.fullPath, data, key: imageRef.fullPath, fileExtension: 'jpg');
+    DefaultCacheManager().putFile(fileRef.fullPath, data, key: fileRef.fullPath, fileExtension: fileExtension);
   }
   return data;
 }
 
-Future<UploadTask> uploadImage(Reference imageRef, File image) async {
-  await DefaultCacheManager().putFile(imageRef.fullPath, image.readAsBytesSync(), key: imageRef.fullPath, fileExtension: 'jpg');
-  return imageRef.putFile(image);
+Future<UploadTask> uploadFile(Reference fileRef, File file, [String fileExtension = 'jpg']) async {
+  await DefaultCacheManager().putFile(fileRef.fullPath, file.readAsBytesSync(), key: fileRef.fullPath, fileExtension: fileExtension);
+  return fileRef.putFile(file);
 }
 
 //ITEMS
 Future<void> createNewItem(File? image, String title, String price, AddressInfo addressValue, String description, Condition condition, List<ItemCategory> categories) async {
   DocumentReference itemDoc = _firestore.collection('items').doc();
-  await uploadImage(storageRef.child('items').child(itemDoc.id).child('0.jpg'), image!);
+  await uploadFile(storageRef.child('items').child(itemDoc.id).child('0.jpg'), image!);
 
   return itemDoc.set({
     'contactUserID': userDetails.docRef.id,
@@ -68,7 +68,7 @@ Future<void> createNewItem(File? image, String title, String price, AddressInfo 
 
 Future<void> editItem(Item item, bool isImageChanged, File? image, String title, String price, AddressInfo addressValue, String description, Condition condition, List<dynamic> categories) async {
   if(isImageChanged){
-    await uploadImage(storageRef.child('items').child(item.docRef.id).child('0.jpg'), image!);
+    await uploadFile(storageRef.child('items').child(item.docRef.id).child('0.jpg'), image!);
   }
   return item.docRef.update({
     'title': title,
@@ -244,13 +244,33 @@ Future<void> sendImageMessage(DocumentReference chatRef, int userIndex, File ima
 
   DocumentReference messageRef = chatRef.collection('messages').doc();
 
-  await uploadImage(storageRef.child('messages').child('${messageRef.id}.jpg'), image);
+  await uploadFile(storageRef.child('messages').child('${messageRef.id}.jpg'), image);
 
   Map<String, dynamic> messageData = {
     'sender': userIndex,
     'text': 'תמונה',
     'sentAt': FieldValue.serverTimestamp(),
     'type': MessageType.IMAGE.index,
+  };
+
+  batch.set(messageRef, messageData);
+  batch.update(chatRef, {'lastMessageSentAt': FieldValue.serverTimestamp()});
+
+  batch.commit();
+}
+
+Future<void> sendRecordMessage(DocumentReference chatRef, int userIndex, File record) async {
+  WriteBatch batch = _firestore.batch();
+
+  DocumentReference messageRef = chatRef.collection('messages').doc();
+
+  await uploadFile(storageRef.child('messages').child('${messageRef.id}.aac'), record, 'aac');
+
+  Map<String, dynamic> messageData = {
+    'sender': userIndex,
+    'text': 'הקלטה קולית',
+    'sentAt': FieldValue.serverTimestamp(),
+    'type': MessageType.VOICE_RECORD.index,
   };
 
   batch.set(messageRef, messageData);
@@ -348,8 +368,8 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getNewMessagesStream(DocumentReferen
   return chatRef.collection('messages').orderBy('sentAt').where('sentAt', isGreaterThan: DateTime.now()).snapshots();
 }
 
-Reference getMessageImageRef(DocumentReference messageRef) {
-  return storageRef.child('messages').child('${messageRef.id}.jpg');
+Reference getMessageFileRef(DocumentReference messageRef, [String fileExtension = 'jpg']) {
+  return storageRef.child('messages').child('${messageRef.id}.$fileExtension');
 }
 
 //REVIEWS

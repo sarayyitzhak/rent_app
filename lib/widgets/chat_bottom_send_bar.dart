@@ -22,7 +22,6 @@ class ChatBottomSendBar extends StatefulWidget {
 }
 
 class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
-  final storageRef = FirebaseStorage.instance.ref();
   final messageTextController = TextEditingController();
   String messageText = '';
   File? image;
@@ -38,15 +37,11 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
     }
   }
 
-  void uploadImage() async {
-    sendImageMessage(widget.chat.docRef, widget.userIdx, image!);
-  }
-
   void onImagePressed(File? newImage){
       setState(() {
         image = newImage;
       });
-      uploadImage();
+      sendImageMessage(widget.chat.docRef, widget.userIdx, image!);
       setState(() {
         showMic = true;
       });

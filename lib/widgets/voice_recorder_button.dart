@@ -23,7 +23,6 @@ class VoiceRecorderButton extends StatefulWidget {
 class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
   final FlutterSoundRecorder _recorder = FlutterSoundRecorder();
   bool isRecording = false;
-  final storageRef = FirebaseStorage.instance.ref();
   late String recordingUrl;
   String? filePath;
 
@@ -66,15 +65,7 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
     setState(() {
       isRecording = false;
     });
-    uploadVoiceRecording(filePath!);
-  }
-
-  Future<void> uploadVoiceRecording(String filePath) async {
-    File file = File(filePath);
-    final recordingRef = storageRef.child('voice_record_${DateTime.now().millisecondsSinceEpoch}.aac');
-    TaskSnapshot taskSnapshot = await recordingRef.putFile(file);
-    recordingUrl = await taskSnapshot.ref.getDownloadURL();
-    sendMessage(widget.chat.docRef, widget.userIdx, 'הקלטה קולית', MessageType.VOICE_RECORD, recordingUrl);
+    sendRecordMessage(widget.chat.docRef, widget.userIdx, File(filePath!));
   }
 
   @override

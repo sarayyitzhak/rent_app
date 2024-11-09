@@ -30,7 +30,7 @@ class ImageMessageBubble extends StatelessWidget {
             }));
           },
           child: CachedImage(
-            imageRef: getMessageImageRef(message.cloudKey!),
+            imageRef: getMessageFileRef(message.cloudKey!),
             width: MediaQuery.of(context).size.width * 0.6,
             height: MediaQuery.of(context).size.width * 0.9,
             borderRadius: BorderRadius.circular(20),
