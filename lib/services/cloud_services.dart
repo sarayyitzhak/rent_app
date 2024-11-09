@@ -81,7 +81,7 @@ Future<void> editItem(Item item, bool isImageChanged, File? image, String title,
 }
 
 Reference getItemMainImageRef(DocumentReference itemRef, String mainImage) {
-  return storageRef.child('items').child(itemRef.id).child(mainImage);
+  return storageRef.child('items').child(itemRef.id).child('$mainImage.jpg');
 }
 
 Future<QueryBatch<Item>> getItemsByCategory(ItemCategory category, [DocumentSnapshot? startAfterDoc]) async {
