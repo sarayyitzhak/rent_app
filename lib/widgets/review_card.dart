@@ -49,7 +49,7 @@ class ReviewCard extends StatelessWidget {
                         }
                       },
                   ),
-                  SizedBox(width: 250, child: Text(review.text, softWrap: true, overflow: TextOverflow.visible, maxLines: 5,)),
+                  SizedBox(width: 250, child: Text(review.text.toString(), softWrap: true, overflow: TextOverflow.visible, maxLines: 5,)),
                 ],
               ),
             ],

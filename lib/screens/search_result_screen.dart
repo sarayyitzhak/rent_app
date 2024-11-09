@@ -42,7 +42,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
   Widget build(BuildContext context) {
     var localization = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: CustomAppBar(title: localization.search, isBackButton: false),
+      appBar: CustomAppBar(title: localization.search),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(

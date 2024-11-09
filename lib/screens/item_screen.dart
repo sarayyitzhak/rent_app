@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/models/item.dart';
-import 'package:rent_app/models/item_review.dart';
 import 'package:rent_app/models/user.dart';
 import 'package:rent_app/screens/add_item_screen.dart';
 import 'package:rent_app/screens/rental_screen.dart';
@@ -14,10 +12,8 @@ import 'package:rent_app/widgets/chat_icon_button.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/custom_button.dart';
-import 'package:rent_app/widgets/rating_stars.dart';
 import 'package:rent_app/widgets/rating_stars_widget.dart';
 import 'package:rent_app/widgets/favorite_button.dart';
-
 import '../services/cloud_services.dart';
 import '../widgets/cached_image.dart';
 import '../widgets/dial_icon_button.dart';
@@ -33,8 +29,7 @@ class ItemScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Item item = args.item;
     var localization = AppLocalizations.of(context)!;
-    double rate = 0;
-    TextEditingController commentController = TextEditingController();
+    double? rate = item.getRate();
 
     if (userDetails.docRef.id != item.contactUserID) {
       updateUserItemSeen(item.docRef);
@@ -175,18 +170,23 @@ class ItemScreen extends StatelessWidget {
                                     )
                             ],
                           ),
-                          item.getRate() != null
-                              ? Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    TextButton(
-                                      child: Text('${localization.usersReviews} (${item.reviewCount})'),
-                                      onPressed: () => Navigator.pushNamed(context, ReviewsScreen.id, arguments: ReviewsScreenArguments(item)),
-                                    ),
-                                    RatingStarsWidget(rate: item.getRate()!)
-                                  ],
-                                )
-                              : Text(localization.noReviewsYet),
+                          FutureBuilder(
+                              future: getTextItemReviewsCount(item.docRef),
+                              builder: (context, snapshot){
+                                if(snapshot.hasData){
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      snapshot.data != 0 ?  TextButton(
+                                        child: Text('${localization.usersReviews} (${snapshot.data})'),
+                                        onPressed: () => Navigator.pushNamed(context, ReviewsScreen.id, arguments: ReviewsScreenArguments(item)),
+                                      ) : Text(localization.noReviewsYet, style: kBlackTextStyle,),
+                                      if(rate != null) RatingStarsWidget(rate: rate)
+                                    ],
+                                  );
+                                }
+                                return Container();
+                              }),
                         ],
                       ),
                     ),

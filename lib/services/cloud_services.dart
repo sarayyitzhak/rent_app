@@ -373,7 +373,7 @@ void addItemReview(DocumentReference itemRef, int? overallRate, int? valueForPri
 }
 
 Future<List<ItemReview>> getItemReviews(DocumentReference itemRef) async {
-  return await itemRef.collection('reviews').orderBy('createdAt', descending: true).get().then((QuerySnapshot query) => query.docs.map(ItemReview.fromDocumentSnapshot).toList());
+  return await itemRef.collection('reviews').where('text', isNull: false).orderBy('createdAt', descending: true).get().then((QuerySnapshot query) => query.docs.map(ItemReview.fromDocumentSnapshot).toList());
 }
 
 void addUserReview(DocumentReference userRef, int? overallRate, int? serviceLevel, String? text) {
@@ -394,6 +394,14 @@ void addUserReview(DocumentReference userRef, int? overallRate, int? serviceLeve
 
 Future<List<UserReview>> getUserReviews(DocumentReference userRef) async {
   return await userRef.collection('reviews').orderBy('createdAt', descending: true).get().then((QuerySnapshot query) => query.docs.map(UserReview.fromDocumentSnapshot).toList());
+}
+
+Future<int> getTextItemReviewsCount(DocumentReference itemRef) async {
+  int reviewsCount = 0;
+  await itemRef.collection('reviews').where('text', isNull: false).count().get().then(
+        (res) => reviewsCount = res.count!,
+  );
+  return reviewsCount;
 }
 
 // Future<void> addRateField() async {

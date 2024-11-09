@@ -16,8 +16,8 @@ class Item {
   final DateTime _createdAt;
   final int _favoriteCount;
   final int _seenCount;
-  final int? _reviewCount;
-  final int? _rateSum;
+  final int? _overallRateCount;
+  final int? _overallRateSum;
 
   Item({
     required DocumentReference docRef,
@@ -32,8 +32,8 @@ class Item {
     required DateTime createdAt,
     required int favoriteCount,
     required int seenCount,
-    int? reviewCount,
-    int? rateSum,
+    int? overallRateCount,
+    int? overallRateSum,
   })  : _docRef = docRef,
         _contactUserID = contactUserID,
         _mainImage = mainImage,
@@ -46,8 +46,8 @@ class Item {
         _createdAt = createdAt,
         _favoriteCount = favoriteCount,
         _seenCount = seenCount,
-        _reviewCount = reviewCount,
-        _rateSum = rateSum;
+        _overallRateCount = overallRateCount,
+        _overallRateSum = overallRateSum;
 
   DocumentReference get docRef => _docRef;
 
@@ -73,12 +73,12 @@ class Item {
 
   int get seenCount => _seenCount;
 
-  int? get reviewCount => _reviewCount;
+  int? get overallRateCount => _overallRateCount;
 
-  int? get rateSum => _rateSum;
+  int? get overallRateSum => _overallRateSum;
 
   double? getRate() {
-    return (reviewCount != null && reviewCount != 0) ? (rateSum! / reviewCount!) : null;
+    return (overallRateSum != null && overallRateCount != 0) ? (overallRateSum! / overallRateCount!) : null;
   }
 
   factory Item.fromDocumentSnapshot(DocumentSnapshot doc) {
@@ -97,8 +97,8 @@ class Item {
       createdAt: data['createdAt'].toDate(),
       favoriteCount: data['favoriteCount'],
       seenCount: data['seenCount'],
-      reviewCount: data['reviewCount'],
-      rateSum: data['rateSum']
+      overallRateCount: data['overallRateCount'],
+      overallRateSum: data['overallRateSum']
     );
   }
 }

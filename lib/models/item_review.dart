@@ -7,8 +7,8 @@ class ItemReview {
   final int? _overallRate;
   final int? _valueForPrice;
   final int? _compatibility;
-  final String _text;
-  final Condition _condition;
+  final String? _text;
+  final Condition? _condition;
   final DateTime _createdAt;
 
   ItemReview({
@@ -17,8 +17,8 @@ class ItemReview {
     int? overallRate,
     int? valueForPrice,
     int? compatibility,
-    required String text,
-    required Condition condition,
+    String? text,
+    Condition? condition,
     required DateTime createdAt,
   })  : _docRef = docRef,
         _userID = userID,
@@ -54,9 +54,9 @@ class ItemReview {
 
   int? get compatibility => _compatibility;
 
-  String get text => _text;
+  String? get text => _text;
 
-  Condition get condition => _condition;
+  Condition? get condition => _condition;
 
   DateTime get createdAt => _createdAt;
 }
