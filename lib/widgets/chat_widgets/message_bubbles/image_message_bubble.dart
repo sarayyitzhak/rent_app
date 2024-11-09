@@ -1,6 +1,8 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:rent_app/services/cloud_services.dart';
+import 'package:rent_app/widgets/cached_image.dart';
 import 'package:rent_app/widgets/chat_widgets/message_time.dart';
 import '../../../models/chat.dart';
 import '../../../models/message.dart';
@@ -27,20 +29,11 @@ class ImageMessageBubble extends StatelessWidget {
               );
             }));
           },
-          child: CachedNetworkImage(
+          child: CachedImage(
+            imageRef: getMessageImageRef(message.cloudKey!),
             width: MediaQuery.of(context).size.width * 0.6,
             height: MediaQuery.of(context).size.width * 0.9,
-            imageUrl: message.fileRef!,
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-            imageBuilder: (context, imageProvider) => Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                image: DecorationImage(
-                  image: imageProvider,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+            borderRadius: BorderRadius.circular(20),
           ),
         ),
         const SizedBox(height: 4),

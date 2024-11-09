@@ -3,6 +3,8 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:typed_data';
 
+import 'package:rent_app/services/cloud_services.dart';
+
 class CachedImage extends StatelessWidget {
   final Reference? imageRef;
   final double? width;
@@ -39,12 +41,7 @@ class CachedImage extends StatelessWidget {
         if (cachedFile != null) {
           return await cachedFile.file.readAsBytes();
         } else {
-          Uint8List? imageData = await imageRef!.getData();
-
-          if (imageData != null) {
-            DefaultCacheManager().putFile(path, imageData, key: path, fileExtension: 'jpg');
-          }
-          return imageData;
+          return await readImage(imageRef!);
         }
       }
     } catch (e) {

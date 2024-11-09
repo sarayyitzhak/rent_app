@@ -1,10 +1,12 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/models/condition.dart';
@@ -29,11 +31,25 @@ final _messaging = FirebaseMessaging.instance;
 final storageRef = FirebaseStorage.instance.ref();
 
 
+//IMAGES
+
+Future<Uint8List?> readImage(Reference imageRef) async {
+  Uint8List? data = await imageRef.getData();
+  if (data != null) {
+    DefaultCacheManager().putFile(imageRef.fullPath, data, key: imageRef.fullPath, fileExtension: 'jpg');
+  }
+  return data;
+}
+
+Future<UploadTask> uploadImage(Reference imageRef, File image) async {
+  await DefaultCacheManager().putFile(imageRef.fullPath, image.readAsBytesSync(), key: imageRef.fullPath, fileExtension: 'jpg');
+  return imageRef.putFile(image);
+}
+
 //ITEMS
 Future<void> createNewItem(File? image, String title, String price, AddressInfo addressValue, String description, Condition condition, List<ItemCategory> categories) async {
   DocumentReference itemDoc = _firestore.collection('items').doc();
-  final itemRef = storageRef.child('items').child(itemDoc.id).child('0.jpg');
-  await itemRef.putFile(image!);
+  await uploadImage(storageRef.child('items').child(itemDoc.id).child('0.jpg'), image!);
 
   return itemDoc.set({
     'contactUserID': userDetails.docRef.id,
@@ -52,10 +68,9 @@ Future<void> createNewItem(File? image, String title, String price, AddressInfo 
 
 Future<void> editItem(Item item, bool isImageChanged, File? image, String title, String price, AddressInfo addressValue, String description, Condition condition, List<dynamic> categories) async {
   if(isImageChanged){
-    final itemRef = storageRef.child('items').child(item.docRef.id).child('0.jpg');
-    await itemRef.putFile(image!);
+    await uploadImage(storageRef.child('items').child(item.docRef.id).child('0.jpg'), image!);
   }
-  return _firestore.collection('items').doc(item.docRef.id).update({
+  return item.docRef.update({
     'title': title,
     'price': int.parse(price),
     'location': addressValue.toMap(),
@@ -224,6 +239,26 @@ void sendMessage(DocumentReference chatRef, int userIndex, String text, MessageT
   chatRef.update({'lastMessageSentAt': FieldValue.serverTimestamp()});
 }
 
+Future<void> sendImageMessage(DocumentReference chatRef, int userIndex, File image) async {
+  WriteBatch batch = _firestore.batch();
+
+  DocumentReference messageRef = chatRef.collection('messages').doc();
+
+  await uploadImage(storageRef.child('messages').child('${messageRef.id}.jpg'), image);
+
+  Map<String, dynamic> messageData = {
+    'sender': userIndex,
+    'text': 'תמונה',
+    'sentAt': FieldValue.serverTimestamp(),
+    'type': MessageType.IMAGE.index,
+  };
+
+  batch.set(messageRef, messageData);
+  batch.update(chatRef, {'lastMessageSentAt': FieldValue.serverTimestamp()});
+
+  batch.commit();
+}
+
 Future<Chat> sendItemMessage(String userID, DocumentReference itemRef) async {
   Chat? chat;
   QuerySnapshot usersChatsQuery = await _firestore.collection('chats')
@@ -311,6 +346,10 @@ Future<QuerySnapshot> getHistoricalMessages(DocumentReference chatRef, int limit
 
 Stream<QuerySnapshot<Map<String, dynamic>>> getNewMessagesStream(DocumentReference chatRef) {
   return chatRef.collection('messages').orderBy('sentAt').where('sentAt', isGreaterThan: DateTime.now()).snapshots();
+}
+
+Reference getMessageImageRef(DocumentReference messageRef) {
+  return storageRef.child('messages').child('${messageRef.id}.jpg');
 }
 
 //REVIEWS

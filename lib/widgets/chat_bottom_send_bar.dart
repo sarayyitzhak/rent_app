@@ -39,12 +39,7 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
   }
 
   void uploadImage() async {
-    DateTime sentAt = Timestamp.now().toDate();
-    final itemRef = storageRef.child('${widget.chat.docRef}/$sentAt');
-    UploadTask uploadTask = itemRef.putFile(image!);
-    TaskSnapshot taskSnapshot = await uploadTask;
-    var imageUrl = await taskSnapshot.ref.getDownloadURL();
-    sendMessage(widget.chat.docRef, widget.userIdx, 'תמונה', MessageType.IMAGE, imageUrl);
+    sendImageMessage(widget.chat.docRef, widget.userIdx, image!);
   }
 
   void onImagePressed(File? newImage){
