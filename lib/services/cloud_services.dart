@@ -361,7 +361,7 @@ void addItemReview(DocumentReference itemRef, int? overallRate, int? valueForPri
     if(overallRate != null) 'overallRate': overallRate,
     if(valueForPrice != null) 'valueForPrice': valueForPrice,
     if(compatibility != null) 'compatibility': compatibility,
-    if(text != null) 'text': text,
+    if(text != '') 'text': text,
     if(condition != null) 'condition': condition.idx,
     'createdAt': FieldValue.serverTimestamp()
   });
