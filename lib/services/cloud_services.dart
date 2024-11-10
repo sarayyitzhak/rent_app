@@ -60,7 +60,8 @@ Future<UploadTask> uploadFileData(Reference dirRef, FileData fileData) async {
   return uploadData(dirRef.child(fileData.fullName), fileData.data, fileData.extension);
 }
 
-Future<void> deleteFile(Reference fileRef) {
+Future<void> deleteFile(Reference fileRef) async {
+  await DefaultCacheManager().removeFile(fileRef.fullPath);
   return fileRef.delete();
 }
 
@@ -87,7 +88,7 @@ Future<void> createNewItem(List<FileData> images, String mainImage, String title
 }
 
 Future<void> editItem(Item item, String mainImage, String title, int price, AddressInfo addressValue, String description, Condition condition, List<ItemCategory> categories) async {
-  return item.docRef.update({
+  Map<String, Object> data = {
     if (item.mainImage != mainImage) 'mainImage': mainImage,
     if (item.title != title) 'title': title,
     if (item.price != price) 'price': price,
@@ -95,7 +96,8 @@ Future<void> editItem(Item item, String mainImage, String title, int price, Addr
     if (item.description != description) 'description': description,
     if (item.condition != condition) 'condition': condition.index,
     if (!areListsEqual(item.categories, categories)) 'categories': categories.map((c) => c.idx).toList(),
-  });
+  };
+  return data.isNotEmpty ? item.docRef.update(data) : Future.value();
 }
 
 Reference getItemImageDirRef(DocumentReference itemRef) {
@@ -149,8 +151,12 @@ Future<QueryBatch<Item>> getItemsByTitle(String title, [DocumentSnapshot? startA
   });
 }
 
-Future<Item?> getItemById(String id) async {
-  return _firestore.collection('items').doc(id).get().then(Item.fromDocumentSnapshot);
+Future<Item> getItemById(String id) async {
+  return getItemByRef(_firestore.collection('items').doc(id));
+}
+
+Future<Item> getItemByRef(DocumentReference itemRef) async {
+  return itemRef.get().then(Item.fromDocumentSnapshot);
 }
 
 Future<List<Item>> _getItemsByQuery(Future<QuerySnapshot<Map<String, dynamic>>> query, bool onlyOthersItems) async {
@@ -439,11 +445,7 @@ Future<List<UserReview>> getUserReviews(DocumentReference userRef) async {
 }
 
 Future<int> getTextItemReviewsCount(DocumentReference itemRef) async {
-  int reviewsCount = 0;
-  await itemRef.collection('reviews').where('text', isNull: false).count().get().then(
-        (res) => reviewsCount = res.count!,
-  );
-  return reviewsCount;
+  return itemRef.collection('reviews').where('text', isNull: false).count().get().then((res) => res.count!);
 }
 
 // Future<void> addRateField() async {

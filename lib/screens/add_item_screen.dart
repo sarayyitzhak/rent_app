@@ -20,6 +20,7 @@ import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 import '../models/item.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/map_dialog.dart';
+import 'item_screen.dart';
 
 class AddItemScreen extends StatefulWidget {
   static String id = 'add_item_screen';
@@ -171,17 +172,20 @@ class _AddItemScreenState extends State<AddItemScreen> {
     });
 
     imagesController.images.where((fileData) => fileData.fileRef == null).forEach((fileData) async {
-      await uploadFileData(getItemImageDirRef(item!.docRef), fileData);
+      await (await uploadFileData(getItemImageDirRef(item!.docRef), fileData));
     });
 
     await editItem(item!, imagesController.mainImage!.name, titleController.text, int.parse(priceController.text), addressValue,
         descriptionController.text, conditionValue!, _selectedCategories);
+
     Navigator.pop(context);
     Navigator.pop(context);
+    Navigator.popAndPushNamed(context, ItemScreen.id, arguments: ItemScreenArguments(itemRef:  item!.docRef));
   }
 
   @override
   void dispose() {
+    imagesController.dispose();
     titleController.dispose();
     priceController.dispose();
     descriptionController.dispose();

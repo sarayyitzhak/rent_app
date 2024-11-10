@@ -77,7 +77,7 @@ class ItemCard extends StatelessWidget {
       }
     }
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, ItemScreen.id, arguments: ItemScreenArguments(item!, isMine)),
+      onTap: () => Navigator.pushNamed(context, ItemScreen.id, arguments: ItemScreenArguments(item: item!)),
       child: Card(
         elevation: 5,
         margin: isHorizontal ? const EdgeInsets.symmetric(horizontal: 5, vertical: 10) : null,
