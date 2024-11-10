@@ -10,6 +10,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/models/condition.dart';
+import 'package:rent_app/models/file_data.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/models/item_review.dart';
 import 'package:rent_app/models/message.dart';
@@ -41,19 +42,38 @@ Future<Uint8List?> readFile(Reference fileRef, [String fileExtension = 'jpg']) a
   return data;
 }
 
+Future<List<Reference>> getFileReferences(Reference dirRef) async {
+  return dirRef.listAll().then((ListResult res) => res.items);
+}
+
 Future<UploadTask> uploadFile(Reference fileRef, File file, [String fileExtension = 'jpg']) async {
   await DefaultCacheManager().putFile(fileRef.fullPath, file.readAsBytesSync(), key: fileRef.fullPath, fileExtension: fileExtension);
   return fileRef.putFile(file);
 }
 
-//ITEMS
-Future<void> createNewItem(File? image, String title, String price, AddressInfo addressValue, String description, Condition condition, List<ItemCategory> categories) async {
-  DocumentReference itemDoc = _firestore.collection('items').doc();
-  await uploadFile(storageRef.child('items').child(itemDoc.id).child('0.jpg'), image!);
+Future<UploadTask> uploadData(Reference fileRef, Uint8List data, [String fileExtension = 'jpg']) async {
+  await DefaultCacheManager().putFile(fileRef.fullPath, data, key: fileRef.fullPath, fileExtension: fileExtension);
+  return fileRef.putData(data);
+}
 
-  return itemDoc.set({
+Future<UploadTask> uploadFileData(Reference dirRef, FileData fileData) async {
+  return uploadData(dirRef.child(fileData.fullName), fileData.data, fileData.extension);
+}
+
+Future<void> deleteFile(Reference fileRef) {
+  return fileRef.delete();
+}
+
+//ITEMS
+Future<void> createNewItem(List<FileData> images, String mainImage, String title, String price, AddressInfo addressValue, String description, Condition condition, List<ItemCategory> categories) async {
+  DocumentReference itemRef = _firestore.collection('items').doc();
+  for (FileData fileData in images) {
+    await uploadFileData(getItemImageDirRef(itemRef), fileData);
+  }
+
+  return itemRef.set({
     'contactUserID': userDetails.docRef.id,
-    'mainImage': '0.jpg',
+    'mainImage': mainImage,
     'title': title,
     'price': int.parse(price),
     'location': addressValue.toMap(),
@@ -66,22 +86,24 @@ Future<void> createNewItem(File? image, String title, String price, AddressInfo 
   });
 }
 
-Future<void> editItem(Item item, bool isImageChanged, File? image, String title, String price, AddressInfo addressValue, String description, Condition condition, List<dynamic> categories) async {
-  if(isImageChanged){
-    await uploadFile(storageRef.child('items').child(item.docRef.id).child('0.jpg'), image!);
-  }
+Future<void> editItem(Item item, String mainImage, String title, int price, AddressInfo addressValue, String description, Condition condition, List<ItemCategory> categories) async {
   return item.docRef.update({
-    'title': title,
-    'price': int.parse(price),
-    'location': addressValue.toMap(),
-    'description': description,
-    'condition': condition.index,
-    'categories': categories.map((c) => c.idx).toList(),
+    if (item.mainImage != mainImage) 'mainImage': mainImage,
+    if (item.title != title) 'title': title,
+    if (item.price != price) 'price': price,
+    if (item.location != addressValue) 'location': addressValue.toMap(),
+    if (item.description != description) 'description': description,
+    if (item.condition != condition) 'condition': condition.index,
+    if (!areListsEqual(item.categories, categories)) 'categories': categories.map((c) => c.idx).toList(),
   });
 }
 
+Reference getItemImageDirRef(DocumentReference itemRef) {
+  return storageRef.child('items').child(itemRef.id);
+}
+
 Reference getItemMainImageRef(DocumentReference itemRef, String mainImage) {
-  return storageRef.child('items').child(itemRef.id).child('$mainImage.jpg');
+  return getItemImageDirRef(itemRef).child('$mainImage.jpg');
 }
 
 Future<QueryBatch<Item>> getItemsByCategory(ItemCategory category, [DocumentSnapshot? startAfterDoc]) async {

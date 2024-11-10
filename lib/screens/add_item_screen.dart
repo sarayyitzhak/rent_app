@@ -1,26 +1,25 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/models/category.dart';
 import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/models/address_info.dart';
-import 'package:rent_app/screens/home_screen.dart';
-import 'package:rent_app/screens/item_screen.dart';
+import 'package:rent_app/models/file_data.dart';
 import 'package:rent_app/services/cloud_services.dart';
+import 'package:rent_app/utils.dart';
+import 'package:rent_app/widgets/add_item_widgets/selectable_images_container.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/text_and_text_field.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 import '../models/item.dart';
-import '../widgets/cached_image.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/map_dialog.dart';
-import '../widgets/pick_image_button.dart';
 
 class AddItemScreen extends StatefulWidget {
   static String id = 'add_item_screen';
@@ -37,6 +36,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   Item? item;
   File? image;
   bool isImageChangedOnEditMode = false;
+  late SelectingImagesController imagesController;
   late TextEditingController titleController;
   late TextEditingController priceController;
   late TextEditingController descriptionController;
@@ -48,6 +48,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   @override
   void initState() {
     super.initState();
+    imagesController = SelectingImagesController();
     titleController = TextEditingController();
     priceController = TextEditingController();
     descriptionController = TextEditingController();
@@ -59,6 +60,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   }
 
   void initOnEditMode(Item? item) {
+    initImages();
     setState(() {
       titleController.text = item!.title;
       priceController.text = item.price.toString();
@@ -67,6 +69,21 @@ class _AddItemScreenState extends State<AddItemScreen> {
       _selectedCategories = item.categories;
       addressValue = item.location;
     });
+  }
+
+  Future<void> initImages() async {
+    List<Reference> imageRefList = await getFileReferences(getItemImageDirRef(item!.docRef));
+    for (int i = 0; i < imageRefList.length; i++) {
+      FileData fileData = await getFileData(imageRefList[i]);
+      if (fileData.exists) {
+        setState(() {
+          imagesController.images.add(fileData);
+          if (item!.mainImage == fileData.name) {
+            imagesController.mainImage = fileData;
+          }
+        });
+      }
+    }
   }
 
   Future<void> mapDialogBuilder(BuildContext context, var localization) {
@@ -86,46 +103,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
             });
       },
     );
-  }
-
-  Container imageContainer(var localization, bool isEditMode) {
-    return Container(
-        height: 200,
-        width: double.infinity,
-        margin: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: kPastelYellowOpacity,
-          borderRadius: BorderRadius.circular(5),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            isEditMode && !isImageChangedOnEditMode
-                ? CachedImage(
-                    width: 150,
-                    height: 150,
-                    imageRef: getItemMainImageRef(item!.docRef, item!.mainImage),
-                  )
-                : image != null
-                    ? Image.file(
-                        image!,
-                        width: 150,
-                        height: 150,
-                        fit: BoxFit.fill,
-                      )
-                    : Text(localization.noImageSelected),
-            PickImageButton(
-              onImagePicked: (newImage) {
-                setState(() {
-                  image = newImage;
-                });
-                if (isEditMode) {
-                  isImageChangedOnEditMode = true;
-                }
-              },
-            ),
-          ],
-        ));
   }
 
   MultiSelectBottomSheetField categorySelection(AppLocalizations localization) {
@@ -172,7 +149,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
         color: kPastelYellow,
       )),
     );
-    createNewItem(image, titleController.text, priceController.text, addressValue, descriptionController.text,
+
+    await createNewItem(imagesController.images, imagesController.mainImage!.name, titleController.text, priceController.text, addressValue, descriptionController.text,
         conditionValue!, _selectedCategories);
     Navigator.pop(context);
     Navigator.pop(context);
@@ -188,11 +166,18 @@ class _AddItemScreenState extends State<AddItemScreen> {
       )),
     );
 
-    await editItem(item!, isImageChangedOnEditMode, image, titleController.text, priceController.text, addressValue,
+    imagesController.deletedImages.where((fileData) => fileData.fileRef != null).forEach((fileData) async {
+      await deleteFile(fileData.fileRef!);
+    });
+
+    imagesController.images.where((fileData) => fileData.fileRef == null).forEach((fileData) async {
+      await uploadFileData(getItemImageDirRef(item!.docRef), fileData);
+    });
+
+    await editItem(item!, imagesController.mainImage!.name, titleController.text, int.parse(priceController.text), addressValue,
         descriptionController.text, conditionValue!, _selectedCategories);
     Navigator.pop(context);
     Navigator.pop(context);
-    Navigator.popAndPushNamed(context, ItemScreen.id, arguments: ItemScreenArguments(item!, true));
   }
 
   @override
@@ -215,7 +200,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                imageContainer(localization, widget.args.isEditMode),
+                SelectableImagesContainer(controller: imagesController),
                 TextAndTextField(title: localization.title, controller: titleController),
                 TextAndTextField(
                   title: localization.price,

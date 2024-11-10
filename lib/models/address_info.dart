@@ -16,6 +16,13 @@ class AddressInfo {
 
   String? get road => _road;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is AddressInfo && runtimeType == other.runtimeType && _geoPoint == other.geoPoint;
+
+  @override
+  int get hashCode => _geoPoint.hashCode;
+
   String addressDataToString() {
     return '${_city ?? ''}${(_road != null && _road != '') ? ',  $_road' : ''}';
   }

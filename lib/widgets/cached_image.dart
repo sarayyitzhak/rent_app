@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:typed_data';
 
-import 'package:rent_app/services/cloud_services.dart';
+import 'package:rent_app/utils.dart';
 
 class CachedImage extends StatelessWidget {
   final Reference? imageRef;
@@ -23,31 +21,6 @@ class CachedImage extends StatelessWidget {
       this.errorWidget,
       this.imageBuilder,
       this.borderRadius});
-
-  Future<Uint8List?> _fetchImageData() async {
-    if (imageRef == null) {
-      return null;
-    }
-    try {
-      String path = imageRef!.fullPath;
-
-      FileInfo? cachedFile = await DefaultCacheManager().getFileFromMemory(path);
-
-      if (cachedFile != null) {
-        return await cachedFile.file.readAsBytes();
-      } else {
-        cachedFile = await DefaultCacheManager().getFileFromCache(path);
-
-        if (cachedFile != null) {
-          return await cachedFile.file.readAsBytes();
-        } else {
-          return await readFile(imageRef!);
-        }
-      }
-    } catch (e) {
-      return null;
-    }
-  }
 
   Widget _getPlaceholder(BuildContext context) {
     return placeholder != null
@@ -83,12 +56,12 @@ class CachedImage extends StatelessWidget {
       child: imageRef == null
           ? _getPlaceholder(context)
           : FutureBuilder(
-              future: _fetchImageData(),
+              future: getFileData(imageRef!),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return _getPlaceholder(context);
-                } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                  return _getImageBuilder(context, MemoryImage(snapshot.data!));
+                } else if (snapshot.hasData && snapshot.data!.exists) {
+                  return _getImageBuilder(context, MemoryImage(snapshot.data!.data));
                 } else {
                   return _getErrorWidget(context);
                 }

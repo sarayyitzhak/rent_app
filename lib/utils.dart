@@ -1,7 +1,12 @@
 import 'dart:math';
+import 'dart:typed_data';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:intl/intl.dart';
+import 'package:rent_app/models/file_data.dart';
+import 'package:rent_app/services/cloud_services.dart';
 
 
 String dateToString(DateTime date) => '${date.day}.${date.month}';
@@ -56,4 +61,42 @@ String getDifferenceInTimeAsString(BuildContext context, DateTime time){
   } else {
     return 'לפני ${duration.inDays / 365} שנים';
   }
+}
+
+Future<FileData> getFileData(Reference fileRef, [String fileExtension = 'jpg']) async {
+  Uint8List? fileData;
+
+  try {
+    FileInfo? cachedFile = await DefaultCacheManager().getFileFromMemory(fileRef.fullPath);
+
+    if (cachedFile != null) {
+      fileData = await cachedFile.file.readAsBytes();
+    } else {
+      cachedFile = await DefaultCacheManager().getFileFromCache(fileRef.fullPath);
+
+      if (cachedFile != null) {
+        fileData = await cachedFile.file.readAsBytes();
+      } else {
+        fileData = await readFile(fileRef, fileExtension);
+      }
+    }
+  } catch (e) {
+    fileData = null;
+  }
+
+  return FileData.fromDataAndReference(fileData, fileRef);
+}
+
+String generateRandomString(int length) {
+  const characters = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+  final random = Random();
+  return List.generate(length, (index) => characters[random.nextInt(characters.length)]).join();
+}
+
+bool areListsEqual<T>(List<T> list1, List<T> list2) {
+  if (list1.length != list2.length) return false;
+  for (int i = 0; i < list1.length; i++) {
+    if (list1[i] != list2[i]) return false;
+  }
+  return true;
 }

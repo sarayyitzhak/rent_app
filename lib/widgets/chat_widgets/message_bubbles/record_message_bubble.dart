@@ -5,8 +5,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:rent_app/models/file_data.dart';
 import 'package:rent_app/models/message.dart';
 import 'package:rent_app/services/cloud_services.dart';
+import 'package:rent_app/utils.dart';
 
 import '../../../constants.dart';
 import '../../../models/chat.dart';
@@ -31,37 +33,13 @@ class _RecordMessageBubbleState extends State<RecordMessageBubble> {
   bool isPlaying = false;
   bool isPauseAuto = false;
 
-  Future<Uint8List?> _fetchSoundData() async {
-    try {
-      Reference soundRef = getMessageFileRef(widget.message.cloudKey!, 'aac');
-
-      String path = soundRef.fullPath;
-
-      FileInfo? cachedFile = await DefaultCacheManager().getFileFromMemory(path);
-
-      if (cachedFile != null) {
-        return await cachedFile.file.readAsBytes();
-      } else {
-        cachedFile = await DefaultCacheManager().getFileFromCache(path);
-
-        if (cachedFile != null) {
-          return await cachedFile.file.readAsBytes();
-        } else {
-          return await readFile(soundRef, 'aac');
-        }
-      }
-    } catch (e) {
-      return null;
-    }
-  }
-
   Future<void> _playPauseAudio() async {
     if (isPlaying) {
       await player.pause();
     } else {
-      Uint8List? data = await _fetchSoundData();
-      if (data != null) {
-        await player.play(BytesSource(data), position: Duration(seconds: _position.toInt()));
+      FileData fileData = await getFileData(getMessageFileRef(widget.message.cloudKey!, 'aac'), 'aac');
+      if (fileData.exists) {
+        await player.play(BytesSource(fileData.data), position: Duration(seconds: _position.toInt()));
       }
     }
     setState(() {
@@ -76,9 +54,9 @@ class _RecordMessageBubbleState extends State<RecordMessageBubble> {
   }
 
   Future<void> _initPlayer() async {
-    Uint8List? data = await _fetchSoundData();
-    if (data != null) {
-      player.setSourceBytes(data);
+    FileData fileData = await getFileData(getMessageFileRef(widget.message.cloudKey!, 'aac'), 'aac');
+    if (fileData.exists) {
+      player.setSourceBytes(fileData.data);
     }
   }
 

@@ -7,8 +7,8 @@ import 'package:rent_app/models/chat.dart';
 import 'package:rent_app/models/message_type.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/voice_recorder_button.dart';
-import 'package:rent_app/widgets/pick_image_button.dart';
 import '../constants.dart';
+import '../dialogs/select_image_dialog.dart';
 import '../models/message.dart';
 
 
@@ -37,7 +37,7 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
     }
   }
 
-  void onImagePressed(File? newImage){
+  void onImagePressed(File newImage){
       setState(() {
         image = newImage;
       });
@@ -85,7 +85,12 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
                     ? VoiceRecorderButton(chat: widget.chat, userIdx: widget.userIdx,)
                     : const SizedBox(),
 
-                PickImageButton(icon: Icons.camera_alt_outlined, onImagePicked: onImagePressed),
+                IconButton(
+                  icon: const Icon(Icons.camera_alt_outlined),
+                  onPressed: () {
+                    SelectImageDialog(context).pickImage(onImagePressed);
+                  },
+                ),
               ],
             ),
           ),
