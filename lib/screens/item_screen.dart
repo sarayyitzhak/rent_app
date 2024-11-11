@@ -130,14 +130,14 @@ class _ItemScreenState extends State<ItemScreen> {
                                   borderRadius: BorderRadius.circular(100),
                                 ),
                                 child: Padding(
-                                  padding: const EdgeInsets.all(8),
+                                  padding: const EdgeInsets.all(4),
                                   child: SmoothPageIndicator(
                                     controller: _pageController,
                                     count: _imageRefs.length,
                                     onDotClicked: _pageController.jumpToPage,
                                     effect: const ScrollingDotsEffect(
-                                      dotHeight: 10,
-                                      dotWidth: 10,
+                                      dotHeight: 6,
+                                      dotWidth: 6,
                                       activeDotColor: Colors.white,
                                       dotColor: Colors.grey,
                                     ),
