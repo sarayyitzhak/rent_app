@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
-  String title;
-  bool isBackButton;
-  CustomAppBar({super.key, required this.title, this.isBackButton = true});
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
+  final bool isBackButton;
+  final IconData backIcon;
+
+  const CustomAppBar({super.key, required this.title, this.isBackButton = true, this.backIcon = Icons.arrow_back});
 
   @override
   AppBar build(BuildContext context) {
@@ -12,28 +14,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
       title: Text(title),
       titleTextStyle: kTopHeaderTextStyle,
       centerTitle: true,
-      leading: isBackButton ? IconButton(
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        icon: const Icon(Icons.arrow_back),
-      ) : null,
-      automaticallyImplyLeading: this.isBackButton,
+      leading: isBackButton
+          ? IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(backIcon),
+            )
+          : null,
+      automaticallyImplyLeading: isBackButton,
     );
   }
+
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
-
-
-// AppBar(
-// title: Text(localization.createAccount),
-// titleTextStyle: kTopHeaderTextStyle,
-// centerTitle: true,
-// leading: IconButton(
-// onPressed: () {
-// Navigator.pop(context);
-// },
-// icon: Icon(Icons.arrow_back),
-// ),
-// ),

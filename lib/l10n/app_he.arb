@@ -124,6 +124,19 @@
     }
   },
 
+  "outOf": "{index} מתוך {total}",
+  "@outOf": {
+    "description": "X out of Y",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
 
   "waiting": "בהמתנה",
   "rejected": "נדחה",
