@@ -1,13 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import '../constants.dart';
+import '../dialogs/select_image_dialog.dart';
+import '../services/cloud_services.dart';
+import '../widgets/cached_image.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/text_and_text_field.dart';
 
 class EditUserDetailsScreen extends StatefulWidget {
   static String id = 'edit_user_details_screen';
+
   const EditUserDetailsScreen({super.key});
 
   @override
@@ -17,7 +23,19 @@ class EditUserDetailsScreen extends StatefulWidget {
 class _ProfileScreenState extends State<EditUserDetailsScreen> {
   late TextEditingController nameController;
   late TextEditingController phoneNumberController;
-  // DateTime selectedDate = DateTime.now();
+
+  void onEditButtonPressed() {
+    userDetails.name = nameController.text;
+    userDetails.phoneNumber = int.parse(phoneNumberController.text);
+    var data = userDetails.userAsMap();
+    userDetails.docRef.update(data);
+  }
+
+  Future<void> _onImagePicked(File file) async {
+    await uploadFile(getUserImageRef(userDetails.docRef), file);
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
@@ -32,13 +50,6 @@ class _ProfileScreenState extends State<EditUserDetailsScreen> {
     super.dispose();
   }
 
-  void onEditButtonPressed(){
-    userDetails.name = nameController.text;
-    userDetails.phoneNumber = int.parse(phoneNumberController.text);
-    var data = userDetails.userAsMap();
-    userDetails.docRef.update(data);
-  }
-
   @override
   Widget build(BuildContext context) {
     var localization = AppLocalizations.of(context)!;
@@ -51,12 +62,38 @@ class _ProfileScreenState extends State<EditUserDetailsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Align(alignment:Alignment.center, child: CircleAvatar(radius: 40,child: Icon(Icons.person, size: 30,),)),
-              const SizedBox.square(dimension: 15,),
-              Align(alignment: Alignment.center, child: Text(userDetails.name, style: kBlackHeaderTextStyle,)),
-              const SizedBox.square(dimension: 20,),
-              TextAndTextField(title: localization.fullName, controller: nameController,),
-              TextAndTextField(title: localization.mobileNumber, controller: phoneNumberController, keyboardType: TextInputType.phone),
+              GestureDetector(
+                onTap: () => SelectImageDialog(context).pickImage(_onImagePicked),
+                child: Center(
+                  child: CachedImage(
+                    width: 80,
+                    height: 80,
+                    imageRef: getUserImageRef(userDetails.docRef),
+                    borderRadius: BorderRadius.circular(100),
+                    errorIcon: Icons.person,
+                  ),
+                ),
+              ),
+              const SizedBox.square(
+                dimension: 15,
+              ),
+              Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    userDetails.name,
+                    style: kBlackHeaderTextStyle,
+                  )),
+              const SizedBox.square(
+                dimension: 20,
+              ),
+              TextAndTextField(
+                title: localization.fullName,
+                controller: nameController,
+              ),
+              TextAndTextField(
+                  title: localization.mobileNumber,
+                  controller: phoneNumberController,
+                  keyboardType: TextInputType.phone),
               const SizedBox(
                 height: 25,
               ),
@@ -64,7 +101,11 @@ class _ProfileScreenState extends State<EditUserDetailsScreen> {
                 height: 5,
               ),
               Center(
-                child: CustomButton(title: localization.edit, buttonStyle: kDarkButtonStyle, onPress: onEditButtonPressed,),
+                child: CustomButton(
+                  title: localization.edit,
+                  buttonStyle: kDarkButtonStyle,
+                  onPress: onEditButtonPressed,
+                ),
               ),
             ],
           ),

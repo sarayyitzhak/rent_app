@@ -154,41 +154,39 @@ class _ItemScreenState extends State<ItemScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        isMe
-                            ? Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                        // padding: EdgeInsets.all(10),
-                                        margin: const EdgeInsets.all(5),
-                                        decoration: BoxDecoration(
-                                            color: kPastelYellowOpacity, borderRadius: BorderRadius.circular(10)),
-                                        child: ListTile(
-                                          title: Text(
-                                            '${_item!.favoriteCount} ${localization.peopleLikedTheItem} ',
-                                            style: kSmallBlackTextStyle,
-                                          ),
-                                          leading: const Icon(Icons.favorite),
-                                          iconColor: Colors.pinkAccent,
-                                        )),
-                                  ),
-                                  Expanded(
-                                    child: Container(
-                                      margin: const EdgeInsets.all(5),
-                                      decoration: BoxDecoration(
-                                          color: kPastelYellowOpacity, borderRadius: BorderRadius.circular(10)),
-                                      child: ListTile(
-                                        title: Text('${_item!.seenCount} ${localization.peopleSeenTheItem} ',
-                                            style: kSmallBlackTextStyle),
-                                        leading: const Icon(Icons.remove_red_eye),
-                                        iconColor: Colors.blue.shade800,
+                        if (isMe)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Container(
+                                    margin: const EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                        color: kPastelYellowOpacity, borderRadius: BorderRadius.circular(10)),
+                                    child: ListTile(
+                                      title: Text(
+                                        '${_item!.favoriteCount} ${localization.peopleLikedTheItem} ',
+                                        style: kSmallBlackTextStyle,
                                       ),
-                                    ),
+                                      leading: const Icon(Icons.favorite),
+                                      iconColor: Colors.pinkAccent,
+                                    )),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  margin: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                      color: kPastelYellowOpacity, borderRadius: BorderRadius.circular(10)),
+                                  child: ListTile(
+                                    title: Text('${_item!.seenCount} ${localization.peopleSeenTheItem} ',
+                                        style: kSmallBlackTextStyle),
+                                    leading: const Icon(Icons.remove_red_eye),
+                                    iconColor: Colors.blue.shade800,
                                   ),
-                                ],
-                              )
-                            : Container(),
+                                ),
+                              ),
+                            ],
+                          ),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           child: Text(
@@ -225,13 +223,32 @@ class _ItemScreenState extends State<ItemScreen> {
                                   localization.contactUserDetails,
                                   style: kBlackHeaderTextStyle,
                                 ),
-                                Text(
-                                  _userDetails!.name,
-                                  style: kBlackTextStyle,
-                                ),
-                                Text(
-                                  _item!.location.addressDataToString(),
-                                  style: kBlackTextStyle,
+                                Row(
+                                  children: [
+                                    CachedImage(
+                                      width: 50,
+                                      height: 50,
+                                      imageRef: getUserImageRef(_userDetails!.docRef),
+                                      borderRadius: BorderRadius.circular(100),
+                                      errorIcon: Icons.person,
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.symmetric(horizontal: 12),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            _userDetails!.name,
+                                            style: kBlackTextStyle,
+                                          ),
+                                          Text(
+                                            _item!.location.addressDataToString(),
+                                            style: kBlackTextStyle,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),

@@ -11,6 +11,7 @@ class CachedImage extends StatelessWidget {
   final Widget Function(BuildContext context)? errorWidget;
   final Widget Function(BuildContext context, ImageProvider)? imageBuilder;
   final BorderRadiusGeometry? borderRadius;
+  final IconData errorIcon;
 
   const CachedImage(
       {super.key,
@@ -20,7 +21,8 @@ class CachedImage extends StatelessWidget {
       this.placeholder,
       this.errorWidget,
       this.imageBuilder,
-      this.borderRadius});
+      this.borderRadius,
+      this.errorIcon = Icons.error});
 
   Widget _getPlaceholder(BuildContext context) {
     return placeholder != null
@@ -45,7 +47,15 @@ class CachedImage extends StatelessWidget {
   }
 
   Widget _getErrorWidget(BuildContext context) {
-    return errorWidget != null ? errorWidget!(context) : const Icon(Icons.error);
+    return errorWidget != null
+        ? errorWidget!(context)
+        : Container(
+            decoration: BoxDecoration(
+              borderRadius: borderRadius,
+              color: Colors.grey[200],
+            ),
+            child: Icon(errorIcon),
+          );
   }
 
   @override

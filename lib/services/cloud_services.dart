@@ -595,6 +595,10 @@ Stream<bool> getUserFavoriteItem(DocumentReference itemRef) {
   return userDetails.docRef.collection('favorites').doc(itemRef.id).snapshots().map((DocumentSnapshot snapshot) => snapshot.exists);
 }
 
+Reference getUserImageRef(DocumentReference userRef) {
+  return storageRef.child('users').child('${userRef.id}.jpg');
+}
+
 Future<void> updateUserItemSeen(DocumentReference itemRef) async {
   var batch = _firestore.batch();
   DocumentSnapshot snapshot = await userDetails.docRef.collection('seen').doc(itemRef.id).get();
