@@ -32,19 +32,9 @@ class _SelectableImagesContainerState extends State<SelectableImagesContainer> {
     });
   }
 
-  List<Widget> _getImageWidgets() {
-    List<Widget> widgets = [];
-
-    widgets.addAll(widget.controller.images.map((fileData) => _getImageWidget(fileData)).toList());
-
-    if (widget.controller.images.length < kMaxImageCount) {
-      widgets.add(_getAddImageWidget());
-    }
-    return widgets;
-  }
-
   Widget _getImageWidget(FileData fileData) {
     return Container(
+      key: ValueKey(fileData.fullPath),
       width: 150,
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
       decoration: BoxDecoration(
@@ -56,10 +46,12 @@ class _SelectableImagesContainerState extends State<SelectableImagesContainer> {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(8)),
-            child: fileData.exists ? Image.memory(
-              fileData.data,
-              fit: BoxFit.cover,
-            ) : const Icon(Icons.error),
+            child: fileData.exists
+                ? Image.memory(
+                    fileData.data,
+                    fit: BoxFit.cover,
+                  )
+                : const Icon(Icons.error),
           ),
           PositionedDirectional(
             top: 4,
@@ -108,23 +100,6 @@ class _SelectableImagesContainerState extends State<SelectableImagesContainer> {
     );
   }
 
-  Widget _getAddImageWidget() {
-    return GestureDetector(
-      onTap: () {
-        SelectImageDialog(context).pickImages(_onImagesPicked);
-      },
-      child: Container(
-        width: 100,
-        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(8)),
-          color: Colors.grey[200],
-        ),
-        child: const Icon(Icons.add_photo_alternate_outlined),
-      ),
-    );
-  }
-
   void _onFileDeleted(FileData fileData) {
     setState(() {
       widget.controller.deletedImages.add(fileData);
@@ -169,10 +144,46 @@ class _SelectableImagesContainerState extends State<SelectableImagesContainer> {
           children: [
             widget.controller.images.isNotEmpty
                 ? Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      scrollDirection: Axis.horizontal,
-                      children: _getImageWidgets(),
+                    child: Stack(
+                      children: [
+                        ReorderableListView(
+                          padding: const EdgeInsetsDirectional.only(
+                            start: 5,
+                            end: 65,
+                          ).resolve(Directionality.of(context)),
+                          scrollDirection: Axis.horizontal,
+                          onReorder: (int oldIndex, int newIndex) {
+                            setState(() {
+                              if (newIndex > oldIndex) newIndex -= 1;
+                              final FileData fileData = widget.controller.images.removeAt(oldIndex);
+                              widget.controller.images.insert(newIndex, fileData);
+                            });
+                          },
+                          children: widget.controller.images.map((fileData) => _getImageWidget(fileData)).toList(),
+                        ),
+                        PositionedDirectional(
+                          top: 0,
+                          bottom: 0,
+                          end: 8,
+                          child: GestureDetector(
+                            onTap: () {
+                              SelectImageDialog(context).pickImages(_onImagesPicked);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.black.withOpacity(0.7),
+                              ),
+                              child: const Icon(
+                                Icons.add_photo_alternate_outlined,
+                                color: Colors.white,
+                                size: 30,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   )
                 : Column(
