@@ -1,11 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/screens/add_item_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:rent_app/widgets/custom_button.dart';
 import 'package:rent_app/widgets/request_widgets/scrollable_request_list.dart';
+import '../dictionary.dart';
 import '../services/cloud_services.dart';
 import '../widgets/dynamic_scrollable_item_grid.dart';
 
@@ -47,7 +46,7 @@ class _UserItemsScreenState extends State<UserItemsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     return SafeArea(
         child: Scaffold(
       appBar: CustomAppBar(title: localization.myItems, isBackButton: false),

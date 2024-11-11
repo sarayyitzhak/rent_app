@@ -1,13 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
-import 'package:rent_app/models/item.dart';
-import 'package:rent_app/screens/home_screen.dart';
 import 'package:rent_app/screens/pending_requests_screen.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:date_picker_plus/date_picker_plus.dart';
 import 'package:rent_app/widgets/custom_button.dart';
+
+import '../dictionary.dart';
 
 
 class RequestSubmittedScreen extends StatelessWidget {
@@ -17,7 +14,7 @@ class RequestSubmittedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     return Scaffold(
       appBar: CustomAppBar(title: localization.myOrder, isBackButton: false,),
       body: Center(

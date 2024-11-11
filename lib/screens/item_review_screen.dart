@@ -4,8 +4,8 @@ import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/screens/user_review_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/rating_stars.dart';
+import '../dictionary.dart';
 import '../models/item.dart';
 import '../models/item_review.dart';
 
@@ -29,7 +29,7 @@ class _ItemReviewScreenState extends State<ItemReviewScreen> {
   @override
   Widget build(BuildContext context) {
     Item item = widget.args.item;
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     return Scaffold(
       appBar: CustomAppBar(title: localization.reviews),
       body: GestureDetector(

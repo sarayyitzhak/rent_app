@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
-import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/models/user.dart';
 import 'package:rent_app/screens/final_review_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/rating_stars.dart';
-import '../models/item.dart';
-import '../models/item_review.dart';
+import '../dictionary.dart';
 import '../models/user_review.dart';
 
 class UserReviewScreen extends StatefulWidget {
@@ -29,7 +26,7 @@ class _UserReviewScreenState extends State<UserReviewScreen> {
   @override
   Widget build(BuildContext context) {
     UserDetails user = widget.args.user;
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     return Scaffold(
       appBar: CustomAppBar(title: localization.reviews),
       body: GestureDetector(

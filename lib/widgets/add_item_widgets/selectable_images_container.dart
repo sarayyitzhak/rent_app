@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../constants.dart';
 import '../../dialogs/select_image_dialog.dart';
+import '../../dictionary.dart';
 import '../../models/file_data.dart';
 import '../../utils.dart';
 
@@ -148,7 +148,7 @@ class _SelectableImagesContainerState extends State<SelectableImagesContainer> {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
 
     return GestureDetector(
       onTap: () {

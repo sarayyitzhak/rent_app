@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/item_widgets/item_card.dart';
 import '../constants.dart';
+import '../dictionary.dart';
 import '../services/card_utils.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 class DynamicScrollableItemGrid extends StatelessWidget {
@@ -12,7 +12,7 @@ class DynamicScrollableItemGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     return StreamBuilder(
         stream: stream,
         builder: (context, snapshot) {

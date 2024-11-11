@@ -1,15 +1,8 @@
-import 'dart:async';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/models/chat.dart';
-import 'package:rent_app/screens/chat_screen.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../main.dart';
-import '../models/message.dart';
-import '../models/user.dart';
+import '../dictionary.dart';
 import '../services/cloud_services.dart';
 import '../widgets/chat_widgets/chat_card.dart';
 
@@ -20,7 +13,7 @@ class ChatsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     return SafeArea(
       child: Scaffold(
           appBar: CustomAppBar(title: localization.chats, isBackButton: false),

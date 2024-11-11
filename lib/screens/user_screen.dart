@@ -1,6 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/screens/item_grid_screen.dart';
 import 'package:rent_app/screens/profile_screen.dart';
 import 'package:rent_app/screens/welcome_screen.dart';
@@ -8,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:rent_app/globals.dart';
 import '../constants.dart';
-import '../main.dart';
+import '../dictionary.dart';
 import '../services/cloud_services.dart';
 import '../widgets/icon_above_text.dart';
 
@@ -27,7 +24,7 @@ class _UserScreenState extends State<UserScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     return SafeArea(
       child: Scaffold(
         appBar: CustomAppBar(

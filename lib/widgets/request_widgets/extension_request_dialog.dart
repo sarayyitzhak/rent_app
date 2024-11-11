@@ -5,7 +5,6 @@ import 'package:rent_app/models/item_request.dart';
 import 'package:rent_app/models/request_status.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/utils.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class ExtensionRequestDialog extends StatefulWidget {
@@ -54,7 +53,6 @@ class _ExtensionRequestDialogState extends State<ExtensionRequestDialog> {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),

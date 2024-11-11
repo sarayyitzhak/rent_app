@@ -1,16 +1,15 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/models/request_status.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/custom_button.dart';
 import 'package:rent_app/widgets/request_widgets/extension_request_dialog.dart';
 
+import '../dictionary.dart';
 import '../models/item_request.dart';
 import '../utils.dart';
 import '../widgets/cached_image.dart';
@@ -88,7 +87,7 @@ class _RequestScreenState extends State<RequestScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     return Scaffold(
       appBar: CustomAppBar(
         title: 'בקשה',

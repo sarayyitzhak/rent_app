@@ -1,5 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/models/item.dart';
@@ -8,6 +6,7 @@ import 'package:rent_app/screens/item_review_screen.dart';
 import 'package:rent_app/screens/request_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import '../../constants.dart';
+import '../../dictionary.dart';
 import '../../models/request_status.dart';
 import '../../utils.dart';
 import '../cached_image.dart';
@@ -61,7 +60,7 @@ class _RequestCardState extends State<RequestCard> {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     return GestureDetector(
       onTap: widget.request.status == RequestStatus.APPROVED ? () async => Navigator.pushNamed(context, ItemReviewScreen.id,
           arguments: ItemReviewScreenArguments(await getItemById(widget.request.itemID) as Item))

@@ -13,11 +13,11 @@ import 'package:rent_app/screens/rental_screen.dart';
 import 'package:rent_app/screens/reviews_screen.dart';
 import 'package:rent_app/utils.dart';
 import 'package:rent_app/widgets/chat_icon_button.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/custom_button.dart';
 import 'package:rent_app/widgets/rating_stars_widget.dart';
 import 'package:rent_app/widgets/favorite_button.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import '../dictionary.dart';
 import '../services/cloud_services.dart';
 import '../widgets/cached_image.dart';
 import '../widgets/dial_icon_button.dart';
@@ -81,7 +81,7 @@ class _ItemScreenState extends State<ItemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     double? rate = _item?.getRate();
 
     return Scaffold(

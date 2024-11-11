@@ -1,10 +1,10 @@
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/models/category.dart';
 import 'package:rent_app/screens/search_result_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/category_list_tile.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import '../constants.dart';
+import '../dictionary.dart';
 
 class SearchScreen extends StatefulWidget {
   static String id = 'search_screen';
@@ -49,7 +49,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     return SafeArea(
       child: Scaffold(
         appBar: CustomAppBar(title: localization.search, isBackButton: false),

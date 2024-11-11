@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/screens/item_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/cached_image.dart';
 import 'package:rent_app/widgets/rating_stars_widget.dart';
 import 'package:rent_app/widgets/favorite_button.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../constants.dart';
+import '../../dictionary.dart';
 import '../../models/item.dart';
 import '../../utils.dart';
 
@@ -21,7 +21,7 @@ class ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations localization = AppLocalizations.of(context)!;
+    AppLocalizations localization = Dictionary.getLocalization(context);
     if (item == null) {
       return Card(
         elevation: 5,

@@ -1,10 +1,8 @@
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:rent_app/globals.dart';
 import '../../../constants.dart';
+import '../../../dictionary.dart';
 import '../../../models/chat.dart';
 import '../../../models/item.dart';
 import '../../../models/message.dart';
@@ -23,7 +21,7 @@ class ItemMessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations localization = AppLocalizations.of(context)!;
+    AppLocalizations localization = Dictionary.getLocalization(context);
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.7,
       child: Column(

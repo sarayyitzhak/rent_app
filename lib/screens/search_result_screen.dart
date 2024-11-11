@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:rent_app/widgets/item_widgets/item_grid.dart';
 import '../constants.dart';
+import '../dictionary.dart';
 
 class SearchResultScreen extends StatefulWidget {
   static String id = 'search_result_screen';
@@ -40,7 +40,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     return Scaffold(
       appBar: CustomAppBar(title: localization.search),
       body: Padding(

@@ -3,8 +3,8 @@ import 'package:rent_app/constants.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/text_and_text_field.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/custom_button.dart';
+import '../dictionary.dart';
 import 'main_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -80,7 +80,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     return SafeArea(
       child: Scaffold(
         appBar: CustomAppBar(title: localization.createAccount),

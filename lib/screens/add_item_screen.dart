@@ -17,6 +17,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/text_and_text_field.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
+import '../dictionary.dart';
 import '../models/item.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/map_dialog.dart';
@@ -194,7 +195,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     return Scaffold(
       appBar: CustomAppBar(title: widget.args.isEditMode ? localization.edit : localization.addItem),
       body: SingleChildScrollView(

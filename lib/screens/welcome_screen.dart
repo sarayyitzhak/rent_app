@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/screens/login_screen.dart';
 import 'package:rent_app/screens/registration_screen.dart';
 import 'package:rent_app/widgets/custom_button.dart';
+
+import '../dictionary.dart';
 
 class WelcomeScreen extends StatelessWidget {
   static String id = 'welcome_screen';
@@ -29,8 +30,8 @@ class WelcomeScreen extends StatelessWidget {
                     letterSpacing: 1,
                     fontWeight: FontWeight.bold),
               ),
-              CustomButton(title: AppLocalizations.of(context)!.login, onPress: () {Navigator.pushNamed(context, LoginScreen.id);}, buttonStyle: kDarkButtonStyle,),
-              CustomButton(title: AppLocalizations.of(context)!.signUp, onPress: () {Navigator.pushNamed(context, RegistrationScreen.id);}, buttonStyle: kLightButtonStyle,),
+              CustomButton(title: Dictionary.getLocalization(context).login, onPress: () {Navigator.pushNamed(context, LoginScreen.id);}, buttonStyle: kDarkButtonStyle,),
+              CustomButton(title: Dictionary.getLocalization(context).signUp, onPress: () {Navigator.pushNamed(context, RegistrationScreen.id);}, buttonStyle: kLightButtonStyle,),
 
             ],
           ),

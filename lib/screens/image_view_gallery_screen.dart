@@ -4,7 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rent_app/dictionary.dart';
 import 'package:rent_app/models/file_data.dart';
 import 'package:rent_app/utils.dart';
 import '../widgets/custom_app_bar.dart';
@@ -43,8 +43,7 @@ class _ImageViewGalleryScreenState extends State<ImageViewGalleryScreen> {
 
   void _updateTitle(int index) {
     if (_images.length > 1) {
-      AppLocalizations localization = AppLocalizations.of(context)!;
-      title = localization.outOf(index + 1, _images.length);
+      title = Dictionary.getLocalization(context).outOf(index + 1, _images.length);
     }
   }
 

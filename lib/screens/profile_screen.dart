@@ -1,8 +1,8 @@
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import '../constants.dart';
+import '../dictionary.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/text_and_text_field.dart';
 
@@ -41,7 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     return SafeArea(child: Scaffold(
       appBar: CustomAppBar(title: localization.myProfile),
       body: SingleChildScrollView(

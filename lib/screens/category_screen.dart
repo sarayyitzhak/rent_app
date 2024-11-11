@@ -5,8 +5,7 @@ import 'package:rent_app/models/category.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:rent_app/widgets/item_widgets/item_grid.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../services/card_utils.dart';
+import '../dictionary.dart';
 
 class CategoryScreen extends StatelessWidget {
   static String id = 'category_screen';
@@ -41,7 +40,7 @@ class CategoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     return Scaffold(
         appBar: CustomAppBar(title: args.category.getTitle(localization)),
         body: Column(

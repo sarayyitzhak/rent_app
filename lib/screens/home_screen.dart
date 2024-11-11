@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/screens/item_grid_screen.dart';
@@ -9,6 +8,7 @@ import 'package:rent_app/services/query_batch.dart';
 import 'package:rent_app/widgets/reusable_card.dart';
 import '../constants.dart';
 import 'package:rent_app/models/category.dart';
+import '../dictionary.dart';
 import '../services/card_utils.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
@@ -115,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     // create10Users();
     // return Text('finished');
-    var localization = AppLocalizations.of(context)!;
+    var localization = Dictionary.getLocalization(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -136,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                AppLocalizations.of(context)!.hiWelcomeBack,
+                                localization.hiWelcomeBack,
                                 style: kTopHeaderTextStyle,
                               ),
                             ],
