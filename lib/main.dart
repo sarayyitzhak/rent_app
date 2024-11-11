@@ -4,6 +4,7 @@ import 'package:rent_app/screens/add_item_screen.dart';
 import 'package:rent_app/screens/category_screen.dart';
 import 'package:rent_app/screens/chat_screen.dart';
 import 'package:rent_app/screens/chats_screen.dart';
+import 'package:rent_app/screens/edit_user_details_screen.dart';
 import 'package:rent_app/screens/final_review_screen.dart';
 import 'package:rent_app/screens/image_view_gallery_screen.dart';
 import 'package:rent_app/screens/item_review_screen.dart';
@@ -146,6 +147,7 @@ class MyApp extends StatelessWidget {
           UserReviewScreen.id: (context) => UserReviewScreen(settings.arguments as UserReviewScreenArguments),
           FinalReviewScreen.id: (context) => const FinalReviewScreen(),
           ItemGridScreen.id: (context) => ItemGridScreen(settings.arguments as ItemGridScreenArguments),
+          EditUserDetailsScreen.id: (context) => const EditUserDetailsScreen(),
           ImageViewGalleryScreen.id: (context) => ImageViewGalleryScreen(settings.arguments as ImageViewGalleryScreenArguments),
         };
         return MaterialPageRoute(builder: routes[settings.name]!);

@@ -4,7 +4,9 @@ import '../constants.dart';
 
 class RatingStarsWidget extends StatelessWidget {
   double rate;
-  RatingStarsWidget({super.key, required this.rate});
+  double? size;
+  TextStyle? textStyle;
+  RatingStarsWidget({super.key, required this.rate, this.size, this.textStyle});
 
   @override
   Widget build(BuildContext context) {
@@ -13,10 +15,11 @@ class RatingStarsWidget extends StatelessWidget {
         Icon(
           Icons.star_rounded,
           color: kActiveButtonColor,
+          size: size,
         ),
         Text(
           rate.toStringAsFixed(1),
-          style: kSmallBlackTextStyle,
+          style: textStyle ?? kSmallBlackTextStyle,
         ),
       ],
     );

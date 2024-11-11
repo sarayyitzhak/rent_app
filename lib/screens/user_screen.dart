@@ -8,6 +8,7 @@ import '../constants.dart';
 import '../dictionary.dart';
 import '../services/cloud_services.dart';
 import '../widgets/icon_above_text.dart';
+import 'edit_user_details_screen.dart';
 
 class UserScreen extends StatefulWidget {
   static String id = 'user_screen';
@@ -36,28 +37,30 @@ class _UserScreenState extends State<UserScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(30),
-                width: double.infinity,
-                child: Column(
-                  children: [
-                    const CircleAvatar(
-                      backgroundColor: kLightYellow,
-                      child: Icon(
-                        Icons.account_circle_rounded,
-                        size: 40,
+              GestureDetector(
+                onTap: () => Navigator.pushNamed(context, EditUserDetailsScreen.id),
+                child: Container(
+                  padding: const EdgeInsets.all(30),
+                  width: double.infinity,
+                  child: Column(
+                    children: [
+                      const CircleAvatar(
+                        backgroundColor: kLightYellow,
+                        child: Icon(
+                          Icons.account_circle_rounded,
+                          size: 40,
+                        ),
                       ),
-                      // radius: 20,
-                    ),
-                    Text(
-                      userDetails.name,
-                      style: kBlackHeaderTextStyle,
-                    ), //TODO: add user details
-                    Text(
-                      getCurrentUser()!.email!,
-                      style: kBlackTextStyle,
-                    ),
-                  ],
+                      Text(
+                        userDetails.name,
+                        style: kBlackHeaderTextStyle,
+                      ), //TODO: add user details
+                      Text(
+                        getCurrentUser()!.email!,
+                        style: kBlackTextStyle,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Container(

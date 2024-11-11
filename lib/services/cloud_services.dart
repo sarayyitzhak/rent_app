@@ -254,6 +254,33 @@ void deleteRequest(DocumentReference docRef) {
   docRef.delete();
 }
 
+Future<List<ItemRequest>> getUserApprovedRequestsFrom(DateTime fromDate, bool isRentedFromMe) {
+  String field = isRentedFromMe ? 'ownerID' : 'applicantID';
+  return _firestore.collection('requests').
+  where(field, isEqualTo: userDetails.docRef.id).
+  where('status', isEqualTo: RequestStatus.APPROVED.index).
+  where('time.start', isGreaterThanOrEqualTo: Timestamp.fromDate(fromDate)).get().
+  then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
+}
+
+Future<List<ItemRequest>> getCurrentRents(bool isRentedFromMe) {
+  String field = isRentedFromMe ? 'ownerID' : 'applicantID';
+  return _firestore.collection('requests').
+  where(field, isEqualTo: userDetails.docRef.id).
+  where('status', isEqualTo: RequestStatus.APPROVED.index).
+  where('time.start', isLessThanOrEqualTo: Timestamp.now()).
+  where('time.end', isGreaterThanOrEqualTo: Timestamp.now()).get().
+  then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
+}
+
+Future<List<ItemRequest>> getWaitingToApproveRequests() {
+  return _firestore.collection('requests').
+  where('ownerID', isEqualTo: userDetails.docRef.id).
+  where('status', isEqualTo: RequestStatus.WAITING.index).
+  where('time.start', isGreaterThan: Timestamp.now()).get().
+  then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
+}
+
 //CHATS
 
 void sendMessage(DocumentReference chatRef, int userIndex, String text, MessageType type, String? fileRef) {
@@ -432,7 +459,7 @@ void addUserReview(DocumentReference userRef, int? overallRate, int? serviceLeve
   batch.set(userRef.collection('reviews').doc(), {
     'userID': userDetails.docRef.id,
     if(overallRate != null) 'overallRate': overallRate,
-    if(serviceLevel != null) 'valueForPrice': serviceLevel,
+    if(serviceLevel != null) 'serviceLevel': serviceLevel,
     if(text != null) 'text': text,
     'createdAt': FieldValue.serverTimestamp()
   });
@@ -600,6 +627,14 @@ Future<void> toggleUserFavoriteItem(DocumentReference itemRef) async {
     batch.update(itemRef, {'favoriteCount': FieldValue.increment(1)});
   }
   return batch.commit();
+}
+
+Future<double?> getUserOverallRate() async {
+  return userDetails.docRef.get().then((doc) => UserDetails.fromDocumentSnapshot(doc).getRate());
+}
+
+Future<double?> getUserServiceLevel() async {
+  return userDetails.docRef.collection('reviews').aggregate(average('serviceLevel')).get().then((res) => res.getAverage('serviceLevel'));
 }
 
 //Messaging

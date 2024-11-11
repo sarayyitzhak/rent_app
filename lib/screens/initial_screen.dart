@@ -42,7 +42,7 @@ class InitialScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image.asset(kWhiteLogoImage),
-              const Text('BORRO', style: TextStyle(color: Colors.white, fontSize: 60,letterSpacing: 1, fontWeight: FontWeight.bold),),
+              Expanded(child: const Text('BORRO', style: TextStyle(color: Colors.white, fontSize: 60,letterSpacing: 1, fontWeight: FontWeight.bold),)),
             ],
           ),
         ),

@@ -50,6 +50,14 @@ class ItemRequest {
   AddressInfo get pickUpLocation => _pickUpLocation;
   Timestamp get requestTime => _requestTime;
 
+  // just for active rentals
+  double? getActiveRentProgressTime(){
+    DateTime now = DateTime.now();
+    int totalTimeInDays = _time.duration.inDays + 1;
+    int daysPassed = now.difference(_time.start).inDays + 1;
+    return (_time.start.isBefore(now) && _time.end.isAfter(now)) ? daysPassed / totalTimeInDays : null;
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'ownerID': _ownerID,

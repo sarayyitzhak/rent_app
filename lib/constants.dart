@@ -65,6 +65,11 @@ const kWhiteTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
 );
 
+const kBlackBigTextStyle = TextStyle(
+    fontSize: 34,
+    fontWeight: FontWeight.bold
+);
+
 const kTextFieldHintTextStyle = TextStyle(
   color: kGreyColor,
   fontSize: 14,

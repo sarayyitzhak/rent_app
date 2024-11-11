@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/screens/chats_screen.dart';
+import 'package:rent_app/screens/profile_screen.dart';
 import 'package:rent_app/screens/search_screen.dart';
 import 'package:rent_app/screens/user_items_screen.dart';
 import '../services/cloud_services.dart';
@@ -24,6 +25,7 @@ class _MainScreenState extends State<MainScreen> {
     const SearchScreen(),
     const UserItemsScreen(),
     const ChatsScreen(),
+    // const ProfileScreen(),
     const UserScreen(),
   ];
 
