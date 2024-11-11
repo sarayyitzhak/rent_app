@@ -38,9 +38,7 @@ class _RequestCardState extends State<ActiveRentCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.request.status == RequestStatus.APPROVED ? () async => Navigator.pushNamed(context, ItemReviewScreen.id,
-          arguments: ItemReviewScreenArguments(await getItemById(widget.request.itemID) as Item))
-          : () => Navigator.pushNamed(context, RequestScreen.id,
+      onTap: () => Navigator.pushNamed(context, RequestScreen.id,
           arguments: RequestScreenArguments(itemRequest: widget.request)),
       child: Card(
         elevation: 5,
