@@ -47,23 +47,12 @@ class _ItemScreenState extends State<ItemScreen> {
     Item item = widget.args.item ?? await getItemByRef(widget.args.itemRef!);
     isMe = item.contactUserID == userDetails.docRef.id;
     UserDetails details = isMe ? userDetails : await getUserByID(item.contactUserID);
-    List<Reference> imageRefs = await getFileReferences(getItemImageDirRef(item.docRef));
     int reviewCount = await getTextItemReviewsCount(item.docRef);
-
-    Reference? mainImage = imageRefs.where((ref) => ref.name.startsWith(item.mainImage)).firstOrNull;
 
     setState(() {
       _item = item;
       _userDetails = details;
-
-      _imageRefs = mainImage != null ? [mainImage] : [];
-      for (Reference imageRef in imageRefs) {
-        if (imageRef == mainImage) {
-          continue;
-        }
-        _imageRefs.add(imageRef);
-      }
-
+      _imageRefs = getItemImageReferencesSorted(item);
       _reviewCount = reviewCount;
     });
 

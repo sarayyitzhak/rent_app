@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:rent_app/models/file_data.dart';
+import 'package:rent_app/models/item.dart';
 import 'package:rent_app/services/cloud_services.dart';
 
 
@@ -99,4 +100,13 @@ bool areListsEqual<T>(List<T> list1, List<T> list2) {
     if (list1[i] != list2[i]) return false;
   }
   return true;
+}
+
+List<Reference> getItemImageReferencesSorted(Item item) {
+  List<Reference> list = [];
+
+  list.add(getItemImageRef(item.docRef, item.mainImage));
+  list.addAll(item.images.map((String name) => getItemImageRef(item.docRef, name)).toList());
+
+  return list;
 }

@@ -106,7 +106,7 @@ class _RequestScreenState extends State<RequestScreen> {
                   CachedImage(
                     width: 90,
                     height: 90,
-                    imageRef: _item != null ? getItemMainImageRef(_item!.docRef, _item!.mainImage) : null,
+                    imageRef: _item != null ? getItemImageRef(_item!.docRef, _item!.mainImage) : null,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   const SizedBox(

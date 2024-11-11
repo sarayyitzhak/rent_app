@@ -40,7 +40,7 @@ class ItemMessageBubble extends StatelessWidget {
                         CachedImage(
                           width: 100,
                           height: 100,
-                          imageRef: getItemMainImageRef(item.docRef, item.mainImage),
+                          imageRef: getItemImageRef(item.docRef, item.mainImage),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         const SizedBox(width: 10),

@@ -7,6 +7,7 @@ class Item {
   final DocumentReference _docRef;
   final String _contactUserID;
   final String _mainImage;
+  final List<String> _images;
   final String _title;
   final int _price;
   final AddressInfo _location;
@@ -23,6 +24,7 @@ class Item {
     required DocumentReference docRef,
     required String contactUserID,
     required String mainImage,
+    required List<String> images,
     required String title,
     required int price,
     required AddressInfo location,
@@ -37,6 +39,7 @@ class Item {
   })  : _docRef = docRef,
         _contactUserID = contactUserID,
         _mainImage = mainImage,
+        _images = images,
         _title = title,
         _price = price,
         _location = location,
@@ -54,6 +57,8 @@ class Item {
   String get contactUserID => _contactUserID;
 
   String get mainImage => _mainImage;
+
+  List<String> get images => _images;
 
   String get title => _title;
 
@@ -88,6 +93,7 @@ class Item {
       docRef: doc.reference,
       contactUserID: data['contactUserID'],
       mainImage: data['mainImage'],
+      images: data['images']?.cast<String>() ?? [],
       title: data['title'],
       price: data['price'],
       location: AddressInfo.fromMap(data['location']),

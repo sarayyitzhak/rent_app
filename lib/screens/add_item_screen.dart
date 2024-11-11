@@ -74,17 +74,15 @@ class _AddItemScreenState extends State<AddItemScreen> {
   }
 
   Future<void> initImages() async {
-    List<Reference> imageRefList = await getFileReferences(getItemImageDirRef(item!.docRef));
+    List<Reference> imageRefList = getItemImageReferencesSorted(item!);
     for (int i = 0; i < imageRefList.length; i++) {
       FileData fileData = await getFileData(imageRefList[i]);
-      if (fileData.exists) {
-        setState(() {
-          imagesController.images.add(fileData);
-          if (item!.mainImage == fileData.name) {
-            imagesController.mainImage = fileData;
-          }
-        });
-      }
+      setState(() {
+        imagesController.images.add(fileData);
+        if (item!.mainImage == fileData.name) {
+          imagesController.mainImage = fileData;
+        }
+      });
     }
   }
 
@@ -152,7 +150,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
       )),
     );
 
-    await createNewItem(imagesController.images, imagesController.mainImage!.name, titleController.text, priceController.text, addressValue, descriptionController.text,
+    List<String> images = imagesController.images
+        .where((FileData fileData) => fileData != imagesController.mainImage!)
+        .map((FileData fileData) => fileData.name)
+        .toList();
+
+    await createNewItem(imagesController.images, imagesController.mainImage!.name, images, titleController.text, priceController.text, addressValue, descriptionController.text,
         conditionValue!, _selectedCategories);
     Navigator.pop(context);
     Navigator.pop(context);
@@ -168,15 +171,20 @@ class _AddItemScreenState extends State<AddItemScreen> {
       )),
     );
 
-    imagesController.deletedImages.where((fileData) => fileData.fileRef != null).forEach((fileData) async {
-      await deleteFile(fileData.fileRef!);
+    imagesController.deletedImages.where((fileData) => fileData.fileRef != null).forEach((fileData) {
+      deleteFile(fileData.fileRef!);
     });
 
     imagesController.images.where((fileData) => fileData.fileRef == null).forEach((fileData) async {
-      await (await uploadFileData(getItemImageDirRef(item!.docRef), fileData));
+      await uploadFileData(getItemImageDirRef(item!.docRef), fileData);
     });
 
-    await editItem(item!, imagesController.mainImage!.name, titleController.text, int.parse(priceController.text), addressValue,
+    List<String> images = imagesController.images
+        .where((FileData fileData) => fileData != imagesController.mainImage!)
+        .map((FileData fileData) => fileData.name)
+        .toList();
+
+    await editItem(item!, imagesController.mainImage!.name, images, titleController.text, int.parse(priceController.text), addressValue,
         descriptionController.text, conditionValue!, _selectedCategories);
 
     Navigator.pop(context);

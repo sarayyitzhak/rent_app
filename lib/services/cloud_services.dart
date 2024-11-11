@@ -66,15 +66,16 @@ Future<void> deleteFile(Reference fileRef) async {
 }
 
 //ITEMS
-Future<void> createNewItem(List<FileData> images, String mainImage, String title, String price, AddressInfo addressValue, String description, Condition condition, List<ItemCategory> categories) async {
+Future<void> createNewItem(List<FileData> imageDataList, String mainImage, List<String> images, String title, String price, AddressInfo addressValue, String description, Condition condition, List<ItemCategory> categories) async {
   DocumentReference itemRef = _firestore.collection('items').doc();
-  for (FileData fileData in images) {
+  for (FileData fileData in imageDataList) {
     await uploadFileData(getItemImageDirRef(itemRef), fileData);
   }
 
   return itemRef.set({
     'contactUserID': userDetails.docRef.id,
     'mainImage': mainImage,
+    if (images.isNotEmpty) 'images': images,
     'title': title,
     'price': int.parse(price),
     'location': addressValue.toMap(),
@@ -87,9 +88,11 @@ Future<void> createNewItem(List<FileData> images, String mainImage, String title
   });
 }
 
-Future<void> editItem(Item item, String mainImage, String title, int price, AddressInfo addressValue, String description, Condition condition, List<ItemCategory> categories) async {
+Future<void> editItem(Item item, String mainImage, List<String> images, String title, int price, AddressInfo addressValue, String description, Condition condition, List<ItemCategory> categories) async {
   Map<String, Object> data = {
     if (item.mainImage != mainImage) 'mainImage': mainImage,
+    if (images.isNotEmpty && !areListsEqual(item.images, images)) 'images': images,
+    if (images.isEmpty) 'images': FieldValue.delete(),
     if (item.title != title) 'title': title,
     if (item.price != price) 'price': price,
     if (item.location != addressValue) 'location': addressValue.toMap(),
@@ -104,8 +107,8 @@ Reference getItemImageDirRef(DocumentReference itemRef) {
   return storageRef.child('items').child(itemRef.id);
 }
 
-Reference getItemMainImageRef(DocumentReference itemRef, String mainImage) {
-  return getItemImageDirRef(itemRef).child('$mainImage.jpg');
+Reference getItemImageRef(DocumentReference itemRef, String imageName) {
+  return getItemImageDirRef(itemRef).child('$imageName.jpg');
 }
 
 Future<QueryBatch<Item>> getItemsByCategory(ItemCategory category, [DocumentSnapshot? startAfterDoc]) async {

@@ -83,7 +83,7 @@ class _RequestCardState extends State<RequestCard> {
                   CachedImage(
                     width: 100,
                     height: 100,
-                    imageRef: _item != null ? getItemMainImageRef(_item!.docRef, _item!.mainImage) : null,
+                    imageRef: _item != null ? getItemImageRef(_item!.docRef, _item!.mainImage) : null,
                     borderRadius: const BorderRadiusDirectional.only(
                         topStart: Radius.circular(20),
                         bottomStart: Radius.circular(20)

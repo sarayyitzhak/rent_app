@@ -155,7 +155,7 @@ class _RentalScreenState extends State<RentalScreen> {
                   CachedImage(
                     height: 90,
                     width: 90,
-                    imageRef: getItemMainImageRef(widget.args.item.docRef, widget.args.item.mainImage),
+                    imageRef: getItemImageRef(widget.args.item.docRef, widget.args.item.mainImage),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   const SizedBox(

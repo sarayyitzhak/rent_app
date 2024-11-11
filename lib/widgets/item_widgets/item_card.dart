@@ -93,7 +93,7 @@ class ItemCard extends StatelessWidget {
                 child: Stack(
                   children: [
                     CachedImage(
-                      imageRef: getItemMainImageRef(item!.docRef, item!.mainImage),
+                      imageRef: getItemImageRef(item!.docRef, item!.mainImage),
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                     ),
                     if (!isMine && distanceFromMe != null)

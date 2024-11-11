@@ -56,10 +56,10 @@ class _SelectableImagesContainerState extends State<SelectableImagesContainer> {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(8)),
-            child: Image.memory(
+            child: fileData.exists ? Image.memory(
               fileData.data,
               fit: BoxFit.cover,
-            ),
+            ) : const Icon(Icons.error),
           ),
           PositionedDirectional(
             top: 4,
