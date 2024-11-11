@@ -21,7 +21,7 @@ class ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations localization = Dictionary.getLocalization(context);
+    var localization = Dictionary.getLocalization(context);
     if (item == null) {
       return Card(
         elevation: 5,

@@ -11,7 +11,7 @@ class DateBubble extends StatelessWidget {
 
   String getDateAsText(BuildContext context) {
     final now = DateTime.now();
-    AppLocalizations localization = Dictionary.getLocalization(context);
+    var localization = Dictionary.getLocalization(context);
     if (now.year == dateTime.year && now.month == dateTime.month) {
       int daysDifference = getDaysDifference(dateTime, now);
       if (daysDifference == 0) {

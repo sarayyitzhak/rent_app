@@ -34,7 +34,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  Column buildCategoryListTiles(AppLocalizations localization) {
+  Column buildCategoryListTiles(var localization) {
     List<CategoryListTile> tiles = [];
     for (var category in ItemCategory.values) {
       tiles.add(CategoryListTile(
