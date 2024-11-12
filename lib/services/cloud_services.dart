@@ -284,6 +284,8 @@ Future<List<ItemRequest>> getWaitingToApproveRequests() {
 //CHATS
 
 void sendMessage(DocumentReference chatRef, int userIndex, String text, MessageType type, String? fileRef) {
+  WriteBatch batch = _firestore.batch();
+
   Map<String, dynamic> messageData = {
     'sender': userIndex,
     'text': text,
@@ -293,8 +295,11 @@ void sendMessage(DocumentReference chatRef, int userIndex, String text, MessageT
   if (fileRef != null) {
     messageData['fileRef'] = fileRef;
   }
-  chatRef.collection('messages').add(messageData);
-  chatRef.update({'lastMessageSentAt': FieldValue.serverTimestamp()});
+
+  batch.set(chatRef.collection('messages').doc(), messageData);
+  batch.update(chatRef, {'lastMessageSentAt': FieldValue.serverTimestamp()});
+
+  batch.commit();
 }
 
 Future<void> sendImageMessage(DocumentReference chatRef, int userIndex, File image) async {
@@ -338,34 +343,47 @@ Future<void> sendRecordMessage(DocumentReference chatRef, int userIndex, File re
 }
 
 Future<Chat> sendItemMessage(String userID, DocumentReference itemRef) async {
+  WriteBatch batch = _firestore.batch();
+
   Chat? chat;
+  DocumentReference chatRef;
+  int userIndex = -1;
+
   QuerySnapshot usersChatsQuery = await _firestore.collection('chats')
       .where('participants.${userDetails.docRef.id}', isNull: false)
       .get();
   chat = usersChatsQuery.docs.map(Chat.fromDocumentSnapshot).where((chat) => chat.participants.containsKey(userID)).firstOrNull;
   if (chat == null) {
-    DocumentReference chatDoc = await _firestore.collection('chats').add({
+    Map<String, Object> chatData = {
       'lastMessageSentAt': FieldValue.serverTimestamp(),
       'participants': {
         userDetails.docRef.id: {'index': 0, 'lastMessageSeenTime': FieldValue.serverTimestamp()},
         userID: {'index': 1, 'lastMessageSeenTime': Timestamp.fromMillisecondsSinceEpoch(0)},
       }
-    });
-    DocumentSnapshot chatSnapshot = await chatDoc.get();
-    chat = Chat.fromDocumentSnapshot(chatSnapshot);
+    };
+    chatRef = _firestore.collection('chats').doc();
+    userIndex = 0;
+    batch.set(chatRef, chatData);
+  } else {
+    chatRef = chat.docRef;
+    userIndex = chat.participants[userDetails.docRef.id]?.index ?? -1;
   }
-  int userIndex = chat.participants[userDetails.docRef.id]?.index ?? -1;
   if (userIndex == 0 || userIndex == 1) {
-    await chat.docRef.collection('messages').add({
+    Map<String, dynamic> messageData = {
       'sender': userIndex,
       'text': 'האם ניתן להשכיר פריט זה?',
       'sentAt': FieldValue.serverTimestamp(),
       'type': MessageType.ITEM.index,
       'fileRef': itemRef.id
-    });
-    await chat.docRef.update({'lastMessageSentAt': FieldValue.serverTimestamp()});
+    };
+
+    batch.set(chatRef.collection('messages').doc(), messageData);
+    batch.update(chatRef, {'lastMessageSentAt': FieldValue.serverTimestamp()});
   }
-  return chat;
+
+  await batch.commit();
+
+  return chat ?? await chatRef.get().then(Chat.fromDocumentSnapshot);
 }
 
 Future<void> updateUserLastMessageSeenTime(DocumentReference chatRef, DateTime dateTime) {
@@ -424,6 +442,13 @@ Future<QuerySnapshot> getHistoricalMessages(DocumentReference chatRef, int limit
 
 Stream<QuerySnapshot<Map<String, dynamic>>> getNewMessagesStream(DocumentReference chatRef) {
   return chatRef.collection('messages').orderBy('sentAt').where('sentAt', isGreaterThan: DateTime.now()).snapshots();
+}
+
+Future<int> getUnreadMessagesCount(DocumentReference chatRef, int userIndex, DateTime fromDate) {
+  return chatRef.collection('messages')
+      .where('sender', isNotEqualTo: userIndex)
+      .where('sentAt', isGreaterThan: Timestamp.fromDate(fromDate))
+      .count().get().then((res) => res.count!);
 }
 
 Reference getMessageFileRef(DocumentReference messageRef, [String fileExtension = 'jpg']) {
