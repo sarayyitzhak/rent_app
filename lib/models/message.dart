@@ -44,6 +44,6 @@ class Message {
         sentAt: (data['sentAt'] as Timestamp).toDate(),
         type: numToMessageType(data['type']),
         text: data['text'],
-        itemID: data['fileRef']);
+        itemID: data['itemID']);
   }
 }
