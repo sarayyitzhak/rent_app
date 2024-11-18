@@ -1,46 +1,53 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
-import 'package:rent_app/globals.dart';
 import '../../models/chat.dart';
 import '../../models/message.dart';
-import '../../services/cloud_services.dart';
+import '../../utils.dart';
 
 class MessageTime extends StatefulWidget {
   final Chat chat;
   final Message message;
   final bool isMe;
+  final MessageReadNotifier messageReadNotifier;
 
   const MessageTime(
-      {super.key,
-      required this.chat,
-      required this.message,
-      required this.isMe});
+      {super.key, required this.chat, required this.message, required this.isMe, required this.messageReadNotifier});
 
   @override
   State<MessageTime> createState() => _MessageTimeState();
 }
 
 class _MessageTimeState extends State<MessageTime> {
+  late bool _messageRead;
 
-  bool isMessageRead(Chat chat) {
-    for (String uid in chat.participants.keys) {
-      if (uid != userDetails.docRef.id) {
-        DateTime lastMessageSeenTime =
-            chat.participants[uid]!.lastMessageSeenTime;
-        return !lastMessageSeenTime.isBefore(widget.message.sentAt);
-      }
-    }
-    return false;
+  void _onMessageReadChanged() {
+    setState(() {
+      _messageRead = widget.messageReadNotifier.lastMessageSeenTime.isAfter(widget.message.sentAt);
+    });
   }
 
-  Icon buildReadIcon(bool messageRead) {
-    return Icon(
-        messageRead ? Icons.done_all : Icons.done,
-        color: messageRead ? Colors.cyan[300] : Colors.grey[300],
-        size: 18
-    );
+  Icon buildReadIcon() {
+    return Icon(_messageRead ? Icons.done_all : Icons.done,
+        color: _messageRead ? Colors.cyan[300] : Colors.grey[300], size: 18);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.isMe) {
+      _onMessageReadChanged();
+      widget.messageReadNotifier.addListener(_onMessageReadChanged);
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    if (widget.isMe) {
+      widget.messageReadNotifier.removeListener(_onMessageReadChanged);
+    }
   }
 
   @override
@@ -48,21 +55,12 @@ class _MessageTimeState extends State<MessageTime> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        widget.isMe
-            ? isMessageRead(widget.chat)
-                ? buildReadIcon(true)
-                : StreamBuilder(
-                    stream: getChatStream(widget.chat.docRef),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return buildReadIcon(isMessageRead(snapshot.data!));
-                      }
-                      return buildReadIcon(false);
-                    })
-            : Container(),
+        if (widget.isMe)
+          Icon(_messageRead ? Icons.done_all : Icons.done,
+              color: _messageRead ? Colors.cyan[300] : Colors.grey[300], size: 18),
         const SizedBox(width: 4),
         Text(
-          widget.message.sentAtAsString(),
+          getHourMinuteFormat(widget.message.sentAt),
           style: TextStyle(
             color: Colors.grey[widget.isMe ? 300 : 700],
             fontSize: 12,
@@ -70,5 +68,16 @@ class _MessageTimeState extends State<MessageTime> {
         ),
       ],
     );
+  }
+}
+
+class MessageReadNotifier extends ChangeNotifier {
+  late DateTime lastMessageSeenTime;
+
+  void updateLastMessageSeenTime(DateTime lastMessageSeenTime) {
+    if (this.lastMessageSeenTime != lastMessageSeenTime) {
+      this.lastMessageSeenTime = lastMessageSeenTime;
+      notifyListeners();
+    }
   }
 }

@@ -1,5 +1,3 @@
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/services/cloud_services.dart';
@@ -8,19 +6,25 @@ import 'package:rent_app/widgets/chat_widgets/message_time.dart';
 import '../../../models/chat.dart';
 import '../../../models/message.dart';
 import '../../../screens/image_view_gallery_screen.dart';
-import '../../custom_app_bar.dart';
 
 class ImageMessageBubble extends StatelessWidget {
   final Chat chat;
   final Message message;
   final bool isMe;
   final bool tail;
+  final MessageReadNotifier messageReadNotifier;
 
-  const ImageMessageBubble({super.key, required this.chat, required this.message, required this.isMe, required this.tail});
+  const ImageMessageBubble(
+      {super.key,
+      required this.chat,
+      required this.message,
+      required this.isMe,
+      required this.tail,
+      required this.messageReadNotifier});
 
   @override
   Widget build(BuildContext context) {
-    Reference fileRef = getMessageFileRef(message.cloudKey!);
+    Reference fileRef = getMessageFileRef(message.docRef);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -38,7 +42,12 @@ class ImageMessageBubble extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        MessageTime(chat: chat, message: message, isMe: isMe)
+        MessageTime(
+          chat: chat,
+          message: message,
+          isMe: isMe,
+          messageReadNotifier: messageReadNotifier,
+        )
       ],
     );
   }

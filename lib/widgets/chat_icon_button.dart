@@ -27,9 +27,8 @@ class _ChatIconButtonState extends State<ChatIconButton> {
         ),
         onPressed: () async {
           Chat chat = await sendItemMessage(widget.item.contactUserID, widget.item.docRef);
-          UserDetails userDetails = await getUserByID(widget.item.contactUserID);
           if (mounted) {
-            Navigator.pushNamed(context, ChatScreen.id, arguments: ChatScreenArguments(chat, userDetails.name));
+            Navigator.pushNamed(context, ChatScreen.id, arguments: ChatScreenArguments(chat));
           }
         },
         icon: const CircleAvatar(

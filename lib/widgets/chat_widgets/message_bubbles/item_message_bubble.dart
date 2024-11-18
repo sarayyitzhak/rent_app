@@ -16,8 +16,15 @@ class ItemMessageBubble extends StatelessWidget {
   final Message message;
   final bool isMe;
   final bool tail;
+  final MessageReadNotifier messageReadNotifier;
 
-  const ItemMessageBubble({super.key, required this.chat, required this.message, required this.isMe, required this.tail});
+  const ItemMessageBubble(
+      {super.key,
+      required this.chat,
+      required this.message,
+      required this.isMe,
+      required this.tail,
+      required this.messageReadNotifier});
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +34,13 @@ class ItemMessageBubble extends StatelessWidget {
       child: Column(
         children: [
           FutureBuilder(
-              future: getItemById(message.fileRef!),
+              future: getItemById(message.itemID ?? ''),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   Item item = snapshot.data!;
                   return GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, ItemScreen.id,
-                        arguments: ItemScreenArguments(item: item)),
+                    onTap: () =>
+                        Navigator.pushNamed(context, ItemScreen.id, arguments: ItemScreenArguments(item: item)),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -80,10 +87,7 @@ class ItemMessageBubble extends StatelessWidget {
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const SizedBox(
-                          width: 100,
-                          height: 100,
-                          child: Icon(Icons.error)),
+                      const SizedBox(width: 100, height: 100, child: Icon(Icons.error)),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -98,13 +102,16 @@ class ItemMessageBubble extends StatelessWidget {
                     ],
                   );
                 }
-              }
-          ),
+              }),
           const SizedBox(height: 4),
-          MessageTime(chat: chat, message: message, isMe: isMe)
+          MessageTime(
+            chat: chat,
+            message: message,
+            isMe: isMe,
+            messageReadNotifier: messageReadNotifier,
+          )
         ],
       ),
     );
   }
-
 }

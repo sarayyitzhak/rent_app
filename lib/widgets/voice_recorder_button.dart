@@ -12,12 +12,13 @@ import 'package:rent_app/services/cloud_services.dart';
 import '../models/chat.dart';
 
 class VoiceRecorderButton extends StatefulWidget {
-  Chat chat;
-  int userIdx;
-  VoiceRecorderButton({required this.chat, required this.userIdx, super.key});
+  final Chat chat;
+  final bool isUserIndex0;
+
+  const VoiceRecorderButton({super.key, required this.chat, required this.isUserIndex0});
 
   @override
-  _VoiceRecorderButtonState createState() => _VoiceRecorderButtonState();
+  State<VoiceRecorderButton> createState() => _VoiceRecorderButtonState();
 }
 
 class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
@@ -62,10 +63,12 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
 
   Future<void> stopRecording() async {
     await _recorder.stopRecorder();
+
     setState(() {
       isRecording = false;
     });
-    sendRecordMessage(widget.chat.docRef, widget.userIdx, File(filePath!));
+
+    sendRecordMessage(widget.chat.docRef, widget.isUserIndex0, File(filePath!));
   }
 
   @override

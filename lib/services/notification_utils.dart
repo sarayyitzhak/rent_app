@@ -24,8 +24,7 @@ Future<void> handleNotificationTap(BuildContext context, Map<String, dynamic> da
   if (type == 'CHAT') {
     final chatId = data['chatId'];
     Chat chat = await getChatFromChatID(chatId);
-    String otherParticipantName = await getOtherParticipantName(chat);
-    Navigator.pushNamed(context, ChatScreen.id, arguments: ChatScreenArguments(chat, otherParticipantName));
+    Navigator.pushNamed(context, ChatScreen.id, arguments: ChatScreenArguments(chat));
   } else if (type == 'REQUEST') {
     Navigator.pushNamed(context, UserItemsScreen.id, arguments: UserItemsScreenArguments(showRequests: true));
   }

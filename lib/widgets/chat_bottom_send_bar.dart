@@ -1,21 +1,17 @@
 import 'dart:io';
 
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rent_app/models/chat.dart';
-import 'package:rent_app/models/message_type.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/voice_recorder_button.dart';
 import '../constants.dart';
 import '../dialogs/select_image_dialog.dart';
-import '../models/message.dart';
-
 
 class ChatBottomSendBar extends StatefulWidget {
-  Chat chat;
-  int userIdx;
-  ChatBottomSendBar({super.key, required this.chat, required this.userIdx});
+  final Chat chat;
+  final bool isUserIndex0;
+
+  const ChatBottomSendBar({super.key, required this.chat, required this.isUserIndex0});
 
   @override
   State<ChatBottomSendBar> createState() => _ChatBottomSendBarState();
@@ -27,24 +23,28 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
   File? image;
   bool showMic = true;
 
-  void onSendPressed(){
+  void onSendPressed() {
     if (messageTextController.text.isNotEmpty) {
       messageTextController.clear();
-      sendMessage(widget.chat.docRef, widget.userIdx, messageText, MessageType.TEXT, null);
+
+      sendTextMessage(widget.chat.docRef, widget.isUserIndex0, messageText);
+
       setState(() {
         showMic = true;
       });
     }
   }
 
-  void onImagePressed(File newImage){
-      setState(() {
-        image = newImage;
-      });
-      sendImageMessage(widget.chat.docRef, widget.userIdx, image!);
-      setState(() {
-        showMic = true;
-      });
+  void onImagePressed(File newImage) {
+    setState(() {
+      image = newImage;
+    });
+
+    sendImageMessage(widget.chat.docRef, widget.isUserIndex0, image!);
+
+    setState(() {
+      showMic = true;
+    });
   }
 
   @override
@@ -81,10 +81,8 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
                     decoration: kMessageTextFieldDecoration,
                   ),
                 ),
-                showMic
-                    ? VoiceRecorderButton(chat: widget.chat, userIdx: widget.userIdx,)
-                    : const SizedBox(),
-
+                if (showMic)
+                  VoiceRecorderButton(chat: widget.chat, isUserIndex0: widget.isUserIndex0),
                 IconButton(
                   icon: const Icon(Icons.camera_alt_outlined),
                   onPressed: () {
@@ -96,8 +94,7 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(
-              horizontal: 8.0, vertical: 0),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
           child: CircleAvatar(
             backgroundColor: Colors.blueAccent,
             child: IconButton(
@@ -112,6 +109,3 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
     );
   }
 }
-
-
-

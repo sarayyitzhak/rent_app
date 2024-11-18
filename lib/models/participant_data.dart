@@ -1,20 +1,25 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ParticipantData {
-  final int _index;
+  final String _uid;
+  final int _unreadMessages;
   final DateTime _lastMessageSeenTime;
 
-  ParticipantData({required int index, required DateTime lastMessageSeenTime}) : _index = index, _lastMessageSeenTime = lastMessageSeenTime;
+  ParticipantData({required String uid, required int unreadMessages, required DateTime lastMessageSeenTime})
+      : _uid = uid,
+        _unreadMessages = unreadMessages,
+        _lastMessageSeenTime = lastMessageSeenTime;
 
-  int get index => _index;
+  String get uid => _uid;
+
+  int get unreadMessages => _unreadMessages;
 
   DateTime get lastMessageSeenTime => _lastMessageSeenTime;
 
   factory ParticipantData.fromMap(Map<String, dynamic> map) {
     return ParticipantData(
-      index: map['index'] as int,
-      lastMessageSeenTime: (map['lastMessageSeenTime'] as Timestamp).toDate()
-    );
+        uid: map['uid'],
+        unreadMessages: map['unreadMessages'],
+        lastMessageSeenTime: (map['lastMessageSeenTime'] as Timestamp).toDate());
   }
 }

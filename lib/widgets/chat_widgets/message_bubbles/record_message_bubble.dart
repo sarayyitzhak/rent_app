@@ -19,8 +19,15 @@ class RecordMessageBubble extends StatefulWidget {
   final Message message;
   final bool isMe;
   final bool tail;
+  final MessageReadNotifier messageReadNotifier;
 
-  const RecordMessageBubble({super.key, required this.chat, required this.message, required this.isMe, required this.tail});
+  const RecordMessageBubble(
+      {super.key,
+      required this.chat,
+      required this.message,
+      required this.isMe,
+      required this.tail,
+      required this.messageReadNotifier});
 
   @override
   State<RecordMessageBubble> createState() => _RecordMessageBubbleState();
@@ -37,7 +44,7 @@ class _RecordMessageBubbleState extends State<RecordMessageBubble> {
     if (isPlaying) {
       await player.pause();
     } else {
-      FileData fileData = await getFileData(getMessageFileRef(widget.message.cloudKey!, 'aac'), 'aac');
+      FileData fileData = await getFileData(getMessageFileRef(widget.message.docRef, 'aac'), 'aac');
       if (fileData.exists) {
         await player.play(BytesSource(fileData.data), position: Duration(seconds: _position.toInt()));
       }
@@ -54,7 +61,7 @@ class _RecordMessageBubbleState extends State<RecordMessageBubble> {
   }
 
   Future<void> _initPlayer() async {
-    FileData fileData = await getFileData(getMessageFileRef(widget.message.cloudKey!, 'aac'), 'aac');
+    FileData fileData = await getFileData(getMessageFileRef(widget.message.docRef, 'aac'), 'aac');
     if (fileData.exists) {
       player.setSourceBytes(fileData.data);
     }
@@ -154,7 +161,12 @@ class _RecordMessageBubbleState extends State<RecordMessageBubble> {
                         ),
                       ),
                     ),
-                    MessageTime(chat: widget.chat, message: widget.message, isMe: widget.isMe)
+                    MessageTime(
+                      chat: widget.chat,
+                      message: widget.message,
+                      isMe: widget.isMe,
+                      messageReadNotifier: widget.messageReadNotifier,
+                    )
                   ],
                 ),
               ],

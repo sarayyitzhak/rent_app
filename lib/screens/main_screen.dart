@@ -59,16 +59,11 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _fetchUserChats() {
-    _userChatsSubscription = getUserChatsStream().listen((List<Chat> chats) {
+    _userChatsSubscription = getUserUnreadChatCountStream().listen((int unreadChats) {
       setState(() {
-        _unreadChats = chats.where(_isUserNotReadLastMessage).length;
+        _unreadChats = unreadChats;
       });
     });
-  }
-
-  bool _isUserNotReadLastMessage(Chat chat) {
-    DateTime userLastMessageSeenTime = chat.participants[userDetails.docRef.id]!.lastMessageSeenTime;
-    return userLastMessageSeenTime.isBefore(chat.lastMessageSentAt);
   }
 
   Widget _buildNotificationIcon(IconData icon, int notificationCount) {
@@ -91,7 +86,7 @@ class _MainScreenState extends State<MainScreen> {
                 minHeight: 16,
               ),
               child: Text(
-                '$notificationCount',
+                '${notificationCount < 10 ? notificationCount : '9+'}',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 10,

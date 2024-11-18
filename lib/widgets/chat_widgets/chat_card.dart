@@ -1,11 +1,15 @@
 import 'dart:async';
 
+import 'package:rent_app/models/user.dart';
+import 'package:rent_app/utils.dart';
+
 import '../../constants.dart';
 import '../../globals.dart';
 import '../../models/chat.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/message.dart';
+import '../../models/message_type.dart';
 import '../../screens/chat_screen.dart';
 import '../../services/cloud_services.dart';
 
@@ -20,63 +24,52 @@ class ChatCard extends StatefulWidget {
 
 class _ChatCardState extends State<ChatCard> {
   String? _otherParticipantName;
-  Message? _lastMessage;
-  int _unreadMessages = 0;
-
-  StreamSubscription? _lastMessageSubscription;
 
   @override
   void initState() {
     super.initState();
 
     _fetchOtherParticipantData();
-    _fetchUnreadMessagesCount();
-
-    _lastMessageSubscription = getLastMessageStream(widget.chat.docRef).listen((message) {
-      setState(() {
-        _lastMessage = message;
-      });
-    });
   }
 
   void _fetchOtherParticipantData() async {
-    String otherParticipantName = await getOtherParticipantName(widget.chat);
+    bool isUserIndex0 = widget.chat.participantInfo0.uid == userDetails.docRef.id;
+    var otherParticipantUid = isUserIndex0 ? widget.chat.participantInfo1.uid : widget.chat.participantInfo0.uid;
+    UserDetails otherParticipant = await getUserByID(otherParticipantUid);
 
     setState(() {
-      _otherParticipantName = otherParticipantName;
+      _otherParticipantName = otherParticipant.name;
     });
   }
 
-  Future<void> _fetchUnreadMessagesCount() async {
-    int? userIndex = widget.chat.participants[userDetails.docRef.id]?.index;
-    DateTime? fromDate = widget.chat.participants[userDetails.docRef.id]?.lastMessageSeenTime;
-
-    if (userIndex != null && fromDate != null) {
-      int unreadMessages = await getUnreadMessagesCount(widget.chat.docRef, userIndex, fromDate);
-
-      setState(() {
-        _unreadMessages = unreadMessages;
-      });
+  String _getLastMessageText() {
+    if (widget.chat.lastMessageContent is int) {
+      MessageType messageType = numToMessageType(widget.chat.lastMessageContent);
+      if (messageType == MessageType.IMAGE) {
+        return 'תמונה';
+      } else if (messageType == MessageType.VOICE_RECORD) {
+        return 'הקלטה קולית';
+      }
+      return '';
+    } else {
+      return widget.chat.lastMessageContent;
     }
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _lastMessageSubscription?.cancel();
+  int _getUnreadMessageCount() {
+    bool isUserIndex0 = widget.chat.participantInfo0.uid == userDetails.docRef.id;
+    return isUserIndex0 ? widget.chat.participantInfo0.unreadMessages : widget.chat.participantInfo1.unreadMessages;
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, ChatScreen.id,
-          arguments: ChatScreenArguments(widget.chat, _otherParticipantName)),
+      onTap: () => Navigator.pushNamed(context, ChatScreen.id, arguments: ChatScreenArguments(widget.chat)),
       child: Container(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
           margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: kActiveButtonColor)),
+          decoration:
+              BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: kActiveButtonColor)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -88,15 +81,15 @@ class _ChatCardState extends State<ChatCard> {
                     style: kBlackHeaderTextStyle,
                   ),
                   Text(
-                    _lastMessage?.text ?? '',
+                    _getLastMessageText(),
                     style: kSmallBlackTextStyle,
                   ),
                 ],
               ),
               Column(
                 children: [
-                  Text(_lastMessage?.sentAtAsString() ?? ''),
-                  if (_unreadMessages > 0)
+                  Text(getHourMinuteFormat(widget.chat.lastMessageTime)),
+                  if (_getUnreadMessageCount() > 0)
                     Container(
                       padding: const EdgeInsets.all(6),
                       decoration: const BoxDecoration(
@@ -104,7 +97,7 @@ class _ChatCardState extends State<ChatCard> {
                         shape: BoxShape.circle,
                       ),
                       child: Text(
-                        '$_unreadMessages',
+                        '${_getUnreadMessageCount()}',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
