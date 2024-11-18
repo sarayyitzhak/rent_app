@@ -31,7 +31,6 @@ final _auth = FirebaseAuth.instance;
 final _messaging = FirebaseMessaging.instance;
 final storageRef = FirebaseStorage.instance.ref();
 
-
 //FILES
 
 Future<Uint8List?> readFile(Reference fileRef, [String fileExtension = 'jpg']) async {
@@ -47,7 +46,8 @@ Future<List<Reference>> getFileReferences(Reference dirRef) async {
 }
 
 Future<UploadTask> uploadFile(Reference fileRef, File file, [String fileExtension = 'jpg']) async {
-  await DefaultCacheManager().putFile(fileRef.fullPath, file.readAsBytesSync(), key: fileRef.fullPath, fileExtension: fileExtension);
+  await DefaultCacheManager()
+      .putFile(fileRef.fullPath, file.readAsBytesSync(), key: fileRef.fullPath, fileExtension: fileExtension);
   return fileRef.putFile(file);
 }
 
@@ -66,7 +66,16 @@ Future<void> deleteFile(Reference fileRef) async {
 }
 
 //ITEMS
-Future<void> createNewItem(List<FileData> imageDataList, String mainImage, List<String> images, String title, String price, AddressInfo addressValue, String description, Condition condition, List<ItemCategory> categories) async {
+Future<void> createNewItem(
+    List<FileData> imageDataList,
+    String mainImage,
+    List<String> images,
+    String title,
+    String price,
+    AddressInfo addressValue,
+    String description,
+    Condition condition,
+    List<ItemCategory> categories) async {
   DocumentReference itemRef = _firestore.collection('items').doc();
   for (FileData fileData in imageDataList) {
     await uploadFileData(getItemImageDirRef(itemRef), fileData);
@@ -88,7 +97,8 @@ Future<void> createNewItem(List<FileData> imageDataList, String mainImage, List<
   });
 }
 
-Future<void> editItem(Item item, String mainImage, List<String> images, String title, int price, AddressInfo addressValue, String description, Condition condition, List<ItemCategory> categories) async {
+Future<void> editItem(Item item, String mainImage, List<String> images, String title, int price,
+    AddressInfo addressValue, String description, Condition condition, List<ItemCategory> categories) async {
   Map<String, Object> data = {
     if (item.mainImage != mainImage) 'mainImage': mainImage,
     if (images.isNotEmpty && !areListsEqual(item.images, images)) 'images': images,
@@ -127,18 +137,22 @@ Future<QueryBatch<Item>> getItemsByCategory(ItemCategory category, [DocumentSnap
 }
 
 Future<List<Item>> getItemsByLocation(Position position, String cityName) async {
-  return _getItemsByQuery(_firestore.collection('items').where(
-      'location.city', isEqualTo: cityName).get(), true);
+  return _getItemsByQuery(_firestore.collection('items').where('location.city', isEqualTo: cityName).get(), true);
 }
 
 Future<List<Item>> getItemsByGeoPoint(double minLat, double maxLat, double minLng, double maxLng) async {
-  return _getItemsByQuery(_firestore.collection('items').where(
-      'location.geoPoint', isGreaterThanOrEqualTo: GeoPoint(minLat, minLng)).where(
-      'location.geoPoint', isLessThanOrEqualTo: GeoPoint(maxLat, maxLng)).get(), true);
+  return _getItemsByQuery(
+      _firestore
+          .collection('items')
+          .where('location.geoPoint', isGreaterThanOrEqualTo: GeoPoint(minLat, minLng))
+          .where('location.geoPoint', isLessThanOrEqualTo: GeoPoint(maxLat, maxLng))
+          .get(),
+      true);
 }
 
 Future<QueryBatch<Item>> getItemsByTitle(String title, [DocumentSnapshot? startAfterDoc]) async {
-  Query query = _firestore.collection('items')
+  Query query = _firestore
+      .collection('items')
       .where('title', isGreaterThanOrEqualTo: title, isLessThan: getNextAlphabeticalString(title))
       .limit(20);
   // TODO: add where by NOT current user (maybe order by createdAt?)
@@ -176,12 +190,17 @@ Future<List<Item>> _getItemsByQuery(Future<QuerySnapshot<Map<String, dynamic>>> 
 }
 
 Stream<QuerySnapshot<Map<String, dynamic>>> getUserItemsStream() {
-  return _firestore.collection('items').where('contactUserID', isEqualTo: userDetails.docRef.id).orderBy('createdAt', descending: true).snapshots();
+  return _firestore
+      .collection('items')
+      .where('contactUserID', isEqualTo: userDetails.docRef.id)
+      .orderBy('createdAt', descending: true)
+      .snapshots();
 }
 
 //REQUESTS
 Future<List<ItemRequest>> getUserRequestsStream() {
-  return _firestore.collection('requests')
+  return _firestore
+      .collection('requests')
       .where('ownerID', isEqualTo: userDetails.docRef.id)
       .orderBy('requestTime', descending: true)
       .get()
@@ -189,7 +208,8 @@ Future<List<ItemRequest>> getUserRequestsStream() {
 }
 
 Future<List<ItemRequest>> getPendingRequestsStream() {
-  return _firestore.collection('requests')
+  return _firestore
+      .collection('requests')
       .where('applicantID', isEqualTo: userDetails.docRef.id)
       .orderBy('requestTime', descending: true)
       .get()
@@ -197,7 +217,8 @@ Future<List<ItemRequest>> getPendingRequestsStream() {
 }
 
 Stream<List<ItemRequest>> getFutureItemRequestsStream(DocumentReference itemRef) {
-  return _firestore.collection('requests')
+  return _firestore
+      .collection('requests')
       .where('itemID', isEqualTo: itemRef.id)
       .where('time.end', isGreaterThan: Timestamp.now())
       .where('status', isNotEqualTo: RequestStatus.REJECTED.index)
@@ -206,7 +227,8 @@ Stream<List<ItemRequest>> getFutureItemRequestsStream(DocumentReference itemRef)
 }
 
 Future<List<ItemRequest>> getFutureItemRequests(String itemID) {
-  return _firestore.collection('requests')
+  return _firestore
+      .collection('requests')
       .where('itemID', isEqualTo: itemID)
       .where('time.end', isGreaterThan: Timestamp.now())
       .where('status', isNotEqualTo: RequestStatus.REJECTED.index)
@@ -218,32 +240,31 @@ Stream<ItemRequest> getItemRequestStream(DocumentReference docRef) {
   return docRef.snapshots().map(ItemRequest.fromDocumentSnapshot);
 }
 
-void addRequest(Item item, DateTimeRange range){
+void addRequest(Item item, DateTimeRange range) {
   _firestore.collection('requests').add({
     'ownerID': item.contactUserID,
     'applicantID': userDetails.docRef.id,
     'itemID': item.docRef.id,
     'status': RequestStatus.WAITING.index,
-    'time': {
-      'start': range.start,
-      'end': range.end
-    },
+    'time': {'start': range.start, 'end': range.end},
     'price': item.price,
     'pickUpLocation': item.location.toMap(),
     'requestTime': FieldValue.serverTimestamp()
   });
 }
 
-void updateRequestStatus(DocumentReference docRef, RequestStatus status){
+void updateRequestStatus(DocumentReference docRef, RequestStatus status) {
   docRef.update({'status': status.index});
 }
 
 void updateExtensionRequest(DocumentReference docRef, DateTime toDate) {
-  docRef.update({'extensionRequest': {
-    'toDate': toDate,
-    'status': RequestStatus.WAITING.index,
-    'requestTime': FieldValue.serverTimestamp()
-  }});
+  docRef.update({
+    'extensionRequest': {
+      'toDate': toDate,
+      'status': RequestStatus.WAITING.index,
+      'requestTime': FieldValue.serverTimestamp()
+    }
+  });
 }
 
 void removeExtensionRequest(DocumentReference docRef) {
@@ -256,29 +277,35 @@ void deleteRequest(DocumentReference docRef) {
 
 Future<List<ItemRequest>> getUserApprovedRequestsFrom(DateTime fromDate, bool isRentedFromMe) {
   String field = isRentedFromMe ? 'ownerID' : 'applicantID';
-  return _firestore.collection('requests').
-  where(field, isEqualTo: userDetails.docRef.id).
-  where('status', isEqualTo: RequestStatus.APPROVED.index).
-  where('time.start', isGreaterThanOrEqualTo: Timestamp.fromDate(fromDate)).get().
-  then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
+  return _firestore
+      .collection('requests')
+      .where(field, isEqualTo: userDetails.docRef.id)
+      .where('status', isEqualTo: RequestStatus.APPROVED.index)
+      .where('time.start', isGreaterThanOrEqualTo: Timestamp.fromDate(fromDate))
+      .get()
+      .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
 }
 
 Future<List<ItemRequest>> getCurrentRents(bool isRentedFromMe) {
   String field = isRentedFromMe ? 'ownerID' : 'applicantID';
-  return _firestore.collection('requests').
-  where(field, isEqualTo: userDetails.docRef.id).
-  where('status', isEqualTo: RequestStatus.APPROVED.index).
-  where('time.start', isLessThanOrEqualTo: Timestamp.now()).
-  where('time.end', isGreaterThanOrEqualTo: Timestamp.now()).get().
-  then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
+  return _firestore
+      .collection('requests')
+      .where(field, isEqualTo: userDetails.docRef.id)
+      .where('status', isEqualTo: RequestStatus.APPROVED.index)
+      .where('time.start', isLessThanOrEqualTo: Timestamp.now())
+      .where('time.end', isGreaterThanOrEqualTo: Timestamp.now())
+      .get()
+      .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
 }
 
 Future<List<ItemRequest>> getWaitingToApproveRequests() {
-  return _firestore.collection('requests').
-  where('ownerID', isEqualTo: userDetails.docRef.id).
-  where('status', isEqualTo: RequestStatus.WAITING.index).
-  where('time.start', isGreaterThan: Timestamp.now()).get().
-  then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
+  return _firestore
+      .collection('requests')
+      .where('ownerID', isEqualTo: userDetails.docRef.id)
+      .where('status', isEqualTo: RequestStatus.WAITING.index)
+      .where('time.start', isGreaterThan: Timestamp.now())
+      .get()
+      .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
 }
 
 //CHATS
@@ -349,10 +376,12 @@ Future<Chat> sendItemMessage(String userID, DocumentReference itemRef) async {
   DocumentReference chatRef;
   int userIndex = -1;
 
-  QuerySnapshot usersChatsQuery = await _firestore.collection('chats')
-      .where('participants.${userDetails.docRef.id}', isNull: false)
-      .get();
-  chat = usersChatsQuery.docs.map(Chat.fromDocumentSnapshot).where((chat) => chat.participants.containsKey(userID)).firstOrNull;
+  QuerySnapshot usersChatsQuery =
+      await _firestore.collection('chats').where('participants.${userDetails.docRef.id}', isNull: false).get();
+  chat = usersChatsQuery.docs
+      .map(Chat.fromDocumentSnapshot)
+      .where((chat) => chat.participants.containsKey(userID))
+      .firstOrNull;
   if (chat == null) {
     Map<String, Object> chatData = {
       'lastMessageSentAt': FieldValue.serverTimestamp(),
@@ -387,12 +416,10 @@ Future<Chat> sendItemMessage(String userID, DocumentReference itemRef) async {
 }
 
 Future<void> updateUserLastMessageSeenTime(DocumentReference chatRef, DateTime dateTime) {
-  return chatRef.update({
-    'participants.${userDetails.docRef.id}.lastMessageSeenTime': Timestamp.fromDate(dateTime)
-  });
+  return chatRef.update({'participants.${userDetails.docRef.id}.lastMessageSeenTime': Timestamp.fromDate(dateTime)});
 }
 
-Stream<List<Chat>> getUserChatsStream(){
+Stream<List<Chat>> getUserChatsStream() {
   return _firestore
       .collection('chats')
       .where('participants.${userDetails.docRef.id}', isNull: false)
@@ -422,12 +449,11 @@ Future<String> getOtherParticipantName(Chat chat) async {
 //MESSAGES
 
 Stream<Message?> getLastMessageStream(DocumentReference chatRef) {
-  return chatRef
-      .collection('messages')
-      .orderBy('sentAt', descending: true)
-      .limit(1)
-      .snapshots()
-      .map((QuerySnapshot query) => query.docs.map((doc) => mapAsMessage(doc.data() as Map<String, dynamic>, doc.reference)).toList().firstOrNull);
+  return chatRef.collection('messages').orderBy('sentAt', descending: true).limit(1).snapshots().map(
+      (QuerySnapshot query) => query.docs
+          .map((doc) => mapAsMessage(doc.data() as Map<String, dynamic>, doc.reference))
+          .toList()
+          .firstOrNull);
 }
 
 Future<QuerySnapshot> getHistoricalMessages(DocumentReference chatRef, int limit, DocumentSnapshot? startAfterDoc) {
@@ -445,10 +471,13 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getNewMessagesStream(DocumentReferen
 }
 
 Future<int> getUnreadMessagesCount(DocumentReference chatRef, int userIndex, DateTime fromDate) {
-  return chatRef.collection('messages')
+  return chatRef
+      .collection('messages')
       .where('sender', isNotEqualTo: userIndex)
       .where('sentAt', isGreaterThan: Timestamp.fromDate(fromDate))
-      .count().get().then((res) => res.count!);
+      .count()
+      .get()
+      .then((res) => res.count!);
 }
 
 Reference getMessageFileRef(DocumentReference messageRef, [String fileExtension = 'jpg']) {
@@ -457,18 +486,19 @@ Reference getMessageFileRef(DocumentReference messageRef, [String fileExtension 
 
 //REVIEWS
 
-void addItemReview(DocumentReference itemRef, int? overallRate, int? valueForPrice, int? compatibility, Condition? condition, String? text) {
+void addItemReview(DocumentReference itemRef, int? overallRate, int? valueForPrice, int? compatibility,
+    Condition? condition, String? text) {
   WriteBatch batch = _firestore.batch();
   batch.set(itemRef.collection('reviews').doc(), {
     'userID': userDetails.docRef.id,
-    if(overallRate != null) 'overallRate': overallRate,
-    if(valueForPrice != null) 'valueForPrice': valueForPrice,
-    if(compatibility != null) 'compatibility': compatibility,
-    if(text != '') 'text': text,
-    if(condition != null) 'condition': condition.idx,
+    if (overallRate != null) 'overallRate': overallRate,
+    if (valueForPrice != null) 'valueForPrice': valueForPrice,
+    if (compatibility != null) 'compatibility': compatibility,
+    if (text != '') 'text': text,
+    if (condition != null) 'condition': condition.idx,
     'createdAt': FieldValue.serverTimestamp()
   });
-  if(overallRate != null) {
+  if (overallRate != null) {
     batch.update(
         itemRef, {'overallRateCount': FieldValue.increment(1), 'overallRateSum': FieldValue.increment(overallRate)});
   }
@@ -476,19 +506,24 @@ void addItemReview(DocumentReference itemRef, int? overallRate, int? valueForPri
 }
 
 Future<List<ItemReview>> getItemReviews(DocumentReference itemRef) async {
-  return await itemRef.collection('reviews').where('text', isNull: false).orderBy('createdAt', descending: true).get().then((QuerySnapshot query) => query.docs.map(ItemReview.fromDocumentSnapshot).toList());
+  return await itemRef
+      .collection('reviews')
+      .where('text', isNull: false)
+      .orderBy('createdAt', descending: true)
+      .get()
+      .then((QuerySnapshot query) => query.docs.map(ItemReview.fromDocumentSnapshot).toList());
 }
 
 void addUserReview(DocumentReference userRef, int? overallRate, int? serviceLevel, String? text) {
   WriteBatch batch = _firestore.batch();
   batch.set(userRef.collection('reviews').doc(), {
     'userID': userDetails.docRef.id,
-    if(overallRate != null) 'overallRate': overallRate,
-    if(serviceLevel != null) 'serviceLevel': serviceLevel,
-    if(text != null) 'text': text,
+    if (overallRate != null) 'overallRate': overallRate,
+    if (serviceLevel != null) 'serviceLevel': serviceLevel,
+    if (text != null) 'text': text,
     'createdAt': FieldValue.serverTimestamp()
   });
-  if(overallRate != null) {
+  if (overallRate != null) {
     batch.update(
         userRef, {'overallRateCount': FieldValue.increment(1), 'overallRateSum': FieldValue.increment(overallRate)});
   }
@@ -496,7 +531,11 @@ void addUserReview(DocumentReference userRef, int? overallRate, int? serviceLeve
 }
 
 Future<List<UserReview>> getUserReviews(DocumentReference userRef) async {
-  return await userRef.collection('reviews').orderBy('createdAt', descending: true).get().then((QuerySnapshot query) => query.docs.map(UserReview.fromDocumentSnapshot).toList());
+  return await userRef
+      .collection('reviews')
+      .orderBy('createdAt', descending: true)
+      .get()
+      .then((QuerySnapshot query) => query.docs.map(UserReview.fromDocumentSnapshot).toList());
 }
 
 Future<int> getTextItemReviewsCount(DocumentReference itemRef) async {
@@ -540,9 +579,7 @@ Future<int> getTextItemReviewsCount(DocumentReference itemRef) async {
 //AUTH
 
 Future<void> login(String email, String password) async {
-  final user = await _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password);
+  final user = await _auth.signInWithEmailAndPassword(email: email, password: password);
   userUid = user.user?.uid;
 }
 
@@ -560,19 +597,19 @@ Future<UserDetails> getUser() async {
   return userDetails;
 }
 
-Future<void> createNewUser(String email, String password, String name, String phoneNumber) async{
+Future<void> createNewUser(String email, String password, String name, String phoneNumber) async {
   final newUser = await _auth.createUserWithEmailAndPassword(email: email, password: password);
   userUid = newUser.user?.uid;
   DocumentReference userRef = _firestore.collection('users').doc(userUid);
   userDetails = UserDetails(
-      docRef: userRef,
-      name: name,
-      phoneNumber: int.parse(phoneNumber),
+    docRef: userRef,
+    name: name,
+    phoneNumber: int.parse(phoneNumber),
   );
   setToken();
 }
 
-void signOut(){
+void signOut() {
   _auth.signOut();
 }
 
@@ -589,7 +626,8 @@ Future<QueryBatch<Item>> getUserFavoriteItems([DocumentSnapshot? startAfterDoc])
   return _getUserItems('favorites', 'updateTime', startAfterDoc);
 }
 
-Future<QueryBatch<Item>> _getUserItems(String collectionName, String orderByFieldName, DocumentSnapshot? startAfterDoc) {
+Future<QueryBatch<Item>> _getUserItems(
+    String collectionName, String orderByFieldName, DocumentSnapshot? startAfterDoc) {
   Query query = userDetails.docRef.collection(collectionName).orderBy(orderByFieldName, descending: true).limit(20);
 
   if (startAfterDoc != null) {
@@ -611,13 +649,18 @@ Future<QueryBatch<Item>> _getUserItems(String collectionName, String orderByFiel
       List<Item?> list = itemIds.map((String id) => itemMap[id]).toList();
       list.removeWhere((item) => item == null);
 
-      return QueryBatch(list.cast<Item>(), itemIds.length == 20, itemIdsQuery.docs.isNotEmpty ? itemIdsQuery.docs.last : null);
+      return QueryBatch(
+          list.cast<Item>(), itemIds.length == 20, itemIdsQuery.docs.isNotEmpty ? itemIdsQuery.docs.last : null);
     });
   });
 }
 
 Stream<bool> getUserFavoriteItem(DocumentReference itemRef) {
-  return userDetails.docRef.collection('favorites').doc(itemRef.id).snapshots().map((DocumentSnapshot snapshot) => snapshot.exists);
+  return userDetails.docRef
+      .collection('favorites')
+      .doc(itemRef.id)
+      .snapshots()
+      .map((DocumentSnapshot snapshot) => snapshot.exists);
 }
 
 Reference getUserImageRef(DocumentReference userRef) {
@@ -635,10 +678,8 @@ Future<void> updateUserItemSeen(DocumentReference itemRef) async {
 }
 
 Future<void> deleteOldUserItemSeen(DateTime dateTime) async {
-  QuerySnapshot querySnapshot = await userDetails.docRef.collection('seen')
-      .where('seenTime', isLessThan: dateTime)
-      .limit(100)
-      .get();
+  QuerySnapshot querySnapshot =
+      await userDetails.docRef.collection('seen').where('seenTime', isLessThan: dateTime).limit(100).get();
 
   for (final doc in querySnapshot.docs) {
     await doc.reference.delete();
@@ -663,7 +704,11 @@ Future<double?> getUserOverallRate() async {
 }
 
 Future<double?> getUserServiceLevel() async {
-  return userDetails.docRef.collection('reviews').aggregate(average('serviceLevel')).get().then((res) => res.getAverage('serviceLevel'));
+  return userDetails.docRef
+      .collection('reviews')
+      .aggregate(average('serviceLevel'))
+      .get()
+      .then((res) => res.getAverage('serviceLevel'));
 }
 
 //Messaging
@@ -687,16 +732,17 @@ void requestNotificationsPermission() async {
   }
 }
 
-void setToken(){
+Future<void> setToken() async {
   _messaging.getToken().then((String? token) {
     if (token != null && token != userDetails.token) {
+      print('token: $token');
       userDetails.token = token;
       userDetails.docRef.update({'token': token});
     }
   });
 }
 
-void onTokenRefreshed(){
+void onTokenRefreshed() {
   _messaging.onTokenRefresh.listen((newToken) {
     userDetails.token = newToken;
     userDetails.docRef.update({
@@ -705,7 +751,7 @@ void onTokenRefreshed(){
   });
 }
 
-void messagingListenForeground(){
+void messagingListenForeground() {
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     if (message.notification != null && activeChatId != message.data['chatId']) {
       // showNotification(message.notification!.title, message.notification!.body, message);
@@ -713,14 +759,16 @@ void messagingListenForeground(){
   });
 }
 
-void onMessageOpenedApp(BuildContext context){
+void onMessageOpenedApp(BuildContext context) {
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
     handleNotificationTap(context, message.data);
   });
 }
 
-Future<void> messagingHandlerBackground(RemoteMessage message)async{
+Future<void> messagingHandlerBackground(RemoteMessage message) async {
   if (message.notification != null) {
+    print('----------------');
+    handleNotificationOnBackGround(message.notification!);
     // showNotification(message.notification!.title, message.notification!.body, message);
   }
 }

@@ -9,7 +9,7 @@ import 'cloud_services.dart';
 
 int counter = 0;
 
-Future<void> showNotification(String? title, String? body, RemoteMessage? message) async {
+Future<void> showNotification(int id, String? title, String? body, RemoteMessage? message) async {
   await flutterLocalNotificationsPlugin.show(
     counter++,
     title,
@@ -29,4 +29,9 @@ Future<void> handleNotificationTap(BuildContext context, Map<String, dynamic> da
   } else if (type == 'REQUEST') {
     Navigator.pushNamed(context, UserItemsScreen.id, arguments: UserItemsScreenArguments(showRequests: true));
   }
+}
+
+Future<void> handleNotificationOnBackGround(RemoteNotification notification) async {
+  flutterLocalNotificationsPlugin.show(0, notification.title, notification.body, platformChannelSpecifics);
+
 }

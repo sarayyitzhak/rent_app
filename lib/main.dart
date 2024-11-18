@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:rent_app/screens/add_item_screen.dart';
@@ -28,6 +30,7 @@ import 'package:rent_app/constants.dart';
 import 'package:rent_app/screens/login_screen.dart';
 import 'package:rent_app/screens/initial_screen.dart';
 import 'package:rent_app/screens/welcome_screen.dart';
+import 'package:rent_app/services/notification_utils.dart';
 import 'screens/home_screen.dart';
 import 'screens/user_screen.dart';
 import 'screens/registration_screen.dart';
@@ -37,19 +40,28 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rent_app/globals.dart';
 
+Future<void> onDidReceiveLocalNotification(int id, String? title, String? body, String? payload) async {
+  print('---------');
+  // Handle foreground notifications (optional)
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   try {
-    await Firebase.initializeApp(
+    if (Platform.isAndroid) {
+      await Firebase.initializeApp(
         options: const FirebaseOptions(
-      apiKey: 'AIzaSyDW-5bhyRKZGryAWLcpXeCC5gDo0Wmameo',
-      appId: '1:115036149089:android:82d681f3cff220f54aa120',
-      messagingSenderId: '115036149089', //
-      projectId: 'renal-app',
-      storageBucket: 'renal-app.appspot.com',
-    ));
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
+        apiKey: 'AIzaSyDW-5bhyRKZGryAWLcpXeCC5gDo0Wmameo',
+        appId: '1:115036149089:android:82d681f3cff220f54aa120',
+        messagingSenderId: '115036149089', //
+        projectId: 'renal-app',
+        storageBucket: 'renal-app.appspot.com',
+      ));
+    } else if (Platform.isIOS) {
+      await Firebase.initializeApp();
+    }
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
@@ -58,26 +70,42 @@ void main() async {
     //   if(message.data['type'] == 'CHAT'){
     //     int x = 8;
     //     Navigator.pushNamed(context, routeName)
-      // } else if(message.data['type'] == 'REQUEST'){
-      //   Navigator.pushNamed(context, UserItemsScreen.id, );
-      // }
+    // } else if(message.data['type'] == 'REQUEST'){
+    //   Navigator.pushNamed(context, UserItemsScreen.id, );
+    // }
     // });
     FirebaseMessaging.onBackgroundMessage(messagingHandlerBackground);
-    FirebaseAppCheck firebaseAppCheck =  await FirebaseAppCheck.instance.activate(
-      webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
-      androidProvider: AndroidProvider.debug,
-        appleProvider: AppleProvider.debug,
-    ) as FirebaseAppCheck;
+    // FirebaseAppCheck firebaseAppCheck = await FirebaseAppCheck.instance.activate(
+    //   webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
+    //   androidProvider: AndroidProvider.debug,
+    //   appleProvider: AppleProvider.debug,
+    // ) as FirebaseAppCheck;
 
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+    // var initializationSettingsIOS = IOSInitializationSettings(
+    //     onDidReceiveLocalNotification: onDidReceiveLocalNotification);
+    final DarwinInitializationSettings initializationSettingsDarwin =
+        DarwinInitializationSettings(onDidReceiveLocalNotification: (id, title, body, payload) => showNotification);
 
-    final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings, onDidReceiveBackgroundNotificationResponse: (details) => print('--------------------------------'),);
+    final bool? result = await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
 
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsDarwin);
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (details) => handleNotificationOnBackGround,
+      // onDidReceiveBackgroundNotificationResponse: (details) => print('--------------------------------'),
+    );
 
     // await FirebaseAppCheck.instance.activate(
     //   webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
-      // androidProvider: AndroidProvider.playIntegrity,
+    // androidProvider: AndroidProvider.playIntegrity,
     // );
     // firebaseAppCheck.installAppCheckProviderFactory(
     //     DebugAppCheckProviderFactory.getInstance());
@@ -88,8 +116,6 @@ void main() async {
     //   appleProvider: AppleProvider.debug,
     //   webProvider: ReCaptchaV3Provider(kWebRecaptchaSiteKey),
     // );
-
-
   } catch (e) {
     print('error: $e');
   }
@@ -110,9 +136,7 @@ class MyApp extends StatelessWidget {
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.white,
         ),
-        cardTheme: const CardTheme(
-          color: Colors.white
-        ),
+        cardTheme: const CardTheme(color: Colors.white),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             foregroundColor: kDarkYellow, // Default text color
@@ -121,7 +145,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: InitialScreen.id,
       onGenerateRoute: (RouteSettings settings) {
-        var routes = <String, WidgetBuilder> {
+        var routes = <String, WidgetBuilder>{
           InitialScreen.id: (context) => const InitialScreen(),
           MainScreen.id: (context) => const MainScreen(),
           WelcomeScreen.id: (context) => const WelcomeScreen(),
@@ -148,11 +172,11 @@ class MyApp extends StatelessWidget {
           FinalReviewScreen.id: (context) => const FinalReviewScreen(),
           ItemGridScreen.id: (context) => ItemGridScreen(settings.arguments as ItemGridScreenArguments),
           EditUserDetailsScreen.id: (context) => const EditUserDetailsScreen(),
-          ImageViewGalleryScreen.id: (context) => ImageViewGalleryScreen(settings.arguments as ImageViewGalleryScreenArguments),
+          ImageViewGalleryScreen.id: (context) =>
+              ImageViewGalleryScreen(settings.arguments as ImageViewGalleryScreenArguments),
         };
         return MaterialPageRoute(builder: routes[settings.name]!);
       },
-
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -166,5 +190,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
