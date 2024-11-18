@@ -25,8 +25,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late List<ItemRequest> _currentMonthRentsOfMe = [];
   late List<ItemRequest> _activeRentalOfMe = [];
   late List<ItemRequest> _activeRentalFromMe = [];
-  late double? _overallRate = 0;
-  late double? _serviceLevel = 0;
+  late double? _overallRate = -1;
+  late double? _availabilityLevel = 0;
+  late double? _punctualityLevel = 0;
 
   int getMonthlyOutcome(List<ItemRequest> requests) {
     return requests.fold(0, (sum, req) => sum + req.price);
@@ -37,7 +38,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     List<ItemRequest> currentMonthRentsFromMe = await getUserApprovedRequestsFrom(DateTime(DateTime.now().year, DateTime.now().month), true);
     List<ItemRequest> currentMonthRentsOfMe = await getUserApprovedRequestsFrom(DateTime(DateTime.now().year, DateTime.now().month), false);
     double? overallRate = await getUserOverallRate();
-    double? serviceLevel = await getUserServiceLevel();
+    double? availabilityLevel = await getUserAvailabilityLevel();
+    double? punctualityLevel = await getUserPunctualityLevel();
     List<ItemRequest> activeRentalOfMe = await getCurrentRents(false);
     List<ItemRequest> activeRentalFromMe = await getCurrentRents(true);
     setState(() {
@@ -45,7 +47,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _currentMonthRentsOfMe = currentMonthRentsOfMe;
       _image = image;
       _overallRate = overallRate;
-      _serviceLevel = serviceLevel;
+      _availabilityLevel = availabilityLevel;
+      _punctualityLevel = punctualityLevel;
       _activeRentalOfMe = activeRentalOfMe;
       _activeRentalFromMe = activeRentalFromMe;
     });
@@ -62,7 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     var localization = AppLocalizations.of(context)!;
     return Scaffold(
         appBar: CustomAppBar(title: localization.profile),
-        body: _serviceLevel != 0 ? Column(
+        body: _overallRate != -1 ? Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
@@ -138,20 +141,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            if(_serviceLevel != null) Padding(
+            if(_availabilityLevel != null && _availabilityLevel != 0) Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text('רמת שירותיות'), Text((_serviceLevel! * 2).toStringAsFixed(1))],
+                    children: [Text('זמינות'), Text((_availabilityLevel! * 2).toStringAsFixed(1))],
                   ),
                   SizedBox(
                     height: 10,
                     width: double.infinity,
                     child: LinearProgressIndicator(
-                      value: _serviceLevel! / 5,
+                      value: _availabilityLevel! / 5,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if(_punctualityLevel != null && _punctualityLevel != 0) Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text('עמידה בזמנים'), Text((_punctualityLevel! * 2).toStringAsFixed(1))],
+                  ),
+                  SizedBox(
+                    height: 10,
+                    width: double.infinity,
+                    child: LinearProgressIndicator(
+                      value: _punctualityLevel! / 5,
                       borderRadius: BorderRadius.circular(6),
                     ),
                   ),

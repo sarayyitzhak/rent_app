@@ -514,12 +514,13 @@ Future<List<ItemReview>> getItemReviews(DocumentReference itemRef) async {
       .then((QuerySnapshot query) => query.docs.map(ItemReview.fromDocumentSnapshot).toList());
 }
 
-void addUserReview(DocumentReference userRef, int? overallRate, int? serviceLevel, String? text) {
+void addUserReview(DocumentReference userRef, int? overallRate, int? availabilityLevel, int? punctualityLevel, String? text) {
   WriteBatch batch = _firestore.batch();
   batch.set(userRef.collection('reviews').doc(), {
     'userID': userDetails.docRef.id,
     if (overallRate != null) 'overallRate': overallRate,
-    if (serviceLevel != null) 'serviceLevel': serviceLevel,
+    if (availabilityLevel != null) 'availabilityLevel': availabilityLevel,
+    if (punctualityLevel != null) 'punctualityLevel': punctualityLevel,
     if (text != null) 'text': text,
     'createdAt': FieldValue.serverTimestamp()
   });
@@ -703,12 +704,20 @@ Future<double?> getUserOverallRate() async {
   return userDetails.docRef.get().then((doc) => UserDetails.fromDocumentSnapshot(doc).getRate());
 }
 
-Future<double?> getUserServiceLevel() async {
+Future<double?> getUserAvailabilityLevel() async {
   return userDetails.docRef
       .collection('reviews')
-      .aggregate(average('serviceLevel'))
+      .aggregate(average('availabilityLevel'))
       .get()
-      .then((res) => res.getAverage('serviceLevel'));
+      .then((res) => res.getAverage('availabilityLevel'));
+}
+
+Future<double?> getUserPunctualityLevel() async {
+  return userDetails.docRef
+      .collection('reviews')
+      .aggregate(average('punctualityLevel'))
+      .get()
+      .then((res) => res.getAverage('punctualityLevel'));
 }
 
 //Messaging

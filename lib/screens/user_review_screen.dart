@@ -19,7 +19,8 @@ class UserReviewScreen extends StatefulWidget {
 
 class _UserReviewScreenState extends State<UserReviewScreen> {
   int? overallRate;
-  int? serviceLevel;
+  int? availabilityLevel;
+  int? punctualityLevel;
   TextEditingController textController = TextEditingController();
   late UserReview userReview;
 
@@ -48,10 +49,17 @@ class _UserReviewScreenState extends State<UserReviewScreen> {
                       SizedBox(height: 15),
 
                       Text(
-                        'דרג את רמת השרותיות שלו (זמינות, עמידה בזמנים ועוד)',
+                        'מה רמת הזמינות שלו?',
                         style: kBlackHeaderTextStyle,
                       ),
-                      RatingStarsRow(onChanged: (v) => serviceLevel = v.toInt()),
+                      RatingStarsRow(onChanged: (v) => availabilityLevel = v.toInt()),
+                      SizedBox(height: 15),
+
+                      Text(
+                        'עד כמה הוא עמד בזמנים שקבעתם?',
+                        style: kBlackHeaderTextStyle,
+                      ),
+                      RatingStarsRow(onChanged: (v) => punctualityLevel = v.toInt()),
                       SizedBox(height: 15),
                     ],
                   ),
@@ -88,8 +96,8 @@ class _UserReviewScreenState extends State<UserReviewScreen> {
                   SizedBox(height: 40),
 
                   ElevatedButton(onPressed: () {
-                    if(overallRate != null || serviceLevel != null || textController.text.isNotEmpty){
-                      addUserReview(user.docRef, overallRate, serviceLevel, textController.text);
+                    if(overallRate != null || availabilityLevel != null || punctualityLevel != null || textController.text.isNotEmpty){
+                      addUserReview(user.docRef, overallRate, availabilityLevel, punctualityLevel, textController.text);
                       Navigator.pushNamed(context, FinalReviewScreen.id);
                     } // else make then answer
 
