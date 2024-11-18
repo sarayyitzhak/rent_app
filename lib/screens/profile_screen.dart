@@ -142,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             if(_availabilityLevel != null && _availabilityLevel != 0) Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -162,7 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             if(_punctualityLevel != null && _punctualityLevel != 0) Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20, top: 5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
