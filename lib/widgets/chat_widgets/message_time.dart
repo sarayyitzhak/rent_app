@@ -18,17 +18,12 @@ class MessageTime extends StatefulWidget {
 }
 
 class _MessageTimeState extends State<MessageTime> {
-  late bool _messageRead;
+  late bool _messageRead = false;
 
   void _onMessageReadChanged() {
     setState(() {
-      _messageRead = widget.messageReadNotifier.lastMessageSeenTime.isAfter(widget.message.sentAt);
+      _messageRead = !widget.messageReadNotifier.lastMessageSeenTime.isBefore(widget.message.sentAt);
     });
-  }
-
-  Icon buildReadIcon() {
-    return Icon(_messageRead ? Icons.done_all : Icons.done,
-        color: _messageRead ? Colors.cyan[300] : Colors.grey[300], size: 18);
   }
 
   @override
