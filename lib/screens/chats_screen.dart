@@ -101,7 +101,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
         onNotification: onScroll,
         child: ListView.builder(
           itemCount: _chats.length,
-          itemBuilder: (context, index) => ChatCard(chat: _chats[index]),
+          itemBuilder: (context, index) => ChatCard(key: ValueKey(_chats[index].docRef.id), chat: _chats[index]),
         ),
       ),
     );

@@ -12,10 +12,10 @@ import 'package:rent_app/screens/image_view_gallery_screen.dart';
 import 'package:rent_app/screens/rental_screen.dart';
 import 'package:rent_app/screens/reviews_screen.dart';
 import 'package:rent_app/utils.dart';
-import 'package:rent_app/widgets/chat_icon_button.dart';
 import 'package:rent_app/widgets/custom_button.dart';
 import 'package:rent_app/widgets/rating_stars_widget.dart';
 import 'package:rent_app/widgets/favorite_button.dart';
+import 'package:rent_app/widgets/send_item_container.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../dictionary.dart';
 import '../services/cloud_services.dart';
@@ -118,6 +118,24 @@ class _ItemScreenState extends State<ItemScreen> {
                             ),
                           ),
                         ),
+                        if (!isMe)
+                          PositionedDirectional(
+                            top: 8,
+                            end: 8,
+                            child: GestureDetector(
+                              onTap: () => toggleUserFavoriteItem(_item!.docRef),
+                              child: Card(
+                                color: Colors.black.withOpacity(0.3),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: FavoriteButton(item: _item!),
+                                ),
+                              ),
+                            ),
+                          ),
                         if (_imageRefs.length > 1)
                           Positioned(
                             bottom: 8,
@@ -213,6 +231,11 @@ class _ItemScreenState extends State<ItemScreen> {
                           color: Colors.grey,
                           thickness: 1,
                         ),
+                        SendItemContainer(_item!),
+                        const Divider(
+                          color: Colors.grey,
+                          thickness: 1,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -266,15 +289,6 @@ class _ItemScreenState extends State<ItemScreen> {
                               getFormattedPrice(_item!.price),
                               style: kHeadersTextStyle,
                             ),
-                            isMe
-                                ? Container()
-                                : Row(
-                                    children: [
-                                      FavoriteButton(item: _item!),
-                                      const SizedBox(width: 5),
-                                      ChatIconButton(item: _item!),
-                                    ],
-                                  )
                           ],
                         ),
                         Row(

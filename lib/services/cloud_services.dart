@@ -382,7 +382,7 @@ Future<void> sendRecordMessage(DocumentReference chatRef, bool isUserIndex0, Fil
   batch.commit();
 }
 
-Future<Chat> sendItemMessage(String userID, DocumentReference itemRef) async {
+Future<DocumentReference> sendItemMessage(String userID, DocumentReference itemRef, String text) async {
   WriteBatch batch = _firestore.batch();
 
   DocumentReference chatRef;
@@ -404,7 +404,7 @@ Future<Chat> sendItemMessage(String userID, DocumentReference itemRef) async {
 
     Map<String, dynamic> chatData = {
       'lastMessageTime': FieldValue.serverTimestamp(),
-      'lastMessageContent': 'האם ניתן להשכיר פריט זה?',
+      'lastMessageContent': text,
       '${isUserIndex0 ? 'participantInfo1' : 'participantInfo0'}.unreadMessages': FieldValue.increment(1),
     };
 
@@ -412,7 +412,7 @@ Future<Chat> sendItemMessage(String userID, DocumentReference itemRef) async {
   } else {
     Map<String, dynamic> chatData = {
       'lastMessageTime': FieldValue.serverTimestamp(),
-      'lastMessageContent': 'האם ניתן להשכיר פריט זה?',
+      'lastMessageContent': text,
       'participantInfo0': {
         'uid': userDetails.docRef.id,
         'unreadMessages': 0,
@@ -433,7 +433,7 @@ Future<Chat> sendItemMessage(String userID, DocumentReference itemRef) async {
 
   Map<String, dynamic> messageData = {
     'sentBy0': isUserIndex0,
-    'text': 'האם ניתן להשכיר פריט זה?',
+    'text': text,
     'sentAt': FieldValue.serverTimestamp(),
     'type': MessageType.ITEM.index,
     'itemID': itemRef.id
@@ -443,7 +443,7 @@ Future<Chat> sendItemMessage(String userID, DocumentReference itemRef) async {
 
   await batch.commit();
 
-  return chat ?? await chatRef.get().then(Chat.fromDocumentSnapshot);
+  return chatRef;
 }
 
 Future<void> updateChatUserInfo(DocumentReference chatRef, bool isUserIndex0, DateTime lastMessageSeenTime) {
@@ -500,7 +500,11 @@ Stream<Chat> getChatStream(DocumentReference chatRef) {
 }
 
 Future<Chat> getChatFromChatID(String chatID) async {
-  return _firestore.collection('chats').doc(chatID).get().then(Chat.fromDocumentSnapshot);
+  return getChat(_firestore.collection('chats').doc(chatID));
+}
+
+Future<Chat> getChat(DocumentReference chatRef) async {
+  return chatRef.get().then(Chat.fromDocumentSnapshot);
 }
 
 //MESSAGES

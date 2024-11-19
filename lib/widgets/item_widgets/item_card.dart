@@ -118,8 +118,11 @@ class ItemCard extends StatelessWidget {
                       PositionedDirectional(
                         top: 8,
                         end: 8,
-                        child: FavoriteButton(
-                          item: item!,
+                        child: GestureDetector(
+                          onTap: () => toggleUserFavoriteItem(item!.docRef),
+                          child: FavoriteButton(
+                            item: item!,
+                          ),
                         ),
                       ),
                   ],
