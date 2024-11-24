@@ -207,10 +207,23 @@ Future<List<ItemRequest>> getUserRequestsStream() {
       .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
 }
 
-Future<List<ItemRequest>> getPendingRequestsStream() {
+Future<List<ItemRequest>> getMyRequestsByStatus(RequestStatus status) {
   return _firestore
       .collection('requests')
       .where('applicantID', isEqualTo: userDetails.docRef.id)
+      .where('status', isEqualTo: status.index)
+      .where('time.start' , isGreaterThan: Timestamp.now())
+      .orderBy('requestTime', descending: true)
+      .get()
+      .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
+}
+
+Future<List<ItemRequest>> getHistoryRequests() {
+  return _firestore
+      .collection('requests')
+      .where('applicantID', isEqualTo: userDetails.docRef.id)
+      .where('status', isEqualTo: RequestStatus.APPROVED.index)
+      .where('time.end', isLessThan: Timestamp.now())
       .orderBy('requestTime', descending: true)
       .get()
       .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
