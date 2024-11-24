@@ -251,7 +251,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                     CachedImage(
                                       width: 50,
                                       height: 50,
-                                      imageRef: getUserImageRef(_userDetails!.docRef),
+                                      imageRef: getUserImageRef(_userDetails!.docRef, _userDetails!.photoID),
                                       borderRadius: BorderRadius.circular(100),
                                       errorIcon: Icons.person,
                                     ),

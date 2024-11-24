@@ -49,7 +49,7 @@ class _UserScreenState extends State<UserScreen> {
                       CachedImage(
                         width: 70,
                         height: 70,
-                        imageRef: getUserImageRef(userDetails.docRef),
+                        imageRef: getUserImageRef(userDetails.docRef, userDetails.photoID),
                         borderRadius: BorderRadius.circular(100),
                         errorIcon: Icons.person,
                       ),

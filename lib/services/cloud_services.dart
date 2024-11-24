@@ -729,8 +729,8 @@ Stream<bool> getUserFavoriteItem(DocumentReference itemRef) {
       .map((DocumentSnapshot snapshot) => snapshot.exists);
 }
 
-Reference getUserImageRef(DocumentReference userRef) {
-  return storageRef.child('users').child('${userRef.id}.jpg');
+Reference getUserImageRef(DocumentReference userRef, String? photoID) {
+  return storageRef.child('users').child('${userRef.id}_$photoID.jpg');
 }
 
 Future<void> updateUserItemSeen(DocumentReference itemRef) async {
@@ -741,6 +741,10 @@ Future<void> updateUserItemSeen(DocumentReference itemRef) async {
   }
   batch.set(userDetails.docRef.collection('seen').doc(itemRef.id), {'seenTime': FieldValue.serverTimestamp()});
   return batch.commit();
+}
+
+Future<void> updateUserPhotoID(DocumentReference userRef, String? photoID) {
+  return userRef.update({'photoID': photoID ?? FieldValue.delete()});
 }
 
 Future<void> deleteOldUserItemSeen(DateTime dateTime) async {

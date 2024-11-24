@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/globals.dart';
 import 'package:flutter/material.dart';
+import 'package:rent_app/utils.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import '../constants.dart';
 import '../dialogs/select_image_dialog.dart';
@@ -32,7 +33,14 @@ class _ProfileScreenState extends State<EditUserDetailsScreen> {
   }
 
   Future<void> _onImagePicked(File file) async {
-    await uploadFile(getUserImageRef(userDetails.docRef), file);
+    deleteFile(getUserImageRef(userDetails.docRef, userDetails.photoID));
+
+    String newPhotoID = generateRandomString(4);
+    userDetails.photoID = newPhotoID;
+
+    await updateUserPhotoID(userDetails.docRef, newPhotoID);
+
+    await uploadFile(getUserImageRef(userDetails.docRef, newPhotoID), file);
     setState(() {});
   }
 
@@ -68,7 +76,7 @@ class _ProfileScreenState extends State<EditUserDetailsScreen> {
                   child: CachedImage(
                     width: 80,
                     height: 80,
-                    imageRef: getUserImageRef(userDetails.docRef),
+                    imageRef: getUserImageRef(userDetails.docRef, userDetails.photoID),
                     borderRadius: BorderRadius.circular(100),
                     errorIcon: Icons.person,
                   ),

@@ -7,6 +7,7 @@ class UserDetails {
   String? _token;
   int? _overallRateCount;
   int? _overallRateSum;
+  String? _photoID;
 
   UserDetails({
     required DocumentReference docRef,
@@ -14,13 +15,15 @@ class UserDetails {
     required int phoneNumber,
     String? token,
     int? overallRateCount,
-    int? overallRateSum
+    int? overallRateSum,
+    String? photoID,
   })  : _docRef = docRef,
         _name = name,
         _phoneNumber = phoneNumber,
         _token = token,
         _overallRateCount = overallRateCount,
-        _overallRateSum = overallRateSum;
+        _overallRateSum = overallRateSum,
+        _photoID = photoID;
 
   DocumentReference get docRef => _docRef;
 
@@ -34,11 +37,17 @@ class UserDetails {
 
   int? get overallRateSum => _overallRateSum;
 
+  String? get photoID => _photoID;
+
   set name(String value) => _name = value;
 
   set phoneNumber(int value) => _phoneNumber = value;
 
   set token(String? value) => _token = value;
+
+  set photoID(String? value) {
+    _photoID = value;
+  }
 
   double? getRate() {
     return (overallRateSum != null && overallRateCount != 0) ? (overallRateSum! / overallRateCount!) : null;
@@ -57,13 +66,12 @@ class UserDetails {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
     return UserDetails(
-      docRef: doc.reference,
-      name: data['fullName'],
-      phoneNumber: data['phoneNumber'],
-      token: data['token'],
-      overallRateCount: data['overallRateCount'],
-      overallRateSum: data['overallRateSum']
-    );
+        docRef: doc.reference,
+        name: data['fullName'],
+        phoneNumber: data['phoneNumber'],
+        token: data['token'],
+        overallRateCount: data['overallRateCount'],
+        overallRateSum: data['overallRateSum'],
+        photoID: data['photoID']);
   }
-
 }
