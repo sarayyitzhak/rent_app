@@ -1,5 +1,6 @@
 import 'package:rent_app/screens/item_grid_screen.dart';
 import 'package:rent_app/screens/profile_screen.dart';
+import 'package:rent_app/screens/rental_history_screen.dart';
 import 'package:rent_app/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
@@ -82,9 +83,9 @@ class _UserScreenState extends State<UserScreen> {
                         child:
                             IconAboveText(icon: Icons.receipt_long_outlined, label: localization.wishlist, size: 40)),
                     TextButton(
-                        onPressed: () {},
+                        onPressed: () => Navigator.pushNamed(context, RentalHistoryScreen.id),
                         child:
-                            IconAboveText(icon: Icons.shopping_cart_outlined, label: localization.myItems, size: 40)),
+                            IconAboveText(icon: Icons.history_edu, label: 'היסטוריה', size: 40)),
                   ],
                 ),
               ),
