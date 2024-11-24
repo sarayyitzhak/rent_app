@@ -16,6 +16,7 @@ import 'package:rent_app/screens/pending_requests_screen.dart';
 import 'package:rent_app/screens/profile_screen.dart';
 import 'package:rent_app/screens/rental_history_screen.dart';
 import 'package:rent_app/screens/rental_screen.dart';
+import 'package:rent_app/screens/request_list_screen.dart';
 import 'package:rent_app/screens/request_screen.dart';
 import 'package:rent_app/screens/request_submitted_screen.dart';
 import 'package:rent_app/screens/reviews_screen.dart';
@@ -174,6 +175,7 @@ class MyApp extends StatelessWidget {
           ItemGridScreen.id: (context) => ItemGridScreen(settings.arguments as ItemGridScreenArguments),
           EditUserDetailsScreen.id: (context) => const EditUserDetailsScreen(),
           RentalHistoryScreen.id: (context) => const RentalHistoryScreen(),
+          RequestListScreen.id: (context) => RequestListScreen(settings.arguments as RequestListScreenArguments),
           ImageViewGalleryScreen.id: (context) =>
               ImageViewGalleryScreen(settings.arguments as ImageViewGalleryScreenArguments),
         };

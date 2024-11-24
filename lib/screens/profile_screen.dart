@@ -4,6 +4,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/models/item_request.dart';
+import 'package:rent_app/screens/request_list_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/utils.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
@@ -103,15 +104,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                   SizedBox(width: 50),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('שכרו ממך החודש'),
-                      Text(
-                        _currentMonthRentsFromMe.length.toString(),
-                        style: kBlackBigTextStyle,
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: () => Navigator.pushNamed(context, RequestListScreen.id, arguments: RequestListScreenArguments('שכרו ממך החודש', _currentMonthRentsFromMe)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('שכרו ממך החודש'),
+                        Text(
+                          _currentMonthRentsFromMe.length.toString(),
+                          style: kBlackBigTextStyle,
+                        ),
+                      ],
+                    ),
                   )
                 ],
               ),
@@ -132,15 +136,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                   SizedBox(width: 80),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('השכרת החודש'),
-                      Text(
-                        _currentMonthRentsOfMe.length.toString(),
-                        style: kBlackBigTextStyle,
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: () => Navigator.pushNamed(context, RequestListScreen.id, arguments: RequestListScreenArguments('השכרת החודש', _currentMonthRentsOfMe)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('השכרת החודש'),
+                        Text(
+                          _currentMonthRentsOfMe.length.toString(),
+                          style: kBlackBigTextStyle,
+                        ),
+                      ],
+                    ),
                   )
                 ],
               ),
