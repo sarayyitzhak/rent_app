@@ -12,6 +12,8 @@ class QueryBatch<T> {
 
   List<T> get list => _list;
 
+  int get size => _list.length;
+
   DocumentSnapshot? get lastDoc => _lastDoc;
 
   factory QueryBatch.empty() {

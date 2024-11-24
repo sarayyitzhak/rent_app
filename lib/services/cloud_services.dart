@@ -310,7 +310,7 @@ Future<List<ItemRequest>> getWaitingToApproveRequests() {
 
 //CHATS
 
-void sendTextMessage(DocumentReference chatRef, bool isUserIndex0, String text) {
+Future<void> sendTextMessage(DocumentReference chatRef, bool isUserIndex0, String text) {
   WriteBatch batch = _firestore.batch();
 
   Map<String, dynamic> messageData = {
@@ -329,7 +329,7 @@ void sendTextMessage(DocumentReference chatRef, bool isUserIndex0, String text) 
   batch.set(chatRef.collection('messages').doc(), messageData);
   batch.update(chatRef, chatData);
 
-  batch.commit();
+  return batch.commit();
 }
 
 Future<void> sendImageMessage(DocumentReference chatRef, bool isUserIndex0, File image) async {
@@ -511,8 +511,14 @@ Future<Chat> getChat(DocumentReference chatRef) async {
 
 Stream<QueryBatch<Message>> getMessagesStream(DocumentReference chatRef) {
   Query query = chatRef.collection('messages').orderBy('sentAt', descending: true).limit(20);
-  return query.snapshots().map((QuerySnapshot query) =>
-      QueryBatch(query.docs.map(Message.fromDocumentSnapshot).toList(), query.size == 20, query.docs.lastOrNull));
+
+  return query.snapshots().map((QuerySnapshot query) => QueryBatch(
+      query.docChanges
+          .where((DocumentChange change) => change.type == DocumentChangeType.added)
+          .map((DocumentChange change) => Message.fromDocumentSnapshot(change.doc))
+          .toList(),
+      query.size == 20,
+      query.docs.lastOrNull));
 }
 
 Future<QueryBatch<Message>> getMessages(DocumentReference chatRef, DocumentSnapshot? startAfterDoc) {

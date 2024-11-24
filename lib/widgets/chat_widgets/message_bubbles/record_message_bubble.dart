@@ -18,7 +18,6 @@ class RecordMessageBubble extends StatefulWidget {
   final Chat chat;
   final Message message;
   final bool isMe;
-  final bool tail;
   final MessageReadNotifier messageReadNotifier;
 
   const RecordMessageBubble(
@@ -26,7 +25,6 @@ class RecordMessageBubble extends StatefulWidget {
       required this.chat,
       required this.message,
       required this.isMe,
-      required this.tail,
       required this.messageReadNotifier});
 
   @override

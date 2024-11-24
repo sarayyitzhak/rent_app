@@ -32,12 +32,14 @@ class _ChatScreenState extends State<ChatScreen> {
   late ParticipantData _participantInfo;
   UserDetails? _participantUser;
 
+  final List<Widget> _bubbles = [];
   QueryBatch<Message> _queryBatch = QueryBatch.empty();
-  final Map<String, Message> _messageMap = {};
-  List<Widget> _bubbles = [];
+  Message? _firstMessage;
+  Message? _lastMessage;
   bool _loading = false;
 
   final MessageReadNotifier messageReadNotifier = MessageReadNotifier();
+  final MessageTailsNotifier messageTailsNotifier = MessageTailsNotifier();
 
   StreamSubscription? _chatSubscription;
   StreamSubscription? _messagesSubscription;
@@ -73,12 +75,19 @@ class _ChatScreenState extends State<ChatScreen> {
     _loading = true;
 
     _messagesSubscription = getMessagesStream(chat.docRef).listen((QueryBatch<Message> queryBatch) {
-      if (_messageMap.isEmpty) {
+      if (queryBatch.size == 0) {
+        return;
+      }
+
+      if (_bubbles.isEmpty) {
         _queryBatch = queryBatch;
       }
 
-      _updateMessageMap(queryBatch.list);
-      _updateMessages();
+      setState(() {
+        _bubbles.insertAll(0, _getMessageBubbles(queryBatch.list, _bubbles.isNotEmpty));
+      });
+
+      _lastMessage = queryBatch.list.first;
 
       _loading = false;
     });
@@ -91,53 +100,79 @@ class _ChatScreenState extends State<ChatScreen> {
 
     _queryBatch = await getMessages(chat.docRef, _queryBatch.lastDoc);
 
-    _updateMessageMap(_queryBatch.list);
-    _updateMessages();
+    setState(() {
+      _bubbles.addAll(_getMessageBubbles(_queryBatch.list, false));
+    });
 
     _loading = false;
   }
 
-  void _updateMessageMap(List<Message> messages) {
-    for (Message message in messages) {
-      _messageMap[message.docRef.id] = message;
-    }
+  List<Widget> _getMessageBubbles(List<Message> messages, bool isNewMessages) {
+    return isNewMessages ? _getNewMessageBubbles(messages) : _getOldMessageBubbles(messages);
   }
 
-  void _updateMessages() {
-    List<Message> messages = _messageMap.values.toList();
-    messages.sort((message1, message2) => message2.sentAt.compareTo(message1.sentAt));
-
-    Message? lastMessage;
+  List<Widget> _getNewMessageBubbles(List<Message> messages) {
     List<Widget> bubbles = [];
     for (Message message in messages) {
-      int daysDifference = lastMessage != null ? getDaysDifference(message.sentAt, lastMessage.sentAt) : 0;
-      if (daysDifference != 0) {
-        bubbles.add(DateBubble(dateTime: lastMessage!.sentAt));
+      int daysDifference = _lastMessage != null ? getDaysDifference(message.sentAt, _lastMessage!.sentAt) : 0;
+
+      messageTailsNotifier.add(message.docRef.id);
+      if (_lastMessage?.sentBy0 == message.sentBy0 && daysDifference == 0) {
+        messageTailsNotifier.remove(_lastMessage!.docRef.id);
       }
 
       MessageBubble messageBubble = MessageBubble(
+        key: ValueKey(message.docRef.id),
         chat: chat,
         message: message,
         isMe: _isUserIndex0 == message.sentBy0,
+        topMargin: _lastMessage?.sentBy0 != message.sentBy0 && daysDifference == 0 ? 9 : 1,
+        bottomMargin: 1,
         messageReadNotifier: messageReadNotifier,
+        messageTailsNotifier: messageTailsNotifier,
       );
 
-      if (lastMessage?.sentBy0 == message.sentBy0 && daysDifference == 0) {
-        messageBubble.tail = false;
-      }
-      if (lastMessage?.sentBy0 != message.sentBy0 && daysDifference == 0) {
-        messageBubble.bottomMargin = 10;
-      }
       bubbles.add(messageBubble);
-      lastMessage = message;
+      if (daysDifference != 0) {
+        DateTime sentAt = message.sentAt;
+        bubbles.add(DateBubble(key: ValueKey(sentAt.millisecondsSinceEpoch.toString()), dateTime: sentAt));
+      }
+    }
+    return bubbles;
+  }
+
+  List<Widget> _getOldMessageBubbles(List<Message> messages) {
+    List<Widget> bubbles = [];
+    for (Message message in messages) {
+      int daysDifference = _firstMessage != null ? getDaysDifference(message.sentAt, _firstMessage!.sentAt) : 0;
+      if (daysDifference != 0) {
+        DateTime sentAt = _firstMessage!.sentAt;
+        bubbles.add(DateBubble(key: ValueKey(sentAt.millisecondsSinceEpoch.toString()), dateTime: sentAt));
+      }
+
+      if (_firstMessage?.sentBy0 != message.sentBy0 || daysDifference > 0) {
+        messageTailsNotifier.add(message.docRef.id);
+      }
+
+      MessageBubble messageBubble = MessageBubble(
+        key: ValueKey(message.docRef.id),
+        chat: chat,
+        message: message,
+        isMe: _isUserIndex0 == message.sentBy0,
+        bottomMargin: _firstMessage != null && _firstMessage?.sentBy0 != message.sentBy0 && daysDifference == 0 ? 9 : 1,
+        topMargin: 1,
+        messageReadNotifier: messageReadNotifier,
+        messageTailsNotifier: messageTailsNotifier,
+      );
+
+      bubbles.add(messageBubble);
+      _firstMessage = message;
     }
     if (!_queryBatch.hasMore) {
-      bubbles.add(DateBubble(dateTime: lastMessage!.sentAt));
+      DateTime sentAt = _firstMessage!.sentAt;
+      bubbles.add(DateBubble(key: ValueKey(sentAt.millisecondsSinceEpoch.toString()), dateTime: sentAt));
     }
-
-    setState(() {
-      _bubbles = bubbles;
-    });
+    return bubbles;
   }
 
   @override
@@ -184,10 +219,17 @@ class _ChatScreenState extends State<ChatScreen> {
             NotificationListener<ScrollNotification>(
               onNotification: onScroll,
               child: Expanded(
-                child: ListView.builder(
+                child: ListView.custom(
                   reverse: true,
-                  itemCount: _bubbles.length,
-                  itemBuilder: (context, index) => _bubbles[index],
+                  childrenDelegate: SliverChildBuilderDelegate(
+                    (context, i) {
+                      return _bubbles[i];
+                    },
+                    childCount: _bubbles.length,
+                    findChildIndexCallback: (key) {
+                      return _bubbles.indexWhere((m) => m.key == key);
+                    },
+                  ),
                 ),
               ),
             ),

@@ -41,7 +41,7 @@ class Message {
     return Message(
         docRef: doc.reference,
         sentBy0: data['sentBy0'],
-        sentAt: (data['sentAt'] as Timestamp).toDate(),
+        sentAt: (data['sentAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
         type: numToMessageType(data['type']),
         text: data['text'],
         itemID: data['itemID']);

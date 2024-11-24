@@ -15,7 +15,6 @@ class ItemMessageBubble extends StatelessWidget {
   final Chat chat;
   final Message message;
   final bool isMe;
-  final bool tail;
   final MessageReadNotifier messageReadNotifier;
 
   const ItemMessageBubble(
@@ -23,7 +22,6 @@ class ItemMessageBubble extends StatelessWidget {
       required this.chat,
       required this.message,
       required this.isMe,
-      required this.tail,
       required this.messageReadNotifier});
 
   @override

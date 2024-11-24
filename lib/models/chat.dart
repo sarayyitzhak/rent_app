@@ -35,7 +35,7 @@ class Chat {
 
     return Chat(
         docRef: doc.reference,
-        lastMessageTime: (data['lastMessageTime'] as Timestamp).toDate(),
+        lastMessageTime: (data['lastMessageTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
         lastMessageContent: data['lastMessageContent'],
         participantInfo0: ParticipantData.fromMap(data['participantInfo0'] as Map<String, dynamic>),
         participantInfo1: ParticipantData.fromMap(data['participantInfo1'] as Map<String, dynamic>));
