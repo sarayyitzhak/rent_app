@@ -9,6 +9,7 @@ import 'package:rent_app/utils.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/widgets/rating_stars_widget.dart';
+import '../widgets/cached_image.dart';
 import '../widgets/scrollable_active_rent_list.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -77,10 +78,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     'שלום, ${userDetails.name}!',
                     style: kTopHeaderTextStyle,
                   ),
-                  CircleAvatar(
-                      radius: 30,
-                      child: _image != null ? null : Icon(Icons.person, size: 40),
-                      backgroundImage: _image != null ? CachedNetworkImageProvider(_image!) : null)
+                  CachedImage(
+                    width: 70,
+                    height: 70,
+                    imageRef: getUserImageRef(userDetails.docRef),
+                    borderRadius: BorderRadius.circular(100),
+                    errorIcon: Icons.person,
+                  ),
                 ],
               ),
             ),
@@ -181,12 +185,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            if(_activeRentalOfMe != []) ScrollableActiveRentList(
+            if(_activeRentalOfMe.isNotEmpty) ScrollableActiveRentList(
               isRentedFromMe: false,
               title: 'אני משכיר',
               rentals: _activeRentalOfMe,
             ),
-            if(_activeRentalFromMe != []) ScrollableActiveRentList(
+            if(_activeRentalFromMe.isNotEmpty) ScrollableActiveRentList(
               isRentedFromMe: true,
               title: 'משכירים ממני',
               rentals: _activeRentalFromMe,

@@ -75,6 +75,8 @@ dependencies:
   syncfusion_flutter_datepicker: ^27.1.57
   flutter_rating_stars: ^1.1.0
   shimmer: ^3.0.0
+  flutter_launcher_icons: ^0.14.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -87,6 +89,11 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
   build_runner: ^2.4.12
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"  # Path to your app icon image
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

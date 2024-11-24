@@ -47,42 +47,39 @@ class _UserItemsScreenState extends State<UserItemsScreen> {
   @override
   Widget build(BuildContext context) {
     var localization = Dictionary.getLocalization(context);
-    return SafeArea(
-        child: Scaffold(
-      appBar: CustomAppBar(title: localization.myItems, isBackButton: false),
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
+    return Scaffold(
+          appBar: CustomAppBar(title: localization.myItems, isBackButton: false),
+          body: Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              TextButton(
-                  onPressed: onAllItemsPressed,
-                  style: kSmallButtonStyle,
-                  child: Text(localization.allItems)),
-              TextButton(
-                  onPressed: onOnlyRequestsPressed,
-                  style: kSmallButtonStyle,
-                  child: Text(localization.pendingRequests)),
-            ],
-          ),
-          showAllItems 
-              ? Expanded(
-              child: DynamicScrollableItemGrid(
-            stream: getUserItemsStream(),
-          ))
-          : Expanded(child: ScrollableRequestList(future: getUserRequestsStream())),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: CustomButton(
-                title: localization.addItem,
-                onPress: () {
-                  Navigator.pushNamed(context, AddItemScreen.id, arguments: AddItemScreenArguments(isEditMode: false));
-                }),
-          )
+          TextButton(
+              onPressed: onAllItemsPressed,
+              style: kSmallButtonStyle,
+              child: Text(localization.allItems)),
+          TextButton(
+              onPressed: onOnlyRequestsPressed,
+              style: kSmallButtonStyle,
+              child: Text(localization.pendingRequests)),
         ],
       ),
-    ));
+      showAllItems
+          ? Expanded(
+          child: DynamicScrollableItemGrid(
+        stream: getUserItemsStream(),
+      ))
+      : Expanded(child: ScrollableRequestList(future: getUserRequestsStream())),
+    ],
+          ),
+      floatingActionButton: CustomButton(
+          title: localization.addItem,
+          onPress: () {
+            Navigator.pushNamed(context, AddItemScreen.id, arguments: AddItemScreenArguments(isEditMode: false));
+          }),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        );
   }
 }
 

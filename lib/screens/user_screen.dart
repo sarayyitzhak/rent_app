@@ -7,6 +7,7 @@ import 'package:rent_app/globals.dart';
 import '../constants.dart';
 import '../dictionary.dart';
 import '../services/cloud_services.dart';
+import '../widgets/cached_image.dart';
 import '../widgets/icon_above_text.dart';
 import 'edit_user_details_screen.dart';
 
@@ -40,16 +41,16 @@ class _UserScreenState extends State<UserScreen> {
               GestureDetector(
                 onTap: () => Navigator.pushNamed(context, EditUserDetailsScreen.id),
                 child: Container(
-                  padding: const EdgeInsets.all(30),
+                  padding: const EdgeInsets.only(bottom: 30),
                   width: double.infinity,
                   child: Column(
                     children: [
-                      const CircleAvatar(
-                        backgroundColor: kLightYellow,
-                        child: Icon(
-                          Icons.account_circle_rounded,
-                          size: 40,
-                        ),
+                      CachedImage(
+                        width: 70,
+                        height: 70,
+                        imageRef: getUserImageRef(userDetails.docRef),
+                        borderRadius: BorderRadius.circular(100),
+                        errorIcon: Icons.person,
                       ),
                       Text(
                         userDetails.name,
