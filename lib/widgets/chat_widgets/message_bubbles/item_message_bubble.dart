@@ -18,11 +18,7 @@ class ItemMessageBubble extends StatelessWidget {
   final MessageReadNotifier messageReadNotifier;
 
   const ItemMessageBubble(
-      {super.key,
-      required this.chat,
-      required this.message,
-      required this.isMe,
-      required this.messageReadNotifier});
+      {super.key, required this.chat, required this.message, required this.isMe, required this.messageReadNotifier});
 
   @override
   Widget build(BuildContext context) {
@@ -34,26 +30,40 @@ class ItemMessageBubble extends StatelessWidget {
           FutureBuilder(
               future: getItemById(message.itemID ?? ''),
               builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  Item item = snapshot.data!;
-                  return GestureDetector(
-                    onTap: () =>
-                        Navigator.pushNamed(context, ItemScreen.id, arguments: ItemScreenArguments(item: item)),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CachedImage(
-                          width: 100,
-                          height: 100,
-                          imageRef: getItemImageRef(item.docRef, item.mainImage),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                Item? item = snapshot.data;
+                bool hasError = snapshot.hasError;
+
+                return GestureDetector(
+                  onTap: () => item != null
+                      ? Navigator.pushNamed(context, ItemScreen.id, arguments: ItemScreenArguments(item: item))
+                      : null,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      hasError
+                          ? const SizedBox(width: 100, height: 100, child: Icon(Icons.error))
+                          : CachedImage(
+                              width: 100,
+                              height: 100,
+                              imageRef: item != null ? getItemImageRef(item.docRef, item.mainImage) : null,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (hasError)
+                              Text(
+                                localization.errorLoadingItem,
+                                style: TextStyle(
+                                  color: isMe ? Colors.white : Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            if (item != null)
                               Text(
                                 item.title,
                                 style: TextStyle(
@@ -62,10 +72,12 @@ class ItemMessageBubble extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
+                            if (item != null)
                               Text(
                                 getFormattedPrice(item.price),
                                 style: kHeadersTextStyle,
                               ),
+                            if (item != null)
                               Text(
                                 item.description,
                                 maxLines: 2,
@@ -75,38 +87,33 @@ class ItemMessageBubble extends StatelessWidget {
                                   fontSize: 12,
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                } else {
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(width: 100, height: 100, child: Icon(Icons.error)),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          localization.errorLoadingItem,
-                          style: TextStyle(
-                            color: isMe ? Colors.white : Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          ],
                         ),
                       ),
                     ],
-                  );
-                }
+                  ),
+                );
               }),
           const SizedBox(height: 4),
-          MessageTime(
-            chat: chat,
-            message: message,
-            isMe: isMe,
-            messageReadNotifier: messageReadNotifier,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Text(
+                  message.text ?? '',
+                  style: TextStyle(
+                    color: isMe ? Colors.white : Colors.black,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              MessageTime(
+                chat: chat,
+                message: message,
+                isMe: isMe,
+                messageReadNotifier: messageReadNotifier,
+              )
+            ],
           )
         ],
       ),
