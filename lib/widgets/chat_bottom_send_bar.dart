@@ -53,6 +53,10 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
   }
 
   void _handleTyping() {
+    if (messageTextController.text.isEmpty) {
+      return;
+    }
+
     _typingTimer?.cancel();
 
     if (!_isTyping) {

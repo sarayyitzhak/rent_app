@@ -95,7 +95,7 @@ class _CustomAppBarState extends State<ChatAppBar> {
       } else {
         DateTime now = DateTime.now();
         Duration difference = now.difference(_participantLastSeenTime!);
-        if (difference.isNegative) {
+        if (difference.inDays < 0) {
           return '';
         } else {
           String hourMinuteFormat = getHourMinuteFormat(_participantLastSeenTime!);
