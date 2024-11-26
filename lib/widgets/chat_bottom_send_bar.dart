@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -19,15 +20,19 @@ class ChatBottomSendBar extends StatefulWidget {
 
 class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
   final messageTextController = TextEditingController();
-  String messageText = '';
   File? image;
   bool showMic = true;
+  bool _isTyping = false;
+  Timer? _typingTimer;
 
   void onSendPressed() {
     if (messageTextController.text.isNotEmpty) {
-      messageTextController.clear();
+      sendTextMessage(widget.chat.docRef, widget.isUserIndex0, messageTextController.text);
 
-      sendTextMessage(widget.chat.docRef, widget.isUserIndex0, messageText);
+      _typingTimer?.cancel();
+      _isTyping = false;
+
+      messageTextController.clear();
 
       setState(() {
         showMic = true;
@@ -45,6 +50,42 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
     setState(() {
       showMic = true;
     });
+  }
+
+  void _handleTyping() {
+    _typingTimer?.cancel();
+
+    if (!_isTyping) {
+      _isTyping = true;
+      _updateChatUserTyping();
+    }
+
+    _typingTimer = Timer(const Duration(seconds: 2), () {
+      _isTyping = false;
+      _updateChatUserTyping();
+    });
+  }
+
+  void _updateChatUserTyping() {
+    updateChatUserTyping(widget.chat.docRef, widget.isUserIndex0, _isTyping);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    messageTextController.addListener(_handleTyping);
+  }
+
+  @override
+  void dispose() {
+    messageTextController.removeListener(_handleTyping);
+    _typingTimer?.cancel();
+
+    _isTyping = false;
+    _updateChatUserTyping();
+
+    super.dispose();
   }
 
   @override
@@ -70,7 +111,6 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
                     minLines: 1,
                     maxLines: 3,
                     onChanged: (value) {
-                      messageText = value;
                       setState(() {
                         showMic = false;
                         if (value.isEmpty) {

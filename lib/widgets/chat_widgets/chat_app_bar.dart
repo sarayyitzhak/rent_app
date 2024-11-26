@@ -4,14 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:rent_app/dictionary.dart';
 import 'package:rent_app/utils.dart';
 
+import '../../globals.dart';
+import '../../models/chat.dart';
+import '../../models/participant_data.dart';
 import '../../models/user.dart';
 import '../../services/cloud_services.dart';
 import '../cached_image.dart';
 
 class ChatAppBar extends StatefulWidget implements PreferredSizeWidget {
-  final String participantUid;
+  final Chat chat;
 
-  const ChatAppBar({super.key, required this.participantUid});
+  const ChatAppBar({super.key, required this.chat});
 
   @override
   State<ChatAppBar> createState() => _CustomAppBarState();
@@ -21,17 +24,22 @@ class ChatAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _CustomAppBarState extends State<ChatAppBar> {
+  late bool _isUserIndex0;
+  late ParticipantData _participantInfo;
+
   UserDetails? _participantUser;
   DateTime? _participantLastSeenTime;
   bool? _participantOnline;
 
   bool? _isParticipantOnline;
+  bool _isParticipantTyping = false;
 
   Timer? _lastSeenTimeTimer;
   StreamSubscription? _userSubscription;
+  StreamSubscription? _chatSubscription;
 
   Future<void> _fetchParticipantUser() async {
-    _userSubscription = getUserByIDStream(widget.participantUid).listen((UserDetails participantUser) {
+    _userSubscription = getUserByIDStream(_participantInfo.uid).listen((UserDetails participantUser) {
       if (_participantUser == null) {
         setState(() {
           _participantUser = participantUser;
@@ -65,10 +73,25 @@ class _CustomAppBarState extends State<ChatAppBar> {
     });
   }
 
+  void _fetchChatStream() {
+    _chatSubscription = getChatStream(widget.chat.docRef).listen((Chat chat) {
+      ParticipantData participantData = _isUserIndex0 ? chat.participantInfo1 : chat.participantInfo0;
+      if (_isParticipantTyping != participantData.typing) {
+        setState(() {
+          _isParticipantTyping = participantData.typing;
+        });
+      }
+    });
+  }
+
   String _getParticipantOnline(BuildContext context) {
     if (_isParticipantOnline != null) {
       if (_isParticipantOnline!) {
-        return Dictionary.getLocalization(context).online;
+        if (_isParticipantTyping) {
+          return Dictionary.getLocalization(context).typing;
+        } else {
+          return Dictionary.getLocalization(context).online;
+        }
       } else {
         DateTime now = DateTime.now();
         Duration difference = now.difference(_participantLastSeenTime!);
@@ -95,13 +118,18 @@ class _CustomAppBarState extends State<ChatAppBar> {
   void initState() {
     super.initState();
 
+    _isUserIndex0 = widget.chat.participantInfo0.uid == userDetails.docRef.id;
+    _participantInfo = _isUserIndex0 ? widget.chat.participantInfo1 : widget.chat.participantInfo0;
+
     _fetchParticipantUser();
+    _fetchChatStream();
   }
 
   @override
   void dispose() {
     _lastSeenTimeTimer?.cancel();
     _userSubscription?.cancel();
+    _chatSubscription?.cancel();
 
     super.dispose();
   }

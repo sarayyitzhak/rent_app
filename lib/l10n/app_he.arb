@@ -101,9 +101,10 @@
   "addComment": "הוסף תגובה",
   "publish": "פרסם",
   "nearby": "בקרבת מקום",
-  "online": "מחובר",
+  "online": "מחובר/ת",
+  "typing": "מקליד/ה...",
 
-  "lastSeenTodayAtTime": "נראה לאחרונה היום ב-{time}",
+  "lastSeenTodayAtTime": "נראה/תה לאחרונה היום ב-{time}",
   "@lastSeenTodayAtTime": {
     "placeholders": {
       "time": {
@@ -112,7 +113,7 @@
     }
   },
 
-  "lastSeenYesterdayAtTime": "נראה לאחרונה אתמול ב-{time}",
+  "lastSeenYesterdayAtTime": "נראה/תה לאחרונה אתמול ב-{time}",
   "@lastSeenYesterdayAtTime": {
     "placeholders": {
       "time": {
@@ -121,7 +122,7 @@
     }
   },
 
-  "lastSeenOnDateAtTime": "נראה לאחרונה ב-{date} בשעה {time}",
+  "lastSeenOnDateAtTime": "נראה/תה לאחרונה ב-{date} בשעה {time}",
   "@lastSeenOnDateAtTime": {
     "placeholders": {
       "date": {

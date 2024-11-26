@@ -102,6 +102,7 @@
   "publish": "Publish",
   "nearby": "Nearby",
   "online": "Online",
+  "typing": "Typing...",
 
   "lastSeenTodayAtTime": "Last seen today at {time}",
   "@lastSeenTodayAtTime": {

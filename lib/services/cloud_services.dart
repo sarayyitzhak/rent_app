@@ -336,6 +336,7 @@ Future<void> sendTextMessage(DocumentReference chatRef, bool isUserIndex0, Strin
   Map<String, dynamic> chatData = {
     'lastMessageTime': FieldValue.serverTimestamp(),
     'lastMessageContent': text,
+    '${isUserIndex0 ? 'participantInfo0' : 'participantInfo1'}.typing': false,
     '${isUserIndex0 ? 'participantInfo1' : 'participantInfo0'}.unreadMessages': FieldValue.increment(1),
   };
 
@@ -429,12 +430,14 @@ Future<DocumentReference> sendItemMessage(String userID, DocumentReference itemR
       'participantInfo0': {
         'uid': userDetails.docRef.id,
         'unreadMessages': 0,
-        'lastMessageSeenTime': FieldValue.serverTimestamp()
+        'lastMessageSeenTime': FieldValue.serverTimestamp(),
+        'typing': false
       },
       'participantInfo1': {
         'uid': userID,
         'unreadMessages': 1,
-        'lastMessageSeenTime': Timestamp.fromMillisecondsSinceEpoch(0)
+        'lastMessageSeenTime': Timestamp.fromMillisecondsSinceEpoch(0),
+        'typing': false
       }
     };
 
@@ -464,6 +467,13 @@ Future<void> updateChatUserInfo(DocumentReference chatRef, bool isUserIndex0, Da
   return chatRef.update({
     '$participantInfoIndex.lastMessageSeenTime': Timestamp.fromDate(lastMessageSeenTime),
     '$participantInfoIndex.unreadMessages': 0
+  });
+}
+
+Future<void> updateChatUserTyping(DocumentReference chatRef, bool isUserIndex0, bool typing) {
+  String participantInfoIndex = isUserIndex0 ? 'participantInfo0' : 'participantInfo1';
+  return chatRef.update({
+    '$participantInfoIndex.typing': typing
   });
 }
 
@@ -842,7 +852,7 @@ void onTokenRefreshed() {
 
 void messagingListenForeground() {
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    if (message.notification != null && activeChatId != message.data['chatId']) {
+    if (message.notification != null && activeChat?.docRef.id != message.data['chatId']) {
       // showNotification(message.notification!.title, message.notification!.body, message);
     }
   });

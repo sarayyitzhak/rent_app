@@ -174,7 +174,7 @@ class _ChatScreenState extends State<ChatScreen> {
     chat = widget.args.chat;
     _isUserIndex0 = chat.participantInfo0.uid == userDetails.docRef.id;
     _participantInfo = _isUserIndex0 ? chat.participantInfo1 : chat.participantInfo0;
-    activeChatId = chat.docRef.id;
+    activeChat = chat;
 
     messageReadNotifier.lastMessageSeenTime = _participantInfo.lastMessageSeenTime;
 
@@ -191,17 +191,17 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    super.dispose();
-
-    activeChatId = null;
+    activeChat = null;
     _chatSubscription?.cancel();
     _messagesSubscription?.cancel();
+
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: ChatAppBar(participantUid: _participantInfo.uid),
+      appBar: ChatAppBar(chat: chat),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

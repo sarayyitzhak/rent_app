@@ -109,10 +109,18 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     );
   }
 
+  void _onAppDetached() {
+    updateUserLastSeenTime(false);
+    if (activeChat != null) {
+      bool isUserIndex0 = activeChat!.participantInfo0.uid == userDetails.docRef.id;
+      updateChatUserTyping(activeChat!.docRef, isUserIndex0, false);
+    }
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
-      updateUserLastSeenTime(false);
+      _onAppDetached();
     } else if (state == AppLifecycleState.resumed) {
       updateUserLastSeenTime();
     }
@@ -150,7 +158,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
               _selectedBottomBarIndex = 0;
             });
           } else {
-            updateUserLastSeenTime(false);
+            _onAppDetached();
             SystemNavigator.pop();
           }
         },
