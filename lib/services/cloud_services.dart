@@ -212,7 +212,7 @@ Future<List<ItemRequest>> getMyRequestsByStatus(RequestStatus status) {
       .collection('requests')
       .where('applicantID', isEqualTo: userDetails.docRef.id)
       .where('status', isEqualTo: status.index)
-      .where('time.start' , isGreaterThan: Timestamp.now())
+      .where('time.start', isGreaterThan: Timestamp.now())
       .orderBy('requestTime', descending: true)
       .get()
       .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
@@ -668,12 +668,15 @@ Future<void> createNewUser(String email, String password, String name, String ph
   final newUser = await _auth.createUserWithEmailAndPassword(email: email, password: password);
   userUid = newUser.user?.uid;
   DocumentReference userRef = _firestore.collection('users').doc(userUid);
-  userDetails = UserDetails(
-    docRef: userRef,
-    name: name,
-    phoneNumber: int.parse(phoneNumber),
-  );
-  setToken();
+
+  Map<String, dynamic> userData = {
+    'fullName': name,
+    'phoneNumber': int.parse(phoneNumber),
+    'lastSeenTime': FieldValue.serverTimestamp(),
+    'online': true,
+  };
+
+  return userRef.set(userData);
 }
 
 void signOut() {
@@ -683,6 +686,10 @@ void signOut() {
 //USERS
 Future<UserDetails> getUserByID(String id) async {
   return _firestore.collection('users').doc(id).get().then(UserDetails.fromDocumentSnapshot);
+}
+
+Stream<UserDetails> getUserByIDStream(String id) {
+  return _firestore.collection('users').doc(id).snapshots().map(UserDetails.fromDocumentSnapshot);
 }
 
 Future<QueryBatch<Item>> getUserSeenItems([DocumentSnapshot? startAfterDoc]) {
@@ -745,6 +752,10 @@ Future<void> updateUserItemSeen(DocumentReference itemRef) async {
 
 Future<void> updateUserPhotoID(DocumentReference userRef, String? photoID) {
   return userRef.update({'photoID': photoID ?? FieldValue.delete()});
+}
+
+Future<void> updateUserLastSeenTime([bool online = true]) {
+  return userDetails.docRef.update({'lastSeenTime': FieldValue.serverTimestamp(), 'online': online});
 }
 
 Future<void> deleteOldUserItemSeen(DateTime dateTime) async {

@@ -4,6 +4,8 @@ class UserDetails {
   late DocumentReference _docRef;
   late String _name;
   late int _phoneNumber;
+  final DateTime _lastSeenTime;
+  final bool _online;
   String? _token;
   int? _overallRateCount;
   int? _overallRateSum;
@@ -13,6 +15,8 @@ class UserDetails {
     required DocumentReference docRef,
     required String name,
     required int phoneNumber,
+    required DateTime lastSeenTime,
+    required bool online,
     String? token,
     int? overallRateCount,
     int? overallRateSum,
@@ -20,6 +24,8 @@ class UserDetails {
   })  : _docRef = docRef,
         _name = name,
         _phoneNumber = phoneNumber,
+        _lastSeenTime = lastSeenTime,
+        _online = online,
         _token = token,
         _overallRateCount = overallRateCount,
         _overallRateSum = overallRateSum,
@@ -30,6 +36,10 @@ class UserDetails {
   String get name => _name;
 
   int get phoneNumber => _phoneNumber;
+
+  DateTime get lastSeenTime => _lastSeenTime;
+
+  bool get online => _online;
 
   String? get token => _token;
 
@@ -69,6 +79,8 @@ class UserDetails {
         docRef: doc.reference,
         name: data['fullName'],
         phoneNumber: data['phoneNumber'],
+        lastSeenTime: (data['lastSeenTime'] as Timestamp).toDate(),
+        online: data['online'],
         token: data['token'],
         overallRateCount: data['overallRateCount'],
         overallRateSum: data['overallRateSum'],

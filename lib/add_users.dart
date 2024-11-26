@@ -136,47 +136,19 @@ List itemsTitles = [
   "מסננת"
 ];
 List<AddressInfo> addressValues = [
-  AddressInfo(
-      geoPoint: const GeoPoint(32.784809, 35.023056),
-      city: 'חיפה',
-      road: 'הרב מימון'),
-  AddressInfo(
-      geoPoint: const GeoPoint(32.776475, 35.036188),
-      city: 'נשר',
-      road: 'מעלה הגיבורים'),
-  AddressInfo(
-      geoPoint: const GeoPoint(31.795468, 35.153486),
-      city: 'מוצא עילית',
-      road: 'ארזה'),
-  AddressInfo(
-      geoPoint: const GeoPoint(32.026828, 34.872005),
-      city: 'אור יהודה',
-      road: 'ניצן'),
-  AddressInfo(
-      geoPoint: const GeoPoint(31.762280, 35.174503),
-      city: 'ירושלים',
-      road: 'קרית יובל'),
-  AddressInfo(
-      geoPoint: const GeoPoint(31.746798, 35.220745),
-      city: 'ירושלים',
-      road: 'ארנונה'),
-  AddressInfo(
-      geoPoint: const GeoPoint(32.815981, 35.002303),
-      city: 'חיפה',
-      road: 'עיר תחתית'),
-  AddressInfo(
-      geoPoint: const GeoPoint(31.781190, 35.309961),
-      city: 'מעלה אדומים',
-      road: 'החלמיש'),
-  AddressInfo(
-      geoPoint: const GeoPoint(31.767112, 35.303640),
-      city: 'מעלה אדומים',
-      road: 'צמח השדה'),
+  AddressInfo(geoPoint: const GeoPoint(32.784809, 35.023056), city: 'חיפה', road: 'הרב מימון'),
+  AddressInfo(geoPoint: const GeoPoint(32.776475, 35.036188), city: 'נשר', road: 'מעלה הגיבורים'),
+  AddressInfo(geoPoint: const GeoPoint(31.795468, 35.153486), city: 'מוצא עילית', road: 'ארזה'),
+  AddressInfo(geoPoint: const GeoPoint(32.026828, 34.872005), city: 'אור יהודה', road: 'ניצן'),
+  AddressInfo(geoPoint: const GeoPoint(31.762280, 35.174503), city: 'ירושלים', road: 'קרית יובל'),
+  AddressInfo(geoPoint: const GeoPoint(31.746798, 35.220745), city: 'ירושלים', road: 'ארנונה'),
+  AddressInfo(geoPoint: const GeoPoint(32.815981, 35.002303), city: 'חיפה', road: 'עיר תחתית'),
+  AddressInfo(geoPoint: const GeoPoint(31.781190, 35.309961), city: 'מעלה אדומים', road: 'החלמיש'),
+  AddressInfo(geoPoint: const GeoPoint(31.767112, 35.303640), city: 'מעלה אדומים', road: 'צמח השדה'),
 ];
 List categories = ItemCategory.values;
 List images = [];
 final _messaging = FirebaseMessaging.instance;
-
 
 Future<File> getImageFileFromAssets(String path) async {
   var image = Image.asset(path);
@@ -185,8 +157,7 @@ Future<File> getImageFileFromAssets(String path) async {
   final fileName = path.split('/').last; // Get just the file name
   final file = File('${(await getTemporaryDirectory()).path}/$fileName');
 
-  await file.writeAsBytes(byteData.buffer
-      .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+  await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
 
   return file;
 }
@@ -197,17 +168,17 @@ Future<void> onRegisterButtonPressed(int idx) async {
   UserDetails userDetailsRand;
   DocumentReference userReference;
 
-
-
   String email = 'mail${idx.toString()}@gmail.com';
 
   final user = await _auth.signInWithEmailAndPassword(email: email, password: '123456');
   userUidRand = user.user?.uid;
   userReference = _firestore.collection('users').doc(userUidRand);
   userDetailsRand = UserDetails(
-      docRef: userReference,
-      name: names[idx],
-      phoneNumber: int.parse('54808825$idx'),
+    docRef: userReference,
+    name: names[idx],
+    phoneNumber: int.parse('54808825$idx'),
+    lastSeenTime: DateTime.now(),
+    online: false
   );
   _messaging.getToken().then((String? token) {
     if (token != null) {
@@ -251,7 +222,7 @@ Future<void> onRegisterButtonPressed(int idx) async {
       userDetailsRand.docRef.update({
         'items': FieldValue.arrayUnion([itemDoc])
       });
-    } else{
+    } else {
       print('error');
     }
   }

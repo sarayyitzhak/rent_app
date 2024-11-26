@@ -101,6 +101,37 @@
   "addComment": "Add comment",
   "publish": "Publish",
   "nearby": "Nearby",
+  "online": "Online",
+
+  "lastSeenTodayAtTime": "Last seen today at {time}",
+  "@lastSeenTodayAtTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+
+  "lastSeenYesterdayAtTime": "Last seen yesterday at {time}",
+  "@lastSeenYesterdayAtTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+
+  "lastSeenOnDateAtTime": "Last seen on {date} at {time}",
+  "@lastSeenOnDateAtTime": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
 
   "metersFromYou": "{meters} meters from you",
   "@metersFromYou": {

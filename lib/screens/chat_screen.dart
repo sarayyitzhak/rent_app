@@ -5,6 +5,7 @@ import 'package:rent_app/models/chat.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/models/user.dart';
 import 'package:rent_app/widgets/chat_bottom_send_bar.dart';
+import 'package:rent_app/widgets/chat_widgets/chat_app_bar.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import '../models/message.dart';
 import '../models/participant_data.dart';
@@ -30,7 +31,6 @@ class _ChatScreenState extends State<ChatScreen> {
   late Chat chat;
   late bool _isUserIndex0;
   late ParticipantData _participantInfo;
-  UserDetails? _participantUser;
 
   final List<Widget> _bubbles = [];
   QueryBatch<Message> _queryBatch = QueryBatch.empty();
@@ -52,14 +52,6 @@ class _ChatScreenState extends State<ChatScreen> {
       _fetchMessages();
     }
     return false;
-  }
-
-  Future<void> _fetchParticipantUser() async {
-    UserDetails participantUser = await getUserByID(_participantInfo.uid);
-
-    setState(() {
-      _participantUser = participantUser;
-    });
   }
 
   void _fetchChatStream() {
@@ -186,7 +178,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
     messageReadNotifier.lastMessageSeenTime = _participantInfo.lastMessageSeenTime;
 
-    _fetchParticipantUser();
     _fetchChatStream();
     _fetchMessagesStream();
   }
@@ -210,7 +201,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: _participantUser?.name ?? ''),
+      appBar: ChatAppBar(participantUid: _participantInfo.uid),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

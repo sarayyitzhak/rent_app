@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/globals.dart';
@@ -21,9 +22,10 @@ class MainScreen extends StatefulWidget {
   _MainScreenState createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   int _selectedBottomBarIndex = 0;
   int _unreadChats = 0;
+  Timer? _lastSeenTimeTimer;
 
   StreamSubscription? _userChatsSubscription;
 
@@ -66,6 +68,14 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  void _startPeriodicUpdates() {
+    updateUserLastSeenTime();
+
+    _lastSeenTimeTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      updateUserLastSeenTime();
+    });
+  }
+
   Widget _buildNotificationIcon(IconData icon, int notificationCount) {
     return Stack(
       clipBehavior: Clip.none,
@@ -100,29 +110,49 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+      updateUserLastSeenTime(false);
+    } else if (state == AppLifecycleState.resumed) {
+      updateUserLastSeenTime();
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
 
+    WidgetsBinding.instance.addObserver(this);
+
     _initAppData();
     _fetchUserChats();
+    _startPeriodicUpdates();
   }
 
   @override
   void dispose() {
-    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
 
     _userChatsSubscription?.cancel();
+    _lastSeenTimeTimer?.cancel();
+
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: PopScope(
-        canPop: _selectedBottomBarIndex == 0,
+        canPop: false,
         onPopInvokedWithResult: (didPop, result) {
-          setState(() {
-            _selectedBottomBarIndex = 0;
-          });
+          if (_selectedBottomBarIndex != 0) {
+            setState(() {
+              _selectedBottomBarIndex = 0;
+            });
+          } else {
+            updateUserLastSeenTime(false);
+            SystemNavigator.pop();
+          }
         },
         child: IndexedStack(
           index: _selectedBottomBarIndex,

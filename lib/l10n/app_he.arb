@@ -101,6 +101,37 @@
   "addComment": "הוסף תגובה",
   "publish": "פרסם",
   "nearby": "בקרבת מקום",
+  "online": "מחובר",
+
+  "lastSeenTodayAtTime": "נראה לאחרונה היום ב-{time}",
+  "@lastSeenTodayAtTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+
+  "lastSeenYesterdayAtTime": "נראה לאחרונה אתמול ב-{time}",
+  "@lastSeenYesterdayAtTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+
+  "lastSeenOnDateAtTime": "נראה לאחרונה ב-{date} בשעה {time}",
+  "@lastSeenOnDateAtTime": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
 
   "metersFromYou": "{meters} מטרים ממך",
   "@metersFromYou": {

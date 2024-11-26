@@ -3,7 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:rent_app/utils.dart';
 
-class CachedImage extends StatelessWidget {
+class CachedImage extends StatefulWidget {
   final Reference? imageRef;
   final double? width;
   final double? height;
@@ -24,59 +24,67 @@ class CachedImage extends StatelessWidget {
       this.borderRadius,
       this.errorIcon = Icons.error});
 
+  @override
+  State<CachedImage> createState() => _CachedImageState();
+}
+
+class _CachedImageState extends State<CachedImage> {
+  Widget? _image;
+
   Widget _getPlaceholder(BuildContext context) {
-    return placeholder != null
-        ? placeholder!(context)
+    return widget.placeholder != null
+        ? widget.placeholder!(context)
         : Container(
             decoration: BoxDecoration(
-              borderRadius: borderRadius,
+              borderRadius: widget.borderRadius,
               color: Colors.grey[200],
             ),
           );
   }
 
   Widget _getImageBuilder(BuildContext context, ImageProvider imageProvider) {
-    return imageBuilder != null
-        ? imageBuilder!(context, imageProvider)
+    return widget.imageBuilder != null
+        ? widget.imageBuilder!(context, imageProvider)
         : Container(
             decoration: BoxDecoration(
-              borderRadius: borderRadius,
+              borderRadius: widget.borderRadius,
               image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
             ),
           );
   }
 
   Widget _getErrorWidget(BuildContext context) {
-    return errorWidget != null
-        ? errorWidget!(context)
+    return widget.errorWidget != null
+        ? widget.errorWidget!(context)
         : Container(
             decoration: BoxDecoration(
-              borderRadius: borderRadius,
+              borderRadius: widget.borderRadius,
               color: Colors.grey[200],
             ),
-            child: Icon(errorIcon),
+            child: Icon(widget.errorIcon),
           );
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: width,
-      height: height,
-      child: imageRef == null
-          ? _getPlaceholder(context)
-          : FutureBuilder(
-              future: getFileData(imageRef!),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return _getPlaceholder(context);
-                } else if (snapshot.hasData && snapshot.data!.exists) {
-                  return _getImageBuilder(context, MemoryImage(snapshot.data!.data));
-                } else {
-                  return _getErrorWidget(context);
-                }
-              },
-            ),
+      width: widget.width,
+      height: widget.height,
+      child: _image ?? (widget.imageRef == null
+              ? _getPlaceholder(context)
+              : FutureBuilder(
+                  future: getFileData(widget.imageRef!),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return _getPlaceholder(context);
+                    } else if (snapshot.hasData && snapshot.data!.exists) {
+                      _image = _getImageBuilder(context, MemoryImage(snapshot.data!.data));
+                      return _image!;
+                    } else {
+                      return _getErrorWidget(context);
+                    }
+                  },
+                )),
     );
   }
 }
