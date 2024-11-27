@@ -472,8 +472,26 @@ Future<void> updateChatUserInfo(DocumentReference chatRef, bool isUserIndex0, Da
 
 Future<void> updateChatUserTyping(DocumentReference chatRef, bool isUserIndex0, bool typing) {
   String participantInfoIndex = isUserIndex0 ? 'participantInfo0' : 'participantInfo1';
-  return chatRef.update({
-    '$participantInfoIndex.typing': typing
+  return chatRef.update({'$participantInfoIndex.typing': typing});
+}
+
+Future<void> updateAllUserChatsTyping() {
+  return _firestore
+      .collection('chats')
+      .where(Filter.or(
+          Filter.and(Filter('participantInfo0.uid', isEqualTo: userDetails.docRef.id),
+              Filter('participantInfo0.typing', isEqualTo: true)),
+          Filter.and(Filter('participantInfo1.uid', isEqualTo: userDetails.docRef.id),
+              Filter('participantInfo1.typing', isEqualTo: true))))
+      .get()
+      .then((QuerySnapshot query) {
+    WriteBatch batch = _firestore.batch();
+    query.docs.map(Chat.fromDocumentSnapshot).forEach((Chat chat) {
+      bool isUserIndex0 = chat.participantInfo0.uid == userDetails.docRef.id;
+      String participantInfoIndex = isUserIndex0 ? 'participantInfo0' : 'participantInfo1';
+      batch.update(chat.docRef, {'$participantInfoIndex.typing': false});
+    });
+    return batch.commit();
   });
 }
 

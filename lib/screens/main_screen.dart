@@ -56,8 +56,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     // messagingListenForeground();
     setToken();
     onMessageOpenedApp(context);
-
-    deleteOldUserItemSeen(DateTime.now().subtract(const Duration(days: 60)));
   }
 
   void _fetchUserChats() {
@@ -69,8 +67,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   }
 
   void _startPeriodicUpdates() {
-    updateUserLastSeenTime();
-
     _lastSeenTimeTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
       updateUserLastSeenTime();
     });
@@ -109,6 +105,12 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     );
   }
 
+  void _onAppEntered() {
+    updateUserLastSeenTime();
+    deleteOldUserItemSeen(DateTime.now().subtract(const Duration(days: 60)));
+    updateAllUserChatsTyping();
+  }
+
   void _onAppDetached() {
     updateUserLastSeenTime(false);
     if (activeChat != null) {
@@ -134,6 +136,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
     _initAppData();
     _fetchUserChats();
+    _onAppEntered();
     _startPeriodicUpdates();
   }
 

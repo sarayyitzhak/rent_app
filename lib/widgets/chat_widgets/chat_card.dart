@@ -12,6 +12,7 @@ import '../../models/message.dart';
 import '../../models/message_type.dart';
 import '../../screens/chat_screen.dart';
 import '../../services/cloud_services.dart';
+import '../cached_image.dart';
 
 class ChatCard extends StatefulWidget {
   final Chat chat;
@@ -23,22 +24,15 @@ class ChatCard extends StatefulWidget {
 }
 
 class _ChatCardState extends State<ChatCard> {
-  String? _otherParticipantName;
+  UserDetails? _participantUser;
 
-  @override
-  void initState() {
-    super.initState();
-
-    _fetchOtherParticipantData();
-  }
-
-  void _fetchOtherParticipantData() async {
+  void _fetchParticipantUser() async {
     bool isUserIndex0 = widget.chat.participantInfo0.uid == userDetails.docRef.id;
     var otherParticipantUid = isUserIndex0 ? widget.chat.participantInfo1.uid : widget.chat.participantInfo0.uid;
-    UserDetails otherParticipant = await getUserByID(otherParticipantUid);
+    UserDetails participantUser = await getUserByID(otherParticipantUid);
 
     setState(() {
-      _otherParticipantName = otherParticipant.name;
+      _participantUser = participantUser;
     });
   }
 
@@ -62,6 +56,13 @@ class _ChatCardState extends State<ChatCard> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    _fetchParticipantUser();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, ChatScreen.id, arguments: ChatScreenArguments(widget.chat)),
@@ -73,16 +74,32 @@ class _ChatCardState extends State<ChatCard> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: [
-                  Text(
-                    _otherParticipantName ?? '',
-                    style: kBlackHeaderTextStyle,
+                  CachedImage(
+                    width: 50,
+                    height: 50,
+                    imageRef: _participantUser != null
+                        ? getUserImageRef(_participantUser!.docRef, _participantUser!.photoID)
+                        : null,
+                    borderRadius: BorderRadius.circular(100),
+                    errorIcon: Icons.person,
                   ),
-                  Text(
-                    _getLastMessageText(),
-                    style: kSmallBlackTextStyle,
+                  const SizedBox(
+                    width: 12,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _participantUser?.name ?? '',
+                        style: kBlackHeaderTextStyle,
+                      ),
+                      Text(
+                        _getLastMessageText(),
+                        style: kSmallBlackTextStyle,
+                      ),
+                    ],
                   ),
                 ],
               ),
