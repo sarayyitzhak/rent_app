@@ -43,12 +43,12 @@ class _AroundYouContainerState extends State<AroundYouContainer> {
         child: Text(localization.change_location),
       );
     } else if (CurrentPositionService().permission == CurrentPositionPermission.denied) {
-      return OutlinedButton(
+      return TextButton(
         onPressed: CurrentPositionService().requestPermission,
         child: Text(localization.grant_permission),
       );
     } else if (CurrentPositionService().permission == CurrentPositionPermission.serviceDisabled) {
-      return OutlinedButton(
+      return TextButton(
         onPressed: CurrentPositionService().openLocationSettings,
         child: Text(localization.open_location_settings),
       );

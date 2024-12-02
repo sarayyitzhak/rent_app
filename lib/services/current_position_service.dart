@@ -63,11 +63,7 @@ class CurrentPositionService {
     if (placeMarks.isNotEmpty) {
       Placemark place = placeMarks[0];
       _currentCityName = place.locality;
-      if (_currentCityName != null) {
-        if (place.thoroughfare != null && place.thoroughfare!.isNotEmpty) {
-          _currentCityName = '$_currentCityName, ${place.thoroughfare}';
-        }
-      } else {
+      if (_currentCityName == null || _currentCityName!.isEmpty) {
         _currentCityName = place.country;
       }
     }
