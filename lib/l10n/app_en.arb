@@ -103,6 +103,12 @@
   "nearby": "Nearby",
   "online": "Online",
   "typing": "Typing...",
+  "no_permission": "No permission",
+  "location_services_are_turned_off": "Location services are turned off",
+  "please_wait": "Please wait...",
+  "change_location": "Change location",
+  "grant_permission": "Grant permission",
+  "open_location_settings": "Open location settings",
 
   "lastSeenTodayAtTime": "Last seen today at {time}",
   "@lastSeenTodayAtTime": {

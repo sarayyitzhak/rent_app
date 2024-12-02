@@ -4,14 +4,18 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 import 'package:rent_app/globals.dart';
 
+import '../dictionary.dart';
+import '../services/current_position_service.dart';
+
 class MapDialog extends StatelessWidget {
   final BuildContext context;
-  final AppLocalizations localization;
   final Function(PickedData pickedData) onPicked;
-  const MapDialog({super.key, required this.context, required this.localization, required this.onPicked});
+  const MapDialog({super.key, required this.context, required this.onPicked});
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations localization = Dictionary.getLocalization(context);
+
     return AlertDialog(
       title: Text(localization.pleaseChooseLocation),
       insetPadding: const EdgeInsets.all(0),
@@ -23,17 +27,16 @@ class MapDialog extends StatelessWidget {
           searchBarHintText: localization.searchLocation,
           urlTemplate: kMapUrl,
           mapLanguage: localization.language,
-          initPosition: LatLong(currentPosition?.latitude ?? 23, currentPosition?.longitude ?? 25),
+          initPosition: LatLong(CurrentPositionService().geoPoint?.latitude ?? 23, CurrentPositionService().geoPoint?.longitude ?? 25),
           selectLocationButtonStyle: ButtonStyle(
             backgroundColor: WidgetStateProperty.all(Colors.blue),
           ),
           selectedLocationButtonTextStyle: const TextStyle(fontSize: 18),
           selectLocationButtonText: localization.select,
           selectLocationButtonLeadingIcon: const Icon(Icons.check),
-          initZoom: 11,
+          initZoom: 16,
           minZoomLevel: 5,
-          maxZoomLevel: 16,
-          trackMyPosition: true,
+          maxZoomLevel: 18,
           onError: (e) => print(e),
           onPicked: (pickedData) {
             onPicked(pickedData);

@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/screens/item_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
@@ -11,6 +10,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../constants.dart';
 import '../../dictionary.dart';
 import '../../models/item.dart';
+import '../../services/current_position_service.dart';
 import '../../utils.dart';
 
 class ItemCard extends StatelessWidget {
@@ -62,10 +62,8 @@ class ItemCard extends StatelessWidget {
     }
     bool isMine = item!.contactUserID == userDetails.docRef.id;
     String? distanceFromMe;
-    if (currentPosition != null) {
-      var itemGeoPoint = item!.location.geoPoint;
-      double distance = Geolocator.distanceBetween(
-          currentPosition!.latitude, currentPosition!.longitude, itemGeoPoint.latitude, itemGeoPoint.longitude);
+    double? distance = CurrentPositionService().getDistanceFromCurrentPosition(item!.location.geoPoint);
+    if (distance != null) {
       if (distance < kMaxDistance) {
         if (distance < kMaxDistanceForNearby) {
           distanceFromMe = localization.nearby;

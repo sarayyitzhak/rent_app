@@ -103,6 +103,12 @@
   "nearby": "בקרבת מקום",
   "online": "מחובר/ת",
   "typing": "מקליד/ה...",
+  "no_permission": "אין הרשאה",
+  "location_services_are_turned_off": "שירותי מיקום כבויים",
+  "please_wait": "אנא המתן...",
+  "change_location": "שנה מיקום",
+  "grant_permission": "הענק הרשאות",
+  "open_location_settings": "פתח שירותי מיקום",
 
   "lastSeenTodayAtTime": "נראה/תה לאחרונה היום ב-{time}",
   "@lastSeenTodayAtTime": {

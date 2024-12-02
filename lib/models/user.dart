@@ -79,7 +79,7 @@ class UserDetails {
         docRef: doc.reference,
         name: data['fullName'],
         phoneNumber: data['phoneNumber'],
-        lastSeenTime: (data['lastSeenTime'] as Timestamp).toDate(),
+        lastSeenTime: (data['lastSeenTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
         online: data['online'],
         token: data['token'],
         overallRateCount: data['overallRateCount'],

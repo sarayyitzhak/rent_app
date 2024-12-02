@@ -19,6 +19,7 @@ import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 import '../dictionary.dart';
 import '../models/item.dart';
+import '../services/current_position_service.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/map_dialog.dart';
 import 'item_screen.dart';
@@ -44,7 +45,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   late TextEditingController descriptionController;
   Condition? conditionValue;
   late AddressInfo addressValue =
-      AddressInfo(geoPoint: GeoPoint(currentPosition!.latitude, currentPosition!.longitude), city: '', road: '');
+      AddressInfo(geoPoint: GeoPoint(CurrentPositionService().geoPoint!.latitude, CurrentPositionService().geoPoint!.longitude), city: '', road: '');
   List<ItemCategory> _selectedCategories = [];
 
   @override
@@ -86,12 +87,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
     }
   }
 
-  Future<void> mapDialogBuilder(BuildContext context, var localization) {
+  Future<void> mapDialogBuilder(BuildContext context) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return MapDialog(
-            localization: localization,
             context: context,
             onPicked: (PickedData pickedData) {
               setState(() {
@@ -266,7 +266,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   ),
                 ),
                 TextButton(
-                  onPressed: () => mapDialogBuilder(context, localization),
+                  onPressed: () => mapDialogBuilder(context),
                   style: kAddressButtonStyle,
                   child: Text(
                     addressValue.addressDataToString(),

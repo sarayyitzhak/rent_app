@@ -10,6 +10,7 @@ import 'package:rent_app/screens/chats_screen.dart';
 import 'package:rent_app/screens/search_screen.dart';
 import 'package:rent_app/screens/user_items_screen.dart';
 import '../services/cloud_services.dart';
+import '../services/current_position_service.dart';
 import 'home_screen.dart';
 import 'user_screen.dart';
 
@@ -56,6 +57,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     // messagingListenForeground();
     setToken();
     onMessageOpenedApp(context);
+    CurrentPositionService().init();
   }
 
   void _fetchUserChats() {
