@@ -7,7 +7,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/models/condition.dart';
 import 'package:rent_app/models/file_data.dart';
@@ -16,6 +15,7 @@ import 'package:rent_app/models/item_review.dart';
 import 'package:rent_app/models/message.dart';
 import 'package:rent_app/models/user.dart';
 import 'package:rent_app/models/user_review.dart';
+import 'package:rent_app/services/bounding_boxing_query.dart';
 import 'package:rent_app/services/query_batch.dart';
 import 'package:rent_app/utils.dart';
 import '../models/address_info.dart';
@@ -136,18 +136,54 @@ Future<QueryBatch<Item>> getItemsByCategory(ItemCategory category, [DocumentSnap
   });
 }
 
-Future<List<Item>> getItemsByLocation(Position position, String cityName) async {
-  return _getItemsByQuery(_firestore.collection('items').where('location.city', isEqualTo: cityName).get(), true);
-}
+Future<BoundingBoxingQuery> getItemsByGeoPoint(GeoPoint centerGeoPoint,
+    [int distance = BoundingBoxingQuery.kDistanceStep, DocumentSnapshot? startAfterDoc]) async {
+  List<Item> items = [];
 
-Future<List<Item>> getItemsByGeoPoint(double minLat, double maxLat, double minLng, double maxLng) async {
-  return _getItemsByQuery(
-      _firestore
-          .collection('items')
-          .where('location.geoPoint', isGreaterThanOrEqualTo: GeoPoint(minLat, minLng))
-          .where('location.geoPoint', isLessThanOrEqualTo: GeoPoint(maxLat, maxLng))
-          .get(),
-      true);
+  while (distance < BoundingBoxingQuery.kMaxDistance) {
+    List<GeoPoint> outerSquare = getSquare(centerGeoPoint, distance);
+
+    Query query = _firestore
+        .collection('items')
+        .orderBy('latitude')
+        .orderBy('longitude')
+        .orderBy('contactUserID')
+        .where('contactUserID', isNotEqualTo: userDetails.docRef.id)
+        .where('latitude', isGreaterThanOrEqualTo: outerSquare[0].latitude)
+        .where('longitude', isGreaterThanOrEqualTo: outerSquare[0].longitude)
+        .where('latitude', isLessThanOrEqualTo: outerSquare[1].latitude)
+        .where('longitude', isLessThanOrEqualTo: outerSquare[1].longitude);
+
+    if (distance > BoundingBoxingQuery.kDistanceStep) {
+      List<GeoPoint> innerSquare = getSquare(centerGeoPoint, distance - BoundingBoxingQuery.kDistanceStep);
+
+      query = query
+          .where(Filter.or(Filter('latitude', isGreaterThan: innerSquare[1].latitude),
+              Filter('latitude', isLessThan: innerSquare[0].latitude)))
+          .where(Filter.or(Filter('longitude', isGreaterThan: innerSquare[1].longitude),
+              Filter('longitude', isLessThan: innerSquare[0].longitude)));
+    }
+
+    if (startAfterDoc != null) {
+      query = query.startAfterDocument(startAfterDoc);
+    }
+
+    int limit = 20 - items.length;
+    QuerySnapshot itemsQuery = await query.limit(limit).get();
+    items.addAll(itemsQuery.docs.map(Item.fromDocumentSnapshot).toList());
+    startAfterDoc = itemsQuery.docs.lastOrNull;
+
+    if (itemsQuery.size != limit) {
+      distance += BoundingBoxingQuery.kDistanceStep;
+      startAfterDoc = null;
+    }
+
+    if (items.length == 20) {
+      break;
+    }
+  }
+
+  return BoundingBoxingQuery(items, distance < BoundingBoxingQuery.kMaxDistance, startAfterDoc, distance);
 }
 
 Future<QueryBatch<Item>> getItemsByTitle(String title, [DocumentSnapshot? startAfterDoc]) async {

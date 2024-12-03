@@ -2,11 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
+import 'package:rent_app/models/item.dart';
+import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/services/current_position_service.dart';
+import 'package:rent_app/services/query_batch.dart';
 
 import '../../constants.dart';
 import '../../dictionary.dart';
+import '../../screens/item_grid_screen.dart';
+import '../../services/bounding_boxing_query.dart';
 import '../../services/card_utils.dart';
+import '../item_widgets/item_card.dart';
 import '../map_dialog.dart';
 
 class AroundYouContainer extends StatefulWidget {
@@ -17,6 +23,8 @@ class AroundYouContainer extends StatefulWidget {
 }
 
 class _AroundYouContainerState extends State<AroundYouContainer> {
+  late BoundingBoxingQuery _boundingBoxingQuery;
+
   Widget _getCurrentCityName(BuildContext context) {
     AppLocalizations localization = Dictionary.getLocalization(context);
 
@@ -70,6 +78,12 @@ class _AroundYouContainerState extends State<AroundYouContainer> {
     );
   }
 
+  Future<QueryBatch<Item>> _getAroundYouItems([DocumentSnapshot? startAfterDoc]) async {
+    _boundingBoxingQuery = await getItemsByGeoPoint(
+        CurrentPositionService().geoPoint!, _boundingBoxingQuery.currentDistance, startAfterDoc);
+    return _boundingBoxingQuery;
+  }
+
   @override
   Widget build(BuildContext context) {
     AppLocalizations localization = Dictionary.getLocalization(context);
@@ -80,14 +94,30 @@ class _AroundYouContainerState extends State<AroundYouContainer> {
           return Column(
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    localization.aroundYou,
-                    style: kBlackHeaderTextStyle,
+                  Row(
+                    children: [
+                      Text(
+                        localization.aroundYou,
+                        style: kBlackHeaderTextStyle,
+                      ),
+                      const Icon(Icons.location_on_outlined),
+                      _getCurrentCityName(context),
+                      _getChangeLocationAction(context),
+                    ],
                   ),
-                  const Icon(Icons.location_on_outlined),
-                  _getCurrentCityName(context),
-                  _getChangeLocationAction(context)
+                  TextButton(
+                    onPressed: () {
+                      _boundingBoxingQuery = BoundingBoxingQuery.empty();
+                      Navigator.pushNamed(context, ItemGridScreen.id,
+                          arguments: ItemGridScreenArguments(localization.aroundYou, _getAroundYouItems));
+                    },
+                    child: Text(
+                      localization.show_more,
+                      style: const TextStyle(color: Colors.black54),
+                    ),
+                  )
                 ],
               ),
               SizedBox(
@@ -98,14 +128,14 @@ class _AroundYouContainerState extends State<AroundYouContainer> {
                         color: kPastelYellow,
                       ))
                     : FutureBuilder(
-                        future: getItemsFilterByGeoPoint(CurrentPositionService().geoPoint!.latitude,
-                            CurrentPositionService().geoPoint!.longitude, true),
+                        future: getItemsByGeoPoint(CurrentPositionService().geoPoint!),
                         builder: (context, snapshot) {
-                          if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
-                            List? itemCards = snapshot.data;
+                          if (snapshot.hasData) {
+                            QueryBatch<Item> items = snapshot.data!;
                             return ListView(
                               scrollDirection: Axis.horizontal,
-                              children: itemCards as List<Widget>,
+                              children:
+                                  items.list.map((Item item) => ItemCard(item: item, isHorizontal: true)).toList(),
                             );
                           } else {
                             return Container();

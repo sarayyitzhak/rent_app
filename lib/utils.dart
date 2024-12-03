@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -30,17 +31,16 @@ List<DateTime> getDateList(DateTimeRange range) {
   return dates;
 }
 
-Map<String, double> getLatLngSquare(double lat, double lng){
-  double distance = 200; //in meters
+List<GeoPoint> getSquare(GeoPoint geoPoint, int distance){
   double latOffset = distance / 111000;
-  double lngOffset = distance / (111320 * cos(lat * pi / 180));
+  double lngOffset = distance / (111320 * cos(geoPoint.latitude * pi / 180));
 
-  double minLat = lat - latOffset;
-  double maxLat = lat + latOffset;
-  double minLng = lng - lngOffset;
-  double maxLng = lng + lngOffset;
+  double minLat = geoPoint.latitude - latOffset;
+  double minLng = geoPoint.longitude - lngOffset;
+  double maxLat = geoPoint.latitude + latOffset;
+  double maxLng = geoPoint.longitude + lngOffset;
 
-  return {'minLat': minLat, 'minLng': minLng, 'maxLat': maxLat, 'maxLng': maxLng};
+  return [GeoPoint(minLat, minLng), GeoPoint(maxLat, maxLng)];
 }
 
 String getNextAlphabeticalString(String input) {

@@ -18,17 +18,6 @@ List<ItemCard> getItemCards(List<Item> items, bool isHorizontal) {
   return itemCards;
 }
 
-Future<List<ItemCard>> getItemsFilterByLocation(Position position, String cityName, bool isHorizontal) async {
-  List<Item> items = await getItemsByLocation(position, cityName);
-  return getItemCards(items, isHorizontal);
-}
-
-Future<List<ItemCard>> getItemsFilterByGeoPoint(double lat, double lng, bool isHorizontal) async {
-  Map latLng = getLatLngSquare(lat, lng);
-  List<Item> items = await getItemsByGeoPoint(latLng['minLat'], latLng['maxLat'], latLng['minLng'], latLng['maxLng']);
-  return getItemCards(items, isHorizontal);
-}
-
 List<ItemCard> getItemsByStream(dynamic items, bool isHorizontal){
   List<Item> itemsList = [];
   for (var itemDoc in items) {
