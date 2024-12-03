@@ -36,6 +36,10 @@ class _ItemGridState extends State<ItemGrid> {
 
     _loading = true;
 
+    if (_cards.isEmpty) {
+      _cards.addAll(List.generate(8, (_) => const ItemCard()));
+    }
+
     _queryBatch = await widget.queryBatchGetterNotifier.queryBatchGetter(_queryBatch.lastDoc);
 
     setState(() {
@@ -46,11 +50,7 @@ class _ItemGridState extends State<ItemGrid> {
       _cards.addAll(_queryBatch.list.map((Item item) => ItemCard(item: item)).toList());
 
       if (_queryBatch.hasMore) {
-        _cards.add(const ItemCard());
-        _cards.add(const ItemCard());
-        if (_cards.length % 2 == 1) {
-          _cards.add(const ItemCard());
-        }
+        _cards.addAll(List.generate(2 + (_cards.length % 2), (_) => const ItemCard()));
       }
     });
 
