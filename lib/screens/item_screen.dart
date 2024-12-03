@@ -18,6 +18,7 @@ import 'package:rent_app/widgets/favorite_button.dart';
 import 'package:rent_app/widgets/send_item_container.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../dictionary.dart';
+import '../services/address_service.dart';
 import '../services/cloud_services.dart';
 import '../widgets/cached_image.dart';
 import '../widgets/dial_icon_button.dart';
@@ -264,9 +265,12 @@ class _ItemScreenState extends State<ItemScreen> {
                                             _userDetails!.name,
                                             style: kBlackTextStyle,
                                           ),
-                                          Text(
-                                            _item!.location.addressDataToString(),
-                                            style: kBlackTextStyle,
+                                          FutureBuilder(
+                                            future: AddressService().getAddress(_item!.geoPoint),
+                                            builder: (context, snapshot) => Text(
+                                              snapshot.data ?? '',
+                                              style: kBlackTextStyle,
+                                            ),
                                           ),
                                         ],
                                       ),

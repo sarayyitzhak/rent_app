@@ -10,6 +10,7 @@ import 'package:rent_app/widgets/custom_button.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../models/request_status.dart';
+import '../services/address_service.dart';
 import '../services/cloud_services.dart';
 import '../utils.dart';
 import '../widgets/cached_image.dart';
@@ -237,7 +238,13 @@ class _RentalScreenState extends State<RentalScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text('מקום איסוף:', style: kBlackHeaderTextStyle,),
-                Text(widget.args.item.location.addressDataToString(), style: kBlackHeaderTextStyle,),
+                FutureBuilder(
+                  future: AddressService().getAddress(widget.args.item.geoPoint),
+                  builder: (context, snapshot) => Text(
+                    snapshot.data ?? '',
+                    style: kBlackHeaderTextStyle,
+                  ),
+                ),
               ],
             ),
             Align(

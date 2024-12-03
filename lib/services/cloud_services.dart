@@ -18,7 +18,6 @@ import 'package:rent_app/models/user_review.dart';
 import 'package:rent_app/services/bounding_boxing_query.dart';
 import 'package:rent_app/services/query_batch.dart';
 import 'package:rent_app/utils.dart';
-import '../models/address_info.dart';
 import '../models/category.dart';
 import '../models/chat.dart';
 import '../models/message_type.dart';
@@ -66,16 +65,8 @@ Future<void> deleteFile(Reference fileRef) async {
 }
 
 //ITEMS
-Future<void> createNewItem(
-    List<FileData> imageDataList,
-    String mainImage,
-    List<String> images,
-    String title,
-    String price,
-    AddressInfo addressValue,
-    String description,
-    Condition condition,
-    List<ItemCategory> categories) async {
+Future<void> createNewItem(List<FileData> imageDataList, String mainImage, List<String> images, String title,
+    String price, GeoPoint geoPoint, String description, Condition condition, List<ItemCategory> categories) async {
   DocumentReference itemRef = _firestore.collection('items').doc();
   for (FileData fileData in imageDataList) {
     await uploadFileData(getItemImageDirRef(itemRef), fileData);
@@ -87,7 +78,8 @@ Future<void> createNewItem(
     if (images.isNotEmpty) 'images': images,
     'title': title,
     'price': int.parse(price),
-    'location': addressValue.toMap(),
+    'latitude': geoPoint.latitude,
+    'longitude': geoPoint.longitude,
     'description': description,
     'condition': condition.index,
     'categories': categories.map((c) => c.index).toList(),
@@ -97,15 +89,16 @@ Future<void> createNewItem(
   });
 }
 
-Future<void> editItem(Item item, String mainImage, List<String> images, String title, int price,
-    AddressInfo addressValue, String description, Condition condition, List<ItemCategory> categories) async {
+Future<void> editItem(Item item, String mainImage, List<String> images, String title, int price, GeoPoint geoPoint,
+    String description, Condition condition, List<ItemCategory> categories) async {
   Map<String, Object> data = {
     if (item.mainImage != mainImage) 'mainImage': mainImage,
     if (images.isNotEmpty && !areListsEqual(item.images, images)) 'images': images,
     if (images.isEmpty) 'images': FieldValue.delete(),
     if (item.title != title) 'title': title,
     if (item.price != price) 'price': price,
-    if (item.location != addressValue) 'location': addressValue.toMap(),
+    if (item.geoPoint.latitude != geoPoint.latitude) 'latitude': geoPoint.latitude,
+    if (item.geoPoint.longitude != geoPoint.longitude) 'longitude': geoPoint.longitude,
     if (item.description != description) 'description': description,
     if (item.condition != condition) 'condition': condition.index,
     if (!areListsEqual(item.categories, categories)) 'categories': categories.map((c) => c.idx).toList(),
@@ -297,7 +290,8 @@ void addRequest(Item item, DateTimeRange range) {
     'status': RequestStatus.WAITING.index,
     'time': {'start': range.start, 'end': range.end},
     'price': item.price,
-    'pickUpLocation': item.location.toMap(),
+    'latitude': item.latitude,
+    'longitude': item.longitude,
     'requestTime': FieldValue.serverTimestamp()
   });
 }

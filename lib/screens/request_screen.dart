@@ -11,6 +11,7 @@ import 'package:rent_app/widgets/request_widgets/extension_request_dialog.dart';
 
 import '../dictionary.dart';
 import '../models/item_request.dart';
+import '../services/address_service.dart';
 import '../utils.dart';
 import '../widgets/cached_image.dart';
 
@@ -189,9 +190,12 @@ class _RequestScreenState extends State<RequestScreen> {
                   'מקום איסוף:',
                   style: kBlackHeaderTextStyle,
                 ),
-                Text(
-                  _itemRequest.pickUpLocation.addressDataToString(),
-                  style: kBlackHeaderTextStyle,
+                FutureBuilder(
+                  future: AddressService().getAddress(_itemRequest.geoPoint),
+                  builder: (context, snapshot) => Text(
+                    snapshot.data ?? '',
+                    style: kBlackHeaderTextStyle,
+                  ),
                 ),
               ],
             ),

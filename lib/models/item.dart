@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:rent_app/models/address_info.dart';
 import 'category.dart';
 import 'condition.dart';
 
@@ -10,7 +9,6 @@ class Item {
   final List<String> _images;
   final String _title;
   final int _price;
-  final AddressInfo _location;
   final String _description;
   final Condition _condition;
   final List<ItemCategory> _categories;
@@ -19,6 +17,8 @@ class Item {
   final int _seenCount;
   final int? _overallRateCount;
   final int? _overallRateSum;
+  final double _latitude;
+  final double _longitude;
 
   Item({
     required DocumentReference docRef,
@@ -27,7 +27,6 @@ class Item {
     required List<String> images,
     required String title,
     required int price,
-    required AddressInfo location,
     required String description,
     required Condition condition,
     required List<ItemCategory> categories,
@@ -36,13 +35,14 @@ class Item {
     required int seenCount,
     int? overallRateCount,
     int? overallRateSum,
+    required double latitude,
+    required double longitude,
   })  : _docRef = docRef,
         _contactUserID = contactUserID,
         _mainImage = mainImage,
         _images = images,
         _title = title,
         _price = price,
-        _location = location,
         _description = description,
         _condition = condition,
         _categories = categories,
@@ -50,7 +50,9 @@ class Item {
         _favoriteCount = favoriteCount,
         _seenCount = seenCount,
         _overallRateCount = overallRateCount,
-        _overallRateSum = overallRateSum;
+        _overallRateSum = overallRateSum,
+        _latitude = latitude,
+        _longitude = longitude;
 
   DocumentReference get docRef => _docRef;
 
@@ -63,8 +65,6 @@ class Item {
   String get title => _title;
 
   int get price => _price;
-
-  AddressInfo get location => _location;
 
   String get description => _description;
 
@@ -82,6 +82,12 @@ class Item {
 
   int? get overallRateSum => _overallRateSum;
 
+  double get latitude => _latitude;
+
+  double get longitude => _longitude;
+
+  GeoPoint get geoPoint => GeoPoint(latitude, longitude);
+
   double? getRate() {
     return (overallRateSum != null && overallRateCount != 0) ? (overallRateSum! / overallRateCount!) : null;
   }
@@ -96,7 +102,6 @@ class Item {
       images: data['images']?.cast<String>() ?? [],
       title: data['title'],
       price: data['price'],
-      location: AddressInfo.fromMap(data['location']),
       description: data['description'],
       condition: Condition.values[data['condition']],
       categories: (data['categories'] as List<dynamic>).map((idx) => ItemCategory.values[idx]).toList(),
@@ -104,7 +109,9 @@ class Item {
       favoriteCount: data['favoriteCount'],
       seenCount: data['seenCount'],
       overallRateCount: data['overallRateCount'],
-      overallRateSum: data['overallRateSum']
+      overallRateSum: data['overallRateSum'],
+      latitude: data['latitude'],
+      longitude: data['longitude'],
     );
   }
 }

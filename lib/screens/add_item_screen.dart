@@ -4,10 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
-import 'package:rent_app/globals.dart';
 import 'package:rent_app/models/category.dart';
 import 'package:rent_app/models/condition.dart';
-import 'package:rent_app/models/address_info.dart';
 import 'package:rent_app/models/file_data.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/utils.dart';
@@ -19,6 +17,7 @@ import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 import '../dictionary.dart';
 import '../models/item.dart';
+import '../services/address_service.dart';
 import '../services/current_position_service.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/map_dialog.dart';
@@ -32,7 +31,7 @@ class AddItemScreen extends StatefulWidget {
   const AddItemScreen(this.args, {super.key});
 
   @override
-  _AddItemScreenState createState() => _AddItemScreenState();
+  State<AddItemScreen> createState() => _AddItemScreenState();
 }
 
 class _AddItemScreenState extends State<AddItemScreen> {
@@ -44,8 +43,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   late TextEditingController priceController;
   late TextEditingController descriptionController;
   Condition? conditionValue;
-  late AddressInfo addressValue =
-      AddressInfo(geoPoint: GeoPoint(CurrentPositionService().geoPoint!.latitude, CurrentPositionService().geoPoint!.longitude), city: '', road: '');
+  GeoPoint geoPoint = CurrentPositionService().geoPoint!; // TODO: Add default geoPoint
   List<ItemCategory> _selectedCategories = [];
 
   @override
@@ -70,7 +68,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       descriptionController.text = item.description;
       conditionValue = item.condition;
       _selectedCategories = item.categories;
-      addressValue = item.location;
+      geoPoint = item.geoPoint;
     });
   }
 
@@ -95,10 +93,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             context: context,
             onPicked: (PickedData pickedData) {
               setState(() {
-                addressValue = AddressInfo(
-                    geoPoint: GeoPoint(pickedData.latLong.latitude, pickedData.latLong.longitude),
-                    city: pickedData.addressData['city'],
-                    road: pickedData.addressData['road']);
+                geoPoint = GeoPoint(pickedData.latLong.latitude, pickedData.latLong.longitude);
               });
             });
       },
@@ -155,7 +150,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         .map((FileData fileData) => fileData.name)
         .toList();
 
-    await createNewItem(imagesController.images, imagesController.mainImage!.name, images, titleController.text, priceController.text, addressValue, descriptionController.text,
+    await createNewItem(imagesController.images, imagesController.mainImage!.name, images, titleController.text, priceController.text, geoPoint, descriptionController.text,
         conditionValue!, _selectedCategories);
     Navigator.pop(context);
     Navigator.pop(context);
@@ -184,7 +179,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         .map((FileData fileData) => fileData.name)
         .toList();
 
-    await editItem(item!, imagesController.mainImage!.name, images, titleController.text, int.parse(priceController.text), addressValue,
+    await editItem(item!, imagesController.mainImage!.name, images, titleController.text, int.parse(priceController.text), geoPoint,
         descriptionController.text, conditionValue!, _selectedCategories);
 
     Navigator.pop(context);
@@ -268,10 +263,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 TextButton(
                   onPressed: () => mapDialogBuilder(context),
                   style: kAddressButtonStyle,
-                  child: Text(
-                    addressValue.addressDataToString(),
-                    // addressValue.addressDataToString(),
-                    style: kBlackTextStyle,
+                  child: FutureBuilder(
+                    future: AddressService().getAddress(item!.geoPoint),
+                    builder: (context, snapshot) => Text(
+                      snapshot.data ?? '',
+                      style: kBlackTextStyle,
+                    ),
                   ),
                 ),
                 const SizedBox(

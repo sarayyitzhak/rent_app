@@ -10,7 +10,6 @@ import 'package:rent_app/models/file_data.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/services/cloud_services.dart';
 
-
 String dateToString(DateTime date) => '${date.day}.${date.month}';
 
 String getFormattedPrice(int price) => '${NumberFormat("#,##0").format(price)}₪';
@@ -31,7 +30,7 @@ List<DateTime> getDateList(DateTimeRange range) {
   return dates;
 }
 
-List<GeoPoint> getSquare(GeoPoint geoPoint, int distance){
+List<GeoPoint> getSquare(GeoPoint geoPoint, int distance) {
   double latOffset = distance / 111000;
   double lngOffset = distance / (111320 * cos(geoPoint.latitude * pi / 180));
 
@@ -49,15 +48,15 @@ String getNextAlphabeticalString(String input) {
   return String.fromCharCodes(chars);
 }
 
-String getDifferenceInTimeAsString(BuildContext context, DateTime time){
+String getDifferenceInTimeAsString(BuildContext context, DateTime time) {
   Duration duration = DateTime.now().difference(time);
-  if(duration.inMinutes < 60){
+  if (duration.inMinutes < 60) {
     return duration.inMinutes == 0 ? 'לפני מס׳ שניות' : 'לפני ${duration.inMinutes} דקות';
-  } else if(duration.inHours < 24){
+  } else if (duration.inHours < 24) {
     return 'לפני ${duration.inHours} שעות';
-  } else if(duration.inDays < 30){
+  } else if (duration.inDays < 30) {
     return 'לפני ${duration.inDays} ימים';
-  } else if(duration.inDays < 365){
+  } else if (duration.inDays < 365) {
     return 'לפני ${duration.inDays / 30} חודשים';
   } else {
     return 'לפני ${duration.inDays / 365} שנים';

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/screens/item_screen.dart';
+import 'package:rent_app/services/address_service.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/widgets/cached_image.dart';
 import 'package:rent_app/widgets/rating_stars_widget.dart';
@@ -62,7 +63,7 @@ class ItemCard extends StatelessWidget {
     }
     bool isMine = item!.contactUserID == userDetails.docRef.id;
     String? distanceFromMe;
-    double? distance = CurrentPositionService().getDistanceFromCurrentPosition(item!.location.geoPoint);
+    double? distance = CurrentPositionService().getDistanceFromCurrentPosition(item!.geoPoint);
     if (distance != null) {
       if (distance < kMaxDistance) {
         if (distance < kMaxDistanceForNearby) {
@@ -141,9 +142,12 @@ class ItemCard extends StatelessWidget {
               ), //description
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  item!.location.addressDataToString(),
-                  style: kSmallBlackTextStyle,
+                child: FutureBuilder(
+                  future: AddressService().getAddress(item!.geoPoint),
+                  builder: (context, snapshot) => Text(
+                    snapshot.data ?? '',
+                    style: kSmallBlackTextStyle,
+                  ),
                 ),
               ), //place
               const Divider(

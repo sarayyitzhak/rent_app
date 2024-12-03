@@ -11,7 +11,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/models/category.dart';
 import 'package:rent_app/models/condition.dart';
-import 'package:rent_app/models/address_info.dart';
 import 'dart:async';
 
 import '../models/item.dart';
@@ -135,16 +134,16 @@ List itemsTitles = [
   "קערה",
   "מסננת"
 ];
-List<AddressInfo> addressValues = [
-  AddressInfo(geoPoint: const GeoPoint(32.784809, 35.023056), city: 'חיפה', road: 'הרב מימון'),
-  AddressInfo(geoPoint: const GeoPoint(32.776475, 35.036188), city: 'נשר', road: 'מעלה הגיבורים'),
-  AddressInfo(geoPoint: const GeoPoint(31.795468, 35.153486), city: 'מוצא עילית', road: 'ארזה'),
-  AddressInfo(geoPoint: const GeoPoint(32.026828, 34.872005), city: 'אור יהודה', road: 'ניצן'),
-  AddressInfo(geoPoint: const GeoPoint(31.762280, 35.174503), city: 'ירושלים', road: 'קרית יובל'),
-  AddressInfo(geoPoint: const GeoPoint(31.746798, 35.220745), city: 'ירושלים', road: 'ארנונה'),
-  AddressInfo(geoPoint: const GeoPoint(32.815981, 35.002303), city: 'חיפה', road: 'עיר תחתית'),
-  AddressInfo(geoPoint: const GeoPoint(31.781190, 35.309961), city: 'מעלה אדומים', road: 'החלמיש'),
-  AddressInfo(geoPoint: const GeoPoint(31.767112, 35.303640), city: 'מעלה אדומים', road: 'צמח השדה'),
+List<GeoPoint> geoPoints = [
+  const GeoPoint(32.784809, 35.023056),
+  const GeoPoint(32.776475, 35.036188),
+  const GeoPoint(31.795468, 35.153486),
+  const GeoPoint(32.026828, 34.872005),
+  const GeoPoint(31.762280, 35.174503),
+  const GeoPoint(31.746798, 35.220745),
+  const GeoPoint(32.815981, 35.002303),
+  const GeoPoint(31.781190, 35.309961),
+  const GeoPoint(31.767112, 35.303640),
 ];
 List categories = ItemCategory.values;
 List images = [];
@@ -206,7 +205,8 @@ Future<void> onRegisterButtonPressed(int idx) async {
       'mainImage': '0.jpg',
       'title': itemsTitles[(idx * 10) + j],
       'price': Random().nextInt(1000),
-      'location': addressValues[idx].toMap(),
+      'latitude': geoPoints[idx].latitude,
+      'longitude': geoPoints[idx].longitude,
       'description': 'מוצר נדיר מהמם הכי טוב שיש. מומלץ לכל אחד להשכיר.',
       'condition': Condition.USED_AS_NEW.index,
       'categories': [categories[j]].map((c) => c.index).toList(),
