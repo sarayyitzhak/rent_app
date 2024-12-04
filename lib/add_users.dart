@@ -177,7 +177,8 @@ Future<void> onRegisterButtonPressed(int idx) async {
     name: names[idx],
     phoneNumber: int.parse('54808825$idx'),
     lastSeenTime: DateTime.now(),
-    online: false
+    online: false,
+    showPhoneNumber: true
   );
   _messaging.getToken().then((String? token) {
     if (token != null) {

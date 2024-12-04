@@ -210,10 +210,16 @@ class _AddItemScreenState extends State<AddItemScreen> {
               children: <Widget>[
                 SelectableImagesContainer(controller: imagesController),
                 TextAndTextField(title: localization.title, controller: titleController),
+                const SizedBox(
+                  height: 20,
+                ),
                 TextAndTextField(
                   title: localization.price,
                   controller: priceController,
                   keyboardType: TextInputType.number,
+                ),
+                const SizedBox(
+                  height: 20,
                 ),
                 Align(
                     alignment: Alignment.bottomRight,
@@ -252,6 +258,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   maxLines: 3,
                   textInputAction: TextInputAction.newline,
                   textCapitalization: true,
+                ),
+                const SizedBox(
+                  height: 20,
                 ),
                 Align(
                   alignment: Alignment.bottomRight,

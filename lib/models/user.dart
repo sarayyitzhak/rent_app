@@ -10,6 +10,7 @@ class UserDetails {
   int? _overallRateCount;
   int? _overallRateSum;
   String? _photoID;
+  bool _showPhoneNumber;
 
   UserDetails({
     required DocumentReference docRef,
@@ -21,6 +22,7 @@ class UserDetails {
     int? overallRateCount,
     int? overallRateSum,
     String? photoID,
+    required bool showPhoneNumber,
   })  : _docRef = docRef,
         _name = name,
         _phoneNumber = phoneNumber,
@@ -29,7 +31,8 @@ class UserDetails {
         _token = token,
         _overallRateCount = overallRateCount,
         _overallRateSum = overallRateSum,
-        _photoID = photoID;
+        _photoID = photoID,
+        _showPhoneNumber = showPhoneNumber;
 
   DocumentReference get docRef => _docRef;
 
@@ -49,6 +52,8 @@ class UserDetails {
 
   String? get photoID => _photoID;
 
+  bool get showPhoneNumber => _showPhoneNumber;
+
   set name(String value) => _name = value;
 
   set phoneNumber(int value) => _phoneNumber = value;
@@ -57,6 +62,10 @@ class UserDetails {
 
   set photoID(String? value) {
     _photoID = value;
+  }
+
+  set showPhoneNumber(bool value) {
+    _showPhoneNumber = value;
   }
 
   double? getRate() {
@@ -84,6 +93,7 @@ class UserDetails {
         token: data['token'],
         overallRateCount: data['overallRateCount'],
         overallRateSum: data['overallRateSum'],
-        photoID: data['photoID']);
+        photoID: data['photoID'],
+        showPhoneNumber: data['showPhoneNumber']);
   }
 }

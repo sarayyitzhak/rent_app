@@ -109,6 +109,7 @@
   "change_location": "שנה מיקום",
   "grant_permission": "הענק הרשאות",
   "open_location_settings": "פתח שירותי מיקום",
+  "show_phone_number": "הצג את מספר הטלפון שלי",
 
   "lastSeenTodayAtTime": "נראה/תה לאחרונה היום ב-{time}",
   "@lastSeenTodayAtTime": {

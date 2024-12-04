@@ -32,9 +32,6 @@ class TextAndTextField extends StatelessWidget {
           textInputAction: textInputAction,
           obscureText: isObscureText,
         ),
-        const SizedBox(
-          height: 20,
-        ),
       ],
     );
   }

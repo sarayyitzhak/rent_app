@@ -83,13 +83,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
                 ),
+                const SizedBox(
+                  height: 20,
+                ),
                 TextAndTextField(
                   title: localization.password,
                   controller: passwordController,
                   isObscureText: true,
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 40,
                 ),
                 Center(
                   child: CustomButton(

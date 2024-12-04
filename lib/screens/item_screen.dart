@@ -279,7 +279,8 @@ class _ItemScreenState extends State<ItemScreen> {
                                 ),
                               ],
                             ),
-                            DialIconButton(phoneNumber: phoneNumberToString(_userDetails!.phoneNumber)),
+                            if (_userDetails!.showPhoneNumber)
+                              DialIconButton(phoneNumber: phoneNumberToString(_userDetails!.phoneNumber)),
                           ],
                         ),
                         const Divider(

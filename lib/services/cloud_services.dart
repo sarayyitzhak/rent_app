@@ -816,6 +816,15 @@ Future<void> updateUserLastSeenTime([bool online = true]) {
   return userDetails.docRef.update({'lastSeenTime': FieldValue.serverTimestamp(), 'online': online});
 }
 
+Future<void> updateUserDetails(String name, int phoneNumber, bool showPhoneNumber) {
+  Map<String, Object> data = {
+    if (userDetails.name != name) 'fullName': name,
+    if (userDetails.phoneNumber != phoneNumber) 'phoneNumber': phoneNumber,
+    if (userDetails.showPhoneNumber != showPhoneNumber) 'showPhoneNumber': showPhoneNumber,
+  };
+  return data.isNotEmpty ? userDetails.docRef.update(data) : Future.value();
+}
+
 Future<void> deleteOldUserItemSeen(DateTime dateTime) async {
   QuerySnapshot querySnapshot =
       await userDetails.docRef.collection('seen').where('seenTime', isLessThan: dateTime).limit(100).get();

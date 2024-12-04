@@ -109,6 +109,7 @@
   "change_location": "Change location",
   "grant_permission": "Grant permission",
   "open_location_settings": "Open location settings",
+  "show_phone_number": "Show my phone number",
 
   "lastSeenTodayAtTime": "Last seen today at {time}",
   "@lastSeenTodayAtTime": {

@@ -95,15 +95,24 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   title: localization.fullName,
                   controller: nameController,
                 ),
+                const SizedBox(
+                  height: 20,
+                ),
                 TextAndTextField(
                   title: localization.email,
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
                 ),
+                const SizedBox(
+                  height: 20,
+                ),
                 TextAndTextField(
                     title: localization.mobileNumber,
                     controller: phoneNumberController,
                     keyboardType: TextInputType.phone),
+                const SizedBox(
+                  height: 20,
+                ),
                 // TextAndTextField(title: localization.dateOfBirth, controller: dateOfBirthController, keyboardType: TextInputType.datetime,),
                 //
                 //
@@ -116,13 +125,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   controller: passwordController,
                   isObscureText: true,
                 ),
+                const SizedBox(
+                  height: 20,
+                ),
                 TextAndTextField(
                   title: localization.confirmPassword,
                   controller: confirmPasswordController,
                   isObscureText: true,
                 ),
                 const SizedBox(
-                  height: 25,
+                  height: 45,
                 ),
                 Align(
                     alignment: Alignment.center,
