@@ -150,11 +150,11 @@ Future<BoundingBoxingQuery> getItemsByGeoPoint(GeoPoint centerGeoPoint,
     if (distance > BoundingBoxingQuery.kDistanceStep) {
       List<GeoPoint> innerSquare = getSquare(centerGeoPoint, distance - BoundingBoxingQuery.kDistanceStep);
 
-      query = query
-          .where(Filter.or(Filter('latitude', isGreaterThan: innerSquare[1].latitude),
-              Filter('latitude', isLessThan: innerSquare[0].latitude)))
-          .where(Filter.or(Filter('longitude', isGreaterThan: innerSquare[1].longitude),
-              Filter('longitude', isLessThan: innerSquare[0].longitude)));
+      query = query.where(Filter.or(
+          Filter.or(Filter('latitude', isGreaterThan: innerSquare[1].latitude),
+              Filter('latitude', isLessThan: innerSquare[0].latitude)),
+          Filter.or(Filter('longitude', isGreaterThan: innerSquare[1].longitude),
+              Filter('longitude', isLessThan: innerSquare[0].longitude))));
     }
 
     if (startAfterDoc != null) {
