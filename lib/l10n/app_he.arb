@@ -110,6 +110,12 @@
   "grant_permission": "הענק הרשאות",
   "open_location_settings": "פתח שירותי מיקום",
   "show_phone_number": "הצג את מספר הטלפון שלי",
+  "error": "שגיאה",
+  "expired": "פג תוקף",
+  "approved_by_the_owner": "אושר על ידי הבעלים",
+  "rejected_by_the_owner": "נדחה על ידי הבעלים",
+  "approved_by_the_applicant": "אושר על ידי המבקש",
+  "rejected_by_the_applicant": "נדחה על ידי המבקש",
 
   "lastSeenTodayAtTime": "נראה/תה לאחרונה היום ב-{time}",
   "@lastSeenTodayAtTime": {

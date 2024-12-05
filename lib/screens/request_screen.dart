@@ -51,7 +51,7 @@ class _RequestScreenState extends State<RequestScreen> {
   }
 
   void onCancelPressed() {
-    if (_itemRequest.status == RequestStatus.WAITING) {
+    if (_itemRequest.status == RequestStatus.waiting) {
       deleteRequest(_itemRequest.docRef);
       Navigator.pop(context);
     }
@@ -203,7 +203,7 @@ class _RequestScreenState extends State<RequestScreen> {
               child: Column(
                 children: [
                   CustomButton(title: 'בקש הארכה', onPress: onExtensionPressed),
-                  CustomButton(title: _itemRequest.status == RequestStatus.WAITING ? 'מחק בקשה' : 'בטל בקשה', onPress: onCancelPressed)
+                  CustomButton(title: _itemRequest.status == RequestStatus.waiting ? 'מחק בקשה' : 'בטל בקשה', onPress: onCancelPressed)
                 ],
               ),
             ),

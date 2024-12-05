@@ -11,16 +11,12 @@ class ScrollableRequestList extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder(future: future, builder: (context, snapshot) {
       if (snapshot.hasData) {
-        return Expanded(
-          child: ListView(
-            children: snapshot.data!.map((request) => RequestCard(request: request)).toList(),
-          ),
+        return ListView(
+          children: snapshot.data!.map((request) => RequestCard(request: request)).toList(),
         );
       } else {
-        return Expanded(
-          child: Center(
-            child: LoadingAnimationWidget.stretchedDots(color: Colors.grey, size: 50),
-          ),
+        return Center(
+          child: LoadingAnimationWidget.stretchedDots(color: Colors.grey, size: 50),
         );
       }});
   }

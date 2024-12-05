@@ -1,12 +1,15 @@
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 enum RequestStatus{
-  WAITING,
-  APPROVED,
-  REJECTED,
+  waiting,
+  ownerApproved,
+  ownerRejected,
+  applicantApproved,
+  applicantRejected,
+  expired,
 }
 
-RequestStatus getRequestStatus(int idx){
+RequestStatus getRequestStatusByIndex(int idx){
   return RequestStatus.values[idx];
 }
 
@@ -14,12 +17,18 @@ RequestStatus getRequestStatus(int idx){
 extension RequestStatusExtension on RequestStatus {
   String getTitle(AppLocalizations localization) {
     switch (this) {
-      case RequestStatus.WAITING:
+      case RequestStatus.waiting:
         return localization.waiting;
-      case RequestStatus.REJECTED:
-        return localization.rejected;
-      case RequestStatus.APPROVED:
-        return localization.approved;
+      case RequestStatus.ownerRejected:
+        return localization.rejected_by_the_owner;
+      case RequestStatus.ownerApproved:
+        return localization.approved_by_the_owner;
+      case RequestStatus.applicantRejected:
+        return localization.rejected_by_the_applicant;
+      case RequestStatus.applicantApproved:
+        return localization.approved_by_the_applicant;
+      case RequestStatus.expired:
+        return localization.expired;
     }
   }
 }

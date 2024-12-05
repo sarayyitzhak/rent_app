@@ -8,6 +8,8 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:rent_app/models/file_data.dart';
 import 'package:rent_app/models/item.dart';
+import 'package:rent_app/models/item_request.dart';
+import 'package:rent_app/models/request_status.dart';
 import 'package:rent_app/services/cloud_services.dart';
 
 String dateToString(DateTime date) => '${date.day}.${date.month}';
@@ -112,4 +114,19 @@ List<Reference> getItemImageReferencesSorted(Item item) {
 
 String getHourMinuteFormat(DateTime dateTime) {
   return '${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+}
+
+RequestStatus getRequestStatus(ItemRequest request) {
+  DateTime now = DateTime.now();
+  bool expired = request.time.start.isBefore(now);
+  if (request.status == RequestStatus.waiting) {
+    if (expired) {
+      return RequestStatus.expired;
+    }
+  } else if (request.status == RequestStatus.ownerApproved) {
+    if (expired || request.statusUpdateTime.add(const Duration(days: 2)).isBefore(now)) {
+      return RequestStatus.applicantRejected;
+    }
+  }
+  return request.status;
 }

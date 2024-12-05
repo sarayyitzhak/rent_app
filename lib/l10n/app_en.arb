@@ -110,6 +110,12 @@
   "grant_permission": "Grant permission",
   "open_location_settings": "Open location settings",
   "show_phone_number": "Show my phone number",
+  "error": "Error",
+  "expired": "Expired",
+  "approved_by_the_owner": "Approved by the owner",
+  "rejected_by_the_owner": "Rejected by the owner",
+  "approved_by_the_applicant": "Approved by the applicant",
+  "rejected_by_the_applicant": "Rejected by the applicant",
 
   "lastSeenTodayAtTime": "Last seen today at {time}",
   "@lastSeenTodayAtTime": {

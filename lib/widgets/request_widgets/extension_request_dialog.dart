@@ -65,16 +65,16 @@ class _ExtensionRequestDialogState extends State<ExtensionRequestDialog> {
             DateTime? maxDate;
 
             for (ItemRequest itemRequest in snapshot.data!) {
-              if (itemRequest.status == RequestStatus.WAITING) {
+              if (itemRequest.status == RequestStatus.waiting) {
                 waitingDates.addAll(getDateList(itemRequest.time));
-              } else if (itemRequest.status == RequestStatus.APPROVED) {
+              } else if (itemRequest.status == RequestStatus.ownerApproved) {
                 var startDate = itemRequest.time.start.subtract(const Duration(days: 1));
                 if (startDate.isAfter(widget.itemRequest.time.end)) {
                   if (maxDate == null || startDate.isBefore(maxDate)) {
                     maxDate = startDate;
                   }
                 }
-                if (itemRequest.extensionRequest != null && itemRequest.extensionRequest!.status == RequestStatus.WAITING) {
+                if (itemRequest.extensionRequest != null && itemRequest.extensionRequest!.status == RequestStatus.waiting) {
                   var start = itemRequest.time.end.add(const Duration(days: 1));
                   var end = itemRequest.extensionRequest!.toDate;
                   waitingDates.addAll(getDateList(DateTimeRange(start: start, end: end)));

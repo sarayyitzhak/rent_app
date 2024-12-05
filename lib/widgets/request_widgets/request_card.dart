@@ -21,9 +21,39 @@ class RequestCard extends StatefulWidget {
 }
 
 class _RequestCardState extends State<RequestCard> {
-
   Item? _item;
-  RequestStatus? _status;
+  late RequestStatus _status;
+
+  Widget getStatusWidget(BuildContext context) {
+    var localization = Dictionary.getLocalization(context);
+    if (widget.request.applicantID == userDetails.docRef.id) {
+      if (_status == RequestStatus.ownerApproved) {
+        return Row(
+          children: [
+            createStatusButton(localization.accept, RequestStatus.applicantApproved, Colors.green),
+            const SizedBox(width: 5),
+            createStatusButton(localization.reject, RequestStatus.applicantRejected, Colors.red)
+          ],
+        );
+      } else {
+        return Text(_status.getTitle(localization));
+      }
+    } else if (widget.request.ownerID == userDetails.docRef.id) {
+      if (_status == RequestStatus.waiting) {
+        return Row(
+          children: [
+            createStatusButton(localization.accept, RequestStatus.ownerApproved, Colors.green),
+            const SizedBox(width: 5),
+            createStatusButton(localization.reject, RequestStatus.ownerRejected, Colors.red)
+          ],
+        );
+      } else {
+        return Text(_status.getTitle(localization));
+      }
+    } else {
+      return Text(localization.error);
+    }
+  }
 
   ElevatedButton createStatusButton(String title, RequestStatus status, Color color) {
     return ElevatedButton(
@@ -35,10 +65,7 @@ class _RequestCardState extends State<RequestCard> {
       },
       child: Text(title),
       style: ElevatedButton.styleFrom(
-          foregroundColor: kWhiteColor,
-          backgroundColor: color,
-          elevation: 3,
-          textStyle: kWhiteTextStyle),
+          foregroundColor: kWhiteColor, backgroundColor: color, elevation: 3, textStyle: kWhiteTextStyle),
     );
   }
 
@@ -54,7 +81,7 @@ class _RequestCardState extends State<RequestCard> {
   void initState() {
     super.initState();
 
-    _status = widget.request.status;
+    _status = getRequestStatus(widget.request);
     fetchData();
   }
 
@@ -62,10 +89,10 @@ class _RequestCardState extends State<RequestCard> {
   Widget build(BuildContext context) {
     var localization = Dictionary.getLocalization(context);
     return GestureDetector(
-      onTap: widget.request.status == RequestStatus.APPROVED ? () async => Navigator.pushNamed(context, ItemReviewScreen.id,
-          arguments: ItemReviewScreenArguments(await getItemById(widget.request.itemID) as Item))
-       : () => Navigator.pushNamed(context, RequestScreen.id,
-          arguments: RequestScreenArguments(itemRequest: widget.request)),
+      onTap: widget.request.status == RequestStatus.ownerApproved
+          ? () async => Navigator.pushNamed(context, ItemReviewScreen.id, arguments: ItemReviewScreenArguments(_item!))
+          : () => Navigator.pushNamed(context, RequestScreen.id,
+              arguments: RequestScreenArguments(itemRequest: widget.request)),
       child: Card(
         elevation: 5,
         margin: const EdgeInsets.all(5),
@@ -85,9 +112,7 @@ class _RequestCardState extends State<RequestCard> {
                     height: 100,
                     imageRef: _item != null ? getItemImageRef(_item!.docRef, _item!.mainImage) : null,
                     borderRadius: const BorderRadiusDirectional.only(
-                        topStart: Radius.circular(20),
-                        bottomStart: Radius.circular(20)
-                    ),
+                        topStart: Radius.circular(20), bottomStart: Radius.circular(20)),
                   ),
                   const SizedBox(width: 10),
                   Column(
@@ -107,18 +132,7 @@ class _RequestCardState extends State<RequestCard> {
               ),
               Padding(
                 padding: const EdgeInsets.all(10),
-                child: widget.request.applicantID == userDetails.docRef.id ||
-                        _status != RequestStatus.WAITING
-                    ? Text(_status!.getTitle(localization))
-                    : Row(
-                        children: [
-                          createStatusButton(localization.accept,
-                              RequestStatus.APPROVED, Colors.green),
-                          const SizedBox(width: 5),
-                          createStatusButton(localization.reject,
-                              RequestStatus.REJECTED, Colors.red)
-                        ],
-                      ),
+                child: getStatusWidget(context),
               ),
             ],
           ),

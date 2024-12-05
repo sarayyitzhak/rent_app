@@ -236,12 +236,32 @@ Future<List<ItemRequest>> getUserRequestsStream() {
       .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
 }
 
-Future<List<ItemRequest>> getMyRequestsByStatus(RequestStatus status) {
-  return _firestore
-      .collection('requests')
-      .where('applicantID', isEqualTo: userDetails.docRef.id)
-      .where('status', isEqualTo: status.index)
-      .where('time.start', isGreaterThan: Timestamp.now())
+Future<List<ItemRequest>> getApplicantRequestsByStatus(RequestStatus status) {
+  Query query = _firestore.collection('requests').where('applicantID', isEqualTo: userDetails.docRef.id);
+
+  if (status == RequestStatus.expired) {
+    query =
+        query.where('time.start', isLessThan: Timestamp.now()).where('status', isEqualTo: RequestStatus.waiting.index);
+  } else {
+    Timestamp ownerApprovedExpired = Timestamp.fromDate(DateTime.now().subtract(const Duration(days: 2)));
+
+    query = query.where('time.start', isGreaterThan: Timestamp.now());
+
+    if (status != RequestStatus.applicantRejected) {
+      query = query.where('status', isEqualTo: status.index);
+    } else {
+      query = query.where(Filter.or(
+          Filter('status', isEqualTo: status.index),
+          Filter.and(Filter('status', isEqualTo: RequestStatus.ownerApproved.index),
+              Filter('statusUpdateTime', isLessThan: ownerApprovedExpired))));
+    }
+
+    if (status == RequestStatus.ownerApproved) {
+      query = query.where('statusUpdateTime', isGreaterThan: ownerApprovedExpired);
+    }
+  }
+
+  return query
       .orderBy('requestTime', descending: true)
       .get()
       .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
@@ -251,7 +271,7 @@ Future<List<ItemRequest>> getHistoryRequests() {
   return _firestore
       .collection('requests')
       .where('applicantID', isEqualTo: userDetails.docRef.id)
-      .where('status', isEqualTo: RequestStatus.APPROVED.index)
+      .where('status', isEqualTo: RequestStatus.ownerApproved.index)
       .where('time.end', isLessThan: Timestamp.now())
       .orderBy('requestTime', descending: true)
       .get()
@@ -263,7 +283,7 @@ Stream<List<ItemRequest>> getFutureItemRequestsStream(DocumentReference itemRef)
       .collection('requests')
       .where('itemID', isEqualTo: itemRef.id)
       .where('time.end', isGreaterThan: Timestamp.now())
-      .where('status', isNotEqualTo: RequestStatus.REJECTED.index)
+      .where('status', isNotEqualTo: RequestStatus.ownerRejected.index)
       .snapshots()
       .map((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
 }
@@ -273,7 +293,7 @@ Future<List<ItemRequest>> getFutureItemRequests(String itemID) {
       .collection('requests')
       .where('itemID', isEqualTo: itemID)
       .where('time.end', isGreaterThan: Timestamp.now())
-      .where('status', isNotEqualTo: RequestStatus.REJECTED.index)
+      .where('status', isNotEqualTo: RequestStatus.ownerRejected.index)
       .get()
       .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
 }
@@ -287,7 +307,7 @@ void addRequest(Item item, DateTimeRange range) {
     'ownerID': item.contactUserID,
     'applicantID': userDetails.docRef.id,
     'itemID': item.docRef.id,
-    'status': RequestStatus.WAITING.index,
+    'status': RequestStatus.waiting.index,
     'time': {'start': range.start, 'end': range.end},
     'price': item.price,
     'latitude': item.latitude,
@@ -297,14 +317,14 @@ void addRequest(Item item, DateTimeRange range) {
 }
 
 void updateRequestStatus(DocumentReference docRef, RequestStatus status) {
-  docRef.update({'status': status.index});
+  docRef.update({'status': status.index, 'statusUpdateTime': FieldValue.serverTimestamp()});
 }
 
 void updateExtensionRequest(DocumentReference docRef, DateTime toDate) {
   docRef.update({
     'extensionRequest': {
       'toDate': toDate,
-      'status': RequestStatus.WAITING.index,
+      'status': RequestStatus.waiting.index,
       'requestTime': FieldValue.serverTimestamp()
     }
   });
@@ -323,7 +343,7 @@ Future<List<ItemRequest>> getUserApprovedRequestsFrom(DateTime fromDate, bool is
   return _firestore
       .collection('requests')
       .where(field, isEqualTo: userDetails.docRef.id)
-      .where('status', isEqualTo: RequestStatus.APPROVED.index)
+      .where('status', isEqualTo: RequestStatus.ownerApproved.index)
       .where('time.start', isGreaterThanOrEqualTo: Timestamp.fromDate(fromDate))
       .get()
       .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
@@ -334,7 +354,7 @@ Future<List<ItemRequest>> getCurrentRents(bool isRentedFromMe) {
   return _firestore
       .collection('requests')
       .where(field, isEqualTo: userDetails.docRef.id)
-      .where('status', isEqualTo: RequestStatus.APPROVED.index)
+      .where('status', isEqualTo: RequestStatus.ownerApproved.index)
       .where('time.start', isLessThanOrEqualTo: Timestamp.now())
       .where('time.end', isGreaterThanOrEqualTo: Timestamp.now())
       .get()
@@ -345,7 +365,7 @@ Future<List<ItemRequest>> getWaitingToApproveRequests() {
   return _firestore
       .collection('requests')
       .where('ownerID', isEqualTo: userDetails.docRef.id)
-      .where('status', isEqualTo: RequestStatus.WAITING.index)
+      .where('status', isEqualTo: RequestStatus.waiting.index)
       .where('time.start', isGreaterThan: Timestamp.now())
       .get()
       .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());

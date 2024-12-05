@@ -95,12 +95,12 @@ class _RentalScreenState extends State<RentalScreen> {
       List<DateTime> waitingDates = [];
 
       for (ItemRequest itemRequest in itemRequests) {
-        if (itemRequest.status == RequestStatus.WAITING) {
+        if (itemRequest.status == RequestStatus.waiting) {
           waitingDates.addAll(getDateList(itemRequest.time));
-        } else if (itemRequest.status == RequestStatus.APPROVED) {
+        } else if (itemRequest.status == RequestStatus.ownerApproved) {
           blackoutDates.addAll(getDateList(itemRequest.time));
 
-          if (itemRequest.extensionRequest != null && itemRequest.extensionRequest!.status == RequestStatus.WAITING) {
+          if (itemRequest.extensionRequest != null && itemRequest.extensionRequest!.status == RequestStatus.waiting) {
             var start = itemRequest.time.end.add(const Duration(days: 1));
             var end = itemRequest.extensionRequest!.toDate;
             waitingDates.addAll(getDateList(DateTimeRange(start: start, end: end)));

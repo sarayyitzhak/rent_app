@@ -18,7 +18,7 @@ class ItemExtensionRequest {
   factory ItemExtensionRequest.fromMap(Map<String, dynamic> map) {
     return ItemExtensionRequest(
       toDate: (map['toDate'] as Timestamp).toDate(),
-      status: getRequestStatus(map['status']),
+      status: getRequestStatusByIndex(map['status']),
       requestTime: (map['requestTime'] as Timestamp).toDate()
     );
   }

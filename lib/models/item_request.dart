@@ -15,6 +15,7 @@ class ItemRequest {
   final Timestamp _requestTime;
   final double _latitude;
   final double _longitude;
+  final DateTime _statusUpdateTime;
 
   ItemRequest({
     required DocumentReference docRef,
@@ -28,6 +29,7 @@ class ItemRequest {
     required Timestamp requestTime,
     required double latitude,
     required double longitude,
+    required DateTime statusUpdateTime,
   })  : _docRef = docRef,
         _ownerID = ownerID,
         _applicantID = applicantID,
@@ -38,7 +40,8 @@ class ItemRequest {
         _price = price,
         _requestTime = requestTime,
         _latitude = latitude,
-        _longitude = longitude;
+        _longitude = longitude,
+        _statusUpdateTime = statusUpdateTime;
 
   DocumentReference get docRef => _docRef;
 
@@ -62,6 +65,8 @@ class ItemRequest {
 
   double get longitude => _longitude;
 
+  DateTime get statusUpdateTime => _statusUpdateTime;
+
   GeoPoint get geoPoint => GeoPoint(latitude, longitude);
 
   // just for active rentals
@@ -82,7 +87,7 @@ class ItemRequest {
       ownerID: data['ownerID'],
       applicantID: data['applicantID'],
       itemID: data['itemID'],
-      status: getRequestStatus(data['status']),
+      status: getRequestStatusByIndex(data['status']),
       time: DateTimeRange(start: start.toDate(), end: end.toDate()),
       extensionRequest:
           data['extensionRequest'] != null ? ItemExtensionRequest.fromMap(data['extensionRequest']) : null,
@@ -90,6 +95,7 @@ class ItemRequest {
       requestTime: data['requestTime'],
       latitude: data['latitude'],
       longitude: data['longitude'],
+      statusUpdateTime: data['statusUpdateTime'].toDate(),
     );
   }
 }
