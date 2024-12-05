@@ -18,6 +18,11 @@ String getFormattedPrice(int price) => '${NumberFormat("#,##0").format(price)}â‚
 
 String phoneNumberToString(int phoneNumber) => '0$phoneNumber';
 
+DateTime getToday() {
+  DateTime now = DateTime.now();
+  return DateTime(now.year, now.month, now.day);
+}
+
 int getDaysDifference(DateTime lower, DateTime upper) {
   return DateTime(upper.year, upper.month, upper.day).difference(DateTime(lower.year, lower.month, lower.day)).inDays;
 }
@@ -118,7 +123,7 @@ String getHourMinuteFormat(DateTime dateTime) {
 
 RequestStatus getRequestStatus(ItemRequest request) {
   DateTime now = DateTime.now();
-  bool expired = request.time.start.isBefore(now);
+  bool expired = getDaysDifference(request.time.start, now) > 0;
   if (request.status == RequestStatus.waiting) {
     if (expired) {
       return RequestStatus.expired;

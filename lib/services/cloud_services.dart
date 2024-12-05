@@ -239,13 +239,15 @@ Future<List<ItemRequest>> getUserRequestsStream() {
 Future<List<ItemRequest>> getApplicantRequestsByStatus(RequestStatus status) {
   Query query = _firestore.collection('requests').where('applicantID', isEqualTo: userDetails.docRef.id);
 
+  Timestamp today = Timestamp.fromDate(getToday());
+
   if (status == RequestStatus.expired) {
     query =
-        query.where('time.start', isLessThan: Timestamp.now()).where('status', isEqualTo: RequestStatus.waiting.index);
+        query.where('time.start', isLessThan: today).where('status', isEqualTo: RequestStatus.waiting.index);
   } else {
     Timestamp ownerApprovedExpired = Timestamp.fromDate(DateTime.now().subtract(const Duration(days: 2)));
 
-    query = query.where('time.start', isGreaterThan: Timestamp.now());
+    query = query.where('time.start', isGreaterThanOrEqualTo: today);
 
     if (status != RequestStatus.applicantRejected) {
       query = query.where('status', isEqualTo: status.index);
@@ -312,7 +314,8 @@ void addRequest(Item item, DateTimeRange range) {
     'price': item.price,
     'latitude': item.latitude,
     'longitude': item.longitude,
-    'requestTime': FieldValue.serverTimestamp()
+    'requestTime': FieldValue.serverTimestamp(),
+    'statusUpdateTime': FieldValue.serverTimestamp()
   });
 }
 
@@ -331,7 +334,7 @@ void updateExtensionRequest(DocumentReference docRef, DateTime toDate) {
 }
 
 void removeExtensionRequest(DocumentReference docRef) {
-  docRef.update({'extensionRequest': null});
+  docRef.update({'extensionRequest': FieldValue.delete()});
 }
 
 void deleteRequest(DocumentReference docRef) {
@@ -357,16 +360,6 @@ Future<List<ItemRequest>> getCurrentRents(bool isRentedFromMe) {
       .where('status', isEqualTo: RequestStatus.ownerApproved.index)
       .where('time.start', isLessThanOrEqualTo: Timestamp.now())
       .where('time.end', isGreaterThanOrEqualTo: Timestamp.now())
-      .get()
-      .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
-}
-
-Future<List<ItemRequest>> getWaitingToApproveRequests() {
-  return _firestore
-      .collection('requests')
-      .where('ownerID', isEqualTo: userDetails.docRef.id)
-      .where('status', isEqualTo: RequestStatus.waiting.index)
-      .where('time.start', isGreaterThan: Timestamp.now())
       .get()
       .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
 }
