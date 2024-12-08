@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
-import 'package:rent_app/screens/pending_requests_screen.dart';
+import 'package:rent_app/screens/item_requests_screen.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
 import 'package:rent_app/widgets/custom_button.dart';
 
@@ -25,7 +25,7 @@ class RequestSubmittedScreen extends StatelessWidget {
             Icon(Icons.done_outline, color: kPastelYellow, size: 150,),
             Column(
               children: [
-                CustomButton(title: localization.trackYourRequest, onPress: (){Navigator.pushNamed(context, PendingRequestsScreen.id);}, buttonStyle: kDarkButtonStyle,),
+                CustomButton(title: localization.trackYourRequest, onPress: (){Navigator.pushNamed(context, ItemRequestsScreen.id);}, buttonStyle: kDarkButtonStyle,),
                 CustomButton(title: localization.goBackToMainScreen, onPress: (){Navigator.of(context).popUntil((route) => route.isFirst);}, buttonStyle: kLightButtonStyle,),
               ],
             ),

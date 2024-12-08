@@ -236,37 +236,33 @@ Future<List<ItemRequest>> getUserRequestsStream() {
       .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
 }
 
-Future<List<ItemRequest>> getApplicantRequestsByStatus(RequestStatus status) {
-  Query query = _firestore.collection('requests').where('applicantID', isEqualTo: userDetails.docRef.id);
+Stream<List<ItemRequest>> getFutureRequestsStream(bool isUserOwner) {
+  return _firestore
+      .collection('requests')
+      .where(isUserOwner ? 'ownerID' : 'applicantID', isEqualTo: userDetails.docRef.id)
+      .where('time.start', isGreaterThanOrEqualTo: Timestamp.fromDate(getToday()))
+      .orderBy('time.start')
+      .snapshots()
+      .map((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
+}
 
-  Timestamp today = Timestamp.fromDate(getToday());
+Future<QueryBatch<ItemRequest>> getPastRequests(bool isUserOwner, [DocumentSnapshot? startAfterDoc]) {
+  Query query = _firestore
+      .collection('requests')
+      .where(isUserOwner ? 'ownerID' : 'applicantID', isEqualTo: userDetails.docRef.id)
+      .where('time.start', isLessThan: Timestamp.fromDate(getToday()))
+      .orderBy('time.start', descending: true)
+      .limit(20);
 
-  if (status == RequestStatus.expired) {
-    query =
-        query.where('time.start', isLessThan: today).where('status', isEqualTo: RequestStatus.waiting.index);
-  } else {
-    Timestamp ownerApprovedExpired = Timestamp.fromDate(DateTime.now().subtract(const Duration(days: 2)));
-
-    query = query.where('time.start', isGreaterThanOrEqualTo: today);
-
-    if (status != RequestStatus.applicantRejected) {
-      query = query.where('status', isEqualTo: status.index);
-    } else {
-      query = query.where(Filter.or(
-          Filter('status', isEqualTo: status.index),
-          Filter.and(Filter('status', isEqualTo: RequestStatus.ownerApproved.index),
-              Filter('statusUpdateTime', isLessThan: ownerApprovedExpired))));
-    }
-
-    if (status == RequestStatus.ownerApproved) {
-      query = query.where('statusUpdateTime', isGreaterThan: ownerApprovedExpired);
-    }
+  if (startAfterDoc != null) {
+    query = query.startAfterDocument(startAfterDoc);
   }
 
-  return query
-      .orderBy('requestTime', descending: true)
-      .get()
-      .then((QuerySnapshot query) => query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
+  return query.get().then((QuerySnapshot itemsQuery) {
+    List<ItemRequest> list = itemsQuery.docs.map(ItemRequest.fromDocumentSnapshot).toList();
+
+    return QueryBatch(list, list.length == 20, itemsQuery.docs.lastOrNull);
+  });
 }
 
 Future<List<ItemRequest>> getHistoryRequests() {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/screens/item_grid_screen.dart';
-import 'package:rent_app/screens/pending_requests_screen.dart';
+import 'package:rent_app/screens/item_requests_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/services/query_batch.dart';
 import 'package:rent_app/widgets/home_widgets/around_you_container.dart';
@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                           ),
                           IconButton(
-                              onPressed: () => Navigator.pushNamed(context, PendingRequestsScreen.id),
+                              onPressed: () => Navigator.pushNamed(context, ItemRequestsScreen.id),
                               icon: Icon(
                                 Icons.pending_outlined,
                                 color: kDarkYellow,

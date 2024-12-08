@@ -116,6 +116,12 @@
   "rejected_by_the_owner": "נדחה על ידי הבעלים",
   "approved_by_the_applicant": "אושר על ידי המבקש",
   "rejected_by_the_applicant": "נדחה על ידי המבקש",
+  "requests": "בקשות",
+  "my_requests": "הבקשות שלי",
+  "requested_from_me": "ביקשו ממני",
+  "waiting_requests": "ממתינות",
+  "require_attention_requests": "דורשות טיפול",
+  "processed_requests": "טופלו",
 
   "lastSeenTodayAtTime": "נראה/תה לאחרונה היום ב-{time}",
   "@lastSeenTodayAtTime": {

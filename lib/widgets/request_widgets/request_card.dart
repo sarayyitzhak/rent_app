@@ -13,8 +13,9 @@ import '../cached_image.dart';
 
 class RequestCard extends StatefulWidget {
   final ItemRequest request;
+  final Item? item;
 
-  const RequestCard({super.key, required this.request});
+  const RequestCard({super.key, required this.request, this.item});
 
   @override
   State<RequestCard> createState() => _RequestCardState();
@@ -70,7 +71,7 @@ class _RequestCardState extends State<RequestCard> {
   }
 
   void fetchData() async {
-    Item? item = await getItemById(widget.request.itemID);
+    Item? item = widget.item ?? await getItemById(widget.request.itemID);
 
     setState(() {
       _item = item;

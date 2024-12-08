@@ -116,6 +116,12 @@
   "rejected_by_the_owner": "Rejected by the owner",
   "approved_by_the_applicant": "Approved by the applicant",
   "rejected_by_the_applicant": "Rejected by the applicant",
+  "requests": "Requests",
+  "my_requests": "My requests",
+  "requested_from_me": "Requested from me",
+  "waiting_requests": "Waiting",
+  "require_attention_requests": "Require Attention",
+  "processed_requests": "Processed",
 
   "lastSeenTodayAtTime": "Last seen today at {time}",
   "@lastSeenTodayAtTime": {
