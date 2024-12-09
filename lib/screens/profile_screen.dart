@@ -39,9 +39,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     String? image = getCurrentUser()?.photoURL;
     List<ItemRequest> currentMonthRentsFromMe = await getUserApprovedRequestsFrom(DateTime(DateTime.now().year, DateTime.now().month), true);
     List<ItemRequest> currentMonthRentsOfMe = await getUserApprovedRequestsFrom(DateTime(DateTime.now().year, DateTime.now().month), false);
-    double? overallRate = await getUserOverallRate();
-    double? availabilityLevel = await getUserAvailabilityLevel();
-    double? punctualityLevel = await getUserPunctualityLevel();
+    double? overallRate = await getUserOverallRate(userDetails.docRef);
+    double? availabilityLevel = await getUserAvailabilityLevel(userDetails.docRef);
+    double? punctualityLevel = await getUserPunctualityLevel(userDetails.docRef);
     List<ItemRequest> activeRentalOfMe = await getCurrentRents(false);
     List<ItemRequest> activeRentalFromMe = await getCurrentRents(true);
     setState(() {

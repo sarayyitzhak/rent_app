@@ -226,6 +226,10 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getUserItemsStream() {
       .snapshots();
 }
 
+Future<List<Item>> getItemsByContactUser(DocumentReference user){
+  return _getItemsByQuery(_firestore.collection('items').where('contactUserID', isEqualTo: user.id).get(), true);
+}
+
 //REQUESTS
 Future<List<ItemRequest>> getUserRequestsStream() {
   return _firestore
@@ -654,7 +658,7 @@ void addUserReview(
     if (overallRate != null) 'overallRate': overallRate,
     if (availabilityLevel != null) 'availabilityLevel': availabilityLevel,
     if (punctualityLevel != null) 'punctualityLevel': punctualityLevel,
-    if (text != null) 'text': text,
+    if (text != null && text != "") 'text': text,
     'createdAt': FieldValue.serverTimestamp()
   });
   if (overallRate != null) {
@@ -667,6 +671,7 @@ void addUserReview(
 Future<List<UserReview>> getUserReviews(DocumentReference userRef) async {
   return await userRef
       .collection('reviews')
+      .where('text', isNull: false)
       .orderBy('createdAt', descending: true)
       .get()
       .then((QuerySnapshot query) => query.docs.map(UserReview.fromDocumentSnapshot).toList());
@@ -767,6 +772,17 @@ Future<QueryBatch<Item>> getUserFavoriteItems([DocumentSnapshot? startAfterDoc])
   return _getUserItems('favorites', 'updateTime', startAfterDoc);
 }
 
+Future<QueryBatch<Item>> getContactUserItems(DocumentReference user, [DocumentSnapshot? startAfterDoc]) async {
+  Query query = _firestore.collection('items').where('contactUserID', isEqualTo: user.id).orderBy('createdAt', descending: true).limit(20);
+  if (startAfterDoc != null) {
+    query = query.startAfterDocument(startAfterDoc);
+  }
+  return query.get().then((QuerySnapshot itemsSnapshot) {
+    List<Item> items = itemsSnapshot.docs.map((QueryDocumentSnapshot snapshot) => Item.fromDocumentSnapshot(snapshot)).toList();
+    return QueryBatch(items, items.length == 20, itemsSnapshot.docs.lastOrNull);
+  });
+}
+
 Future<QueryBatch<Item>> _getUserItems(
     String collectionName, String orderByFieldName, DocumentSnapshot? startAfterDoc) {
   Query query = userDetails.docRef.collection(collectionName).orderBy(orderByFieldName, descending: true).limit(20);
@@ -805,6 +821,27 @@ Stream<bool> getUserFavoriteItem(DocumentReference itemRef) {
 
 Reference getUserImageRef(DocumentReference userRef, String? photoID) {
   return storageRef.child('users').child('${userRef.id}_$photoID.jpg');
+}
+
+Future<int?> getUserItemCount(DocumentReference userRef) async{
+  final countQuery = await _firestore
+      .collection('items')
+      .where('contactUserID', isEqualTo: userRef.id)
+      .count()
+      .get();
+
+  return countQuery.count;
+}
+
+Future<int?> getUserRentCount(DocumentReference userRef) async {
+  final countQuery = await _firestore
+      .collection('requests')
+      .where('ownerID', isEqualTo: userRef.id)
+      .where('status', isEqualTo: RequestStatus.applicantApproved.index)
+      .count()
+      .get();
+
+  return countQuery.count;
 }
 
 Future<void> updateUserItemSeen(DocumentReference itemRef) async {
@@ -856,20 +893,20 @@ Future<void> toggleUserFavoriteItem(DocumentReference itemRef) async {
   return batch.commit();
 }
 
-Future<double?> getUserOverallRate() async {
-  return userDetails.docRef.get().then((doc) => UserDetails.fromDocumentSnapshot(doc).getRate());
+Future<double?> getUserOverallRate(DocumentReference userRef) async {
+  return userRef.get().then((doc) => UserDetails.fromDocumentSnapshot(doc).getRate());
 }
 
-Future<double?> getUserAvailabilityLevel() async {
-  return userDetails.docRef
+Future<double?> getUserAvailabilityLevel(DocumentReference userRef) async {
+  return userRef
       .collection('reviews')
       .aggregate(average('availabilityLevel'))
       .get()
       .then((res) => res.getAverage('availabilityLevel'));
 }
 
-Future<double?> getUserPunctualityLevel() async {
-  return userDetails.docRef
+Future<double?> getUserPunctualityLevel(DocumentReference userRef) async {
+  return userRef
       .collection('reviews')
       .aggregate(average('punctualityLevel'))
       .get()

@@ -122,6 +122,21 @@
   "waiting_requests": "Waiting",
   "require_attention_requests": "Require Attention",
   "processed_requests": "Processed",
+  "rentals": "Rentals",
+  "rating": "Rating",
+  "items": "Items",
+  "availability": "Availability",
+  "punctuality": "Punctuality",
+
+
+  "itemsOf": "Items of {name}",
+  "@itemsOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
 
   "lastSeenTodayAtTime": "Last seen today at {time}",
   "@lastSeenTodayAtTime": {

@@ -11,6 +11,7 @@ import 'package:rent_app/screens/add_item_screen.dart';
 import 'package:rent_app/screens/image_view_gallery_screen.dart';
 import 'package:rent_app/screens/rental_screen.dart';
 import 'package:rent_app/screens/reviews_screen.dart';
+import 'package:rent_app/screens/user_profile_screen.dart';
 import 'package:rent_app/utils.dart';
 import 'package:rent_app/widgets/custom_button.dart';
 import 'package:rent_app/widgets/rating_stars_widget.dart';
@@ -247,35 +248,37 @@ class _ItemScreenState extends State<ItemScreen> {
                                   localization.contactUserDetails,
                                   style: kBlackHeaderTextStyle,
                                 ),
-                                Row(
-                                  children: [
-                                    CachedImage(
-                                      width: 50,
-                                      height: 50,
-                                      imageRef: getUserImageRef(_userDetails!.docRef, _userDetails!.photoID),
-                                      borderRadius: BorderRadius.circular(100),
-                                      errorIcon: Icons.person,
-                                    ),
-                                    Container(
-                                      margin: const EdgeInsets.symmetric(horizontal: 12),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            _userDetails!.name,
-                                            style: kBlackTextStyle,
-                                          ),
-                                          FutureBuilder(
+                                if(_userDetails != null) GestureDetector(
+                                  onTap: () => Navigator.pushNamed(context, UserProfileScreen.id, arguments: UserProfileScreenArguments(_userDetails!)),
+                                  child: Row(
+                                    children: [
+                                      CachedImage(
+                                        width: 50,
+                                        height: 50,
+                                        imageRef: getUserImageRef(_userDetails!.docRef, _userDetails!.photoID),
+                                        borderRadius: BorderRadius.circular(100),
+                                        errorIcon: Icons.person,
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.symmetric(horizontal: 12),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              _userDetails!.name,
+                                              style: kBlackTextStyle,
+                                            ),
+                                            FutureBuilder(
                                             future: AddressService().getAddress(_item!.geoPoint),
-                                            builder: (context, snapshot) => Text(
+                                            builder: (context, snapshot) =>Text(
                                               snapshot.data ?? '',
                                               style: kBlackTextStyle,
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  ],
+                                    ),],
+                                  ),
                                 ),
                               ],
                             ),

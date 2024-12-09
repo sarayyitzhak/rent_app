@@ -5,8 +5,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool isBackButton;
   final IconData backIcon;
+  final IconData? actionIcon;
+  final Function()? onPressed;
 
-  const CustomAppBar({super.key, required this.title, this.isBackButton = true, this.backIcon = Icons.arrow_back});
+  const CustomAppBar({super.key, required this.title, this.isBackButton = true, this.backIcon = Icons.arrow_back, this.actionIcon, this.onPressed});
 
   @override
   AppBar build(BuildContext context) {
@@ -23,6 +25,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       automaticallyImplyLeading: isBackButton,
+      actions: [
+        IconButton(onPressed: onPressed, icon: Icon(actionIcon))
+      ],
     );
   }
 

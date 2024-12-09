@@ -24,6 +24,7 @@ import 'package:rent_app/screens/search_result_screen.dart';
 import 'package:rent_app/screens/search_screen.dart';
 import 'package:rent_app/screens/user_items_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:rent_app/screens/user_profile_screen.dart';
 import 'package:rent_app/screens/user_review_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -176,6 +177,7 @@ class MyApp extends StatelessWidget {
           EditUserDetailsScreen.id: (context) => const EditUserDetailsScreen(),
           RentalHistoryScreen.id: (context) => const RentalHistoryScreen(),
           RequestListScreen.id: (context) => RequestListScreen(settings.arguments as RequestListScreenArguments),
+          UserProfileScreen.id: (context) => UserProfileScreen(settings.arguments as UserProfileScreenArguments),
           ImageViewGalleryScreen.id: (context) =>
               ImageViewGalleryScreen(settings.arguments as ImageViewGalleryScreenArguments),
         };

@@ -122,6 +122,21 @@
   "waiting_requests": "ממתינות",
   "require_attention_requests": "דורשות טיפול",
   "processed_requests": "טופלו",
+  "rentals": "השכרות",
+  "rating": "ציון כללי",
+  "items": "פריטים",
+  "availability": "זמינות",
+  "punctuality": "עמידה בזמנים",
+
+
+  "itemsOf": "המוצרים של {name}",
+  "@itemsOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
 
   "lastSeenTodayAtTime": "נראה/תה לאחרונה היום ב-{time}",
   "@lastSeenTodayAtTime": {

@@ -5,9 +5,10 @@ import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/utils.dart';
 import 'package:rent_app/widgets/rating_stars_widget.dart';
 import '../constants.dart';
+import 'cached_image.dart';
 
 class ReviewCard extends StatelessWidget {
-  final ItemReview review;
+  final review;
   ReviewCard({super.key, required this.review});
 
   @override
@@ -24,13 +25,6 @@ class ReviewCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.all(5),
-                child: CircleAvatar(
-                  radius: 20,
-                    child: Icon(Icons.person),
-                ),
-              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -42,7 +36,22 @@ class ReviewCard extends StatelessWidget {
                         }
                         if(snapshot.hasData){
                           UserDetails publisher = snapshot.data;
-                          return Text(publisher.name, style: kBlackHeaderTextStyle,);
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: Row(
+                              children: [
+                                CachedImage(
+                                  width: 50,
+                                  height: 50,
+                                  imageRef: getUserImageRef(publisher.docRef, publisher.photoID),
+                                  borderRadius: BorderRadius.circular(100),
+                                  errorIcon: Icons.person,
+                                ),
+                                SizedBox(width: 15,),
+                                Text(publisher.name, style: kBlackHeaderTextStyle,),
+                              ],
+                            ),
+                          );
                         }
                         else {
                           return Text('');

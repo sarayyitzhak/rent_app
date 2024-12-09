@@ -46,6 +46,11 @@ const kBlackTextStyle = TextStyle(
   fontWeight: FontWeight.w400,
 );
 
+const kBlackBoldTextStyle = TextStyle(
+  color: kBlackColor,
+  fontSize: 18,
+  fontWeight: FontWeight.bold,
+);
 
 const kSmallBlackTextStyle = TextStyle(
   color: kBlackColor,

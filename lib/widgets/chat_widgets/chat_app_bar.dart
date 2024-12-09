@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:rent_app/dictionary.dart';
+import 'package:rent_app/screens/user_profile_screen.dart';
 import 'package:rent_app/utils.dart';
 
 import '../../globals.dart';
@@ -137,30 +138,33 @@ class _CustomAppBarState extends State<ChatAppBar> {
   @override
   AppBar build(BuildContext context) {
     return AppBar(
-      title: Row(
-        children: [
-          CachedImage(
-            width: 50,
-            height: 50,
-            imageRef:
-                _participantUser != null ? getUserImageRef(_participantUser!.docRef, _participantUser!.photoID) : null,
-            borderRadius: BorderRadius.circular(100),
-            errorIcon: Icons.person,
-          ),
-          const SizedBox(
-            width: 12,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(_participantUser?.name ?? ''),
-              Text(
-                _getParticipantOnline(context),
-                style: const TextStyle(fontSize: 14),
-              ),
-            ],
-          ),
-        ],
+      title: GestureDetector(
+        onTap: () => Navigator.pushNamed(context, UserProfileScreen.id, arguments: UserProfileScreenArguments(_participantUser!)),
+        child: Row(
+          children: [
+            CachedImage(
+              width: 50,
+              height: 50,
+              imageRef:
+                  _participantUser != null ? getUserImageRef(_participantUser!.docRef, _participantUser!.photoID) : null,
+              borderRadius: BorderRadius.circular(100),
+              errorIcon: Icons.person,
+            ),
+            const SizedBox(
+              width: 12,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(_participantUser?.name ?? ''),
+                Text(
+                  _getParticipantOnline(context),
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
       leading: IconButton(
         onPressed: () {
