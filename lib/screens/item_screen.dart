@@ -241,46 +241,58 @@ class _ItemScreenState extends State<ItemScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  localization.contactUserDetails,
-                                  style: kBlackHeaderTextStyle,
-                                ),
-                                if(_userDetails != null) GestureDetector(
-                                  onTap: () => Navigator.pushNamed(context, UserProfileScreen.id, arguments: UserProfileScreenArguments(_userDetails!)),
-                                  child: Row(
-                                    children: [
-                                      CachedImage(
-                                        width: 50,
-                                        height: 50,
-                                        imageRef: getUserImageRef(_userDetails!.docRef, _userDetails!.photoID),
-                                        borderRadius: BorderRadius.circular(100),
-                                        errorIcon: Icons.person,
-                                      ),
-                                      Container(
-                                        margin: const EdgeInsets.symmetric(horizontal: 12),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              _userDetails!.name,
-                                              style: kBlackTextStyle,
-                                            ),
-                                            FutureBuilder(
-                                            future: AddressService().getAddress(_item!.geoPoint),
-                                            builder: (context, snapshot) =>Text(
-                                              snapshot.data ?? '',
-                                              style: kBlackTextStyle,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    localization.contactUserDetails,
+                                    style: kBlackHeaderTextStyle,
+                                  ),
+                                  if (_userDetails != null)
+                                    GestureDetector(
+                                      onTap: () => Navigator.pushNamed(context, UserProfileScreen.id,
+                                          arguments: UserProfileScreenArguments(_userDetails!)),
+                                      child: Row(
+                                        children: [
+                                          CachedImage(
+                                            width: 50,
+                                            height: 50,
+                                            imageRef: getUserImageRef(
+                                                _userDetails!.docRef, _userDetails!.photoID),
+                                            borderRadius: BorderRadius.circular(100),
+                                            errorIcon: Icons.person,
+                                          ),
+                                          Expanded(
+                                            child: Container(
+                                              margin: const EdgeInsets.symmetric(horizontal: 12),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    _userDetails!.name,
+                                                    style: kBlackTextStyle,
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                  FutureBuilder(
+                                                    future: AddressService().getAddress(_item!.geoPoint),
+                                                    builder: (context, snapshot) => Text(
+                                                      snapshot.data ?? '',
+                                                      style: kBlackTextStyle,
+                                                      maxLines: 2,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ),],
-                                  ),
-                                ),
-                              ],
+                                    ),
+                                ],
+                              ),
                             ),
                             if (_userDetails!.showPhoneNumber)
                               DialIconButton(phoneNumber: phoneNumberToString(_userDetails!.phoneNumber)),

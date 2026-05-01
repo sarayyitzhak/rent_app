@@ -41,60 +41,56 @@ class _ItemReviewScreenState extends State<ItemReviewScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       'מה דעתך הכללית על המוצר?',
                       style: kBlackHeaderTextStyle,
                     ),
                     RatingStarsRow(onChanged: (v) => overallRate = v.toInt()),
-                    SizedBox(height: 15),
-
-                    Text(
+                    const SizedBox(height: 15),
+                    const Text(
                       'מה התמורה למחיר?',
                       style: kBlackHeaderTextStyle,
                     ),
                     RatingStarsRow(onChanged: (v) => valueForPrice = v.toInt()),
-                    SizedBox(height: 15),
-
-                    Text(
+                    const SizedBox(height: 15),
+                    const Text(
                       'כמה המוצר תואם למודעה?',
                       style: kBlackHeaderTextStyle,
                     ),
                     RatingStarsRow(onChanged: (v) => compatibility = v.toInt()),
                   ],
                 ),
-                SizedBox(height: 30),
-
+                const SizedBox(height: 30),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'ספר לנו עוד',
                         style: kBlackTextStyle,
                       ),
                       Container(
                         height: 150,
                         width: double.infinity,
-                        padding: EdgeInsets.symmetric(horizontal: 15),
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
                         decoration: BoxDecoration(
                           color: Colors.grey[300],
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: TextField(
                           controller: textController,
-                          decoration: InputDecoration(
-                            hintText: 'שיתוף פרטים על חווית ההשכרה שלך עם מוצר זה',
+                          decoration: const InputDecoration(
+                            hintText:
+                                'שיתוף פרטים על חווית ההשכרה שלך עם מוצר זה',
                             hintStyle: TextStyle(color: Colors.black54),
                             border: InputBorder.none,
                           ),
                           maxLines: 8,
                         ),
                       ),
-
-                      SizedBox(height: 30),
-
-                      Text(
+                      const SizedBox(height: 30),
+                      const Text(
                         'איך היית מתאר את מצב המוצר?',
                         style: kBlackHeaderTextStyle,
                       ),
@@ -102,32 +98,45 @@ class _ItemReviewScreenState extends State<ItemReviewScreen> {
                         spacing: 10,
                         children: Condition.values
                             .map((c) => ElevatedButton(
-                                  child: Text(c.getTitle(localization)),
                                   style: ButtonStyle(
-                                      backgroundColor: c == condition ? WidgetStatePropertyAll(Colors.grey[400]) : WidgetStatePropertyAll(Colors.grey[200]),
+                                    backgroundColor: c == condition
+                                        ? WidgetStatePropertyAll(
+                                            Colors.grey[400])
+                                        : WidgetStatePropertyAll(
+                                            Colors.grey[200]),
                                   ),
                                   onPressed: () {
                                     setState(() {
                                       condition = c;
                                     });
                                   },
+                                  child: Text(c.getTitle(localization)),
                                 ))
                             .toList(),
                       )
                     ],
                   ),
                 ),
-                SizedBox(height: 40),
-                
-                ElevatedButton(onPressed: () async {
-                  if(overallRate != null || valueForPrice != null || compatibility != null || condition != null || textController.text.isNotEmpty){
-                    addItemReview(item.docRef, overallRate, valueForPrice, compatibility, condition, textController.text);
-                    Navigator.pushNamed(context, UserReviewScreen.id, arguments: UserReviewScreenArguments(await getUserByID(item.contactUserID)));
-                  } // else make then answer
-
-                }, child: Text('המשך'), style: ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll(Colors.grey[200]),
-                ),),
+                const SizedBox(height: 40),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (overallRate != null ||
+                        valueForPrice != null ||
+                        compatibility != null ||
+                        condition != null ||
+                        textController.text.isNotEmpty) {
+                      addItemReview(item.docRef, overallRate, valueForPrice,
+                          compatibility, condition, textController.text);
+                      Navigator.pushNamed(context, UserReviewScreen.id,
+                          arguments: UserReviewScreenArguments(
+                              await getUserByID(item.contactUserID)));
+                    } // else make then answer
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(Colors.grey[200]),
+                  ),
+                  child: const Text('המשך'),
+                ),
               ],
             ),
           ),

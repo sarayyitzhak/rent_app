@@ -13,8 +13,6 @@ import 'package:rent_app/models/category.dart';
 import 'package:rent_app/models/condition.dart';
 import 'dart:async';
 
-import '../models/item.dart';
-
 final _firestore = FirebaseFirestore.instance;
 final _auth = FirebaseAuth.instance;
 final storageRef = FirebaseStorage.instance.ref();
@@ -156,7 +154,8 @@ Future<File> getImageFileFromAssets(String path) async {
   final fileName = path.split('/').last; // Get just the file name
   final file = File('${(await getTemporaryDirectory()).path}/$fileName');
 
-  await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+  await file.writeAsBytes(byteData.buffer
+      .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
 
   return file;
 }
@@ -169,17 +168,17 @@ Future<void> onRegisterButtonPressed(int idx) async {
 
   String email = 'mail${idx.toString()}@gmail.com';
 
-  final user = await _auth.signInWithEmailAndPassword(email: email, password: '123456');
+  final user =
+      await _auth.signInWithEmailAndPassword(email: email, password: '123456');
   userUidRand = user.user?.uid;
   userReference = _firestore.collection('users').doc(userUidRand);
   userDetailsRand = UserDetails(
-    docRef: userReference,
-    name: names[idx],
-    phoneNumber: int.parse('54808825$idx'),
-    lastSeenTime: DateTime.now(),
-    online: false,
-    showPhoneNumber: true
-  );
+      docRef: userReference,
+      name: names[idx],
+      phoneNumber: int.parse('54808825$idx'),
+      lastSeenTime: DateTime.now(),
+      online: false,
+      showPhoneNumber: true);
   _messaging.getToken().then((String? token) {
     if (token != null) {
       userDetailsRand.token = token;

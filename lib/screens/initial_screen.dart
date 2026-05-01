@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/screens/welcome_screen.dart';
 import 'package:rent_app/globals.dart';
-import '../main.dart';
 import '../services/cloud_services.dart';
 import 'main_screen.dart';
 
@@ -26,7 +25,7 @@ class InitialScreen extends StatelessWidget {
 
   Future<void> navigateToInitialScreen(BuildContext context) async {
     String initialRoute = await getInitialScreen();
-    Navigator.popAndPushNamed(context, initialRoute as String);
+    Navigator.popAndPushNamed(context, initialRoute);
   }
 
   @override
@@ -42,7 +41,14 @@ class InitialScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image.asset(kWhiteLogoImage),
-              const Text('BORRO', style: TextStyle(color: Colors.white, fontSize: 60,letterSpacing: 1, fontWeight: FontWeight.bold),),
+              const Text(
+                'BORRO',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 52,
+                    letterSpacing: 1,
+                    fontWeight: FontWeight.bold),
+              ),
             ],
           ),
         ),

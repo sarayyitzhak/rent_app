@@ -11,7 +11,7 @@ import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/utils.dart';
 import 'package:rent_app/widgets/add_item_widgets/selectable_images_container.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rent_app/l10n/app_localizations.dart';
 import 'package:rent_app/widgets/text_and_text_field.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
@@ -131,6 +131,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
       inputDecorationTheme: const InputDecorationTheme(
         fillColor: kPastelYellowOpacity,
         hoverColor: kPastelYellowOpacity,
+        border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
       ),
     );
   }
@@ -273,7 +276,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   onPressed: () => mapDialogBuilder(context),
                   style: kAddressButtonStyle,
                   child: FutureBuilder(
-                    future: AddressService().getAddress(item!.geoPoint),
+                    future: AddressService().getAddress(widget.args.isEditMode ? item!.geoPoint : geoPoint),
                     builder: (context, snapshot) => Text(
                       snapshot.data ?? '',
                       style: kBlackTextStyle,

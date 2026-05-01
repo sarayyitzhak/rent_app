@@ -31,9 +31,11 @@ class _RequestCardState extends State<RequestCard> {
       if (_status == RequestStatus.ownerApproved) {
         return Row(
           children: [
-            createStatusButton(localization.accept, RequestStatus.applicantApproved, Colors.green),
+            createStatusButton(localization.accept,
+                RequestStatus.applicantApproved, Colors.green),
             const SizedBox(width: 5),
-            createStatusButton(localization.reject, RequestStatus.applicantRejected, Colors.red)
+            createStatusButton(localization.reject,
+                RequestStatus.applicantRejected, Colors.red)
           ],
         );
       } else {
@@ -43,9 +45,11 @@ class _RequestCardState extends State<RequestCard> {
       if (_status == RequestStatus.waiting) {
         return Row(
           children: [
-            createStatusButton(localization.accept, RequestStatus.ownerApproved, Colors.green),
+            createStatusButton(
+                localization.accept, RequestStatus.ownerApproved, Colors.green),
             const SizedBox(width: 5),
-            createStatusButton(localization.reject, RequestStatus.ownerRejected, Colors.red)
+            createStatusButton(
+                localization.reject, RequestStatus.ownerRejected, Colors.red)
           ],
         );
       } else {
@@ -56,7 +60,8 @@ class _RequestCardState extends State<RequestCard> {
     }
   }
 
-  ElevatedButton createStatusButton(String title, RequestStatus status, Color color) {
+  ElevatedButton createStatusButton(
+      String title, RequestStatus status, Color color) {
     return ElevatedButton(
       onPressed: () {
         setState(() {
@@ -64,9 +69,12 @@ class _RequestCardState extends State<RequestCard> {
           updateRequestStatus(widget.request.docRef, status);
         });
       },
-      child: Text(title),
       style: ElevatedButton.styleFrom(
-          foregroundColor: kWhiteColor, backgroundColor: color, elevation: 3, textStyle: kWhiteTextStyle),
+          foregroundColor: kWhiteColor,
+          backgroundColor: color,
+          elevation: 3,
+          textStyle: kWhiteTextStyle),
+      child: Text(title),
     );
   }
 
@@ -91,7 +99,8 @@ class _RequestCardState extends State<RequestCard> {
     var localization = Dictionary.getLocalization(context);
     return GestureDetector(
       onTap: widget.request.status == RequestStatus.ownerApproved
-          ? () async => Navigator.pushNamed(context, ItemReviewScreen.id, arguments: ItemReviewScreenArguments(_item!))
+          ? () async => Navigator.pushNamed(context, ItemReviewScreen.id,
+              arguments: ItemReviewScreenArguments(_item!))
           : () => Navigator.pushNamed(context, RequestScreen.id,
               arguments: RequestScreenArguments(itemRequest: widget.request)),
       child: Card(
@@ -100,7 +109,7 @@ class _RequestCardState extends State<RequestCard> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Container(
+        child: SizedBox(
           height: 100,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -111,9 +120,12 @@ class _RequestCardState extends State<RequestCard> {
                   CachedImage(
                     width: 100,
                     height: 100,
-                    imageRef: _item != null ? getItemImageRef(_item!.docRef, _item!.mainImage) : null,
+                    imageRef: _item != null
+                        ? getItemImageRef(_item!.docRef, _item!.mainImage)
+                        : null,
                     borderRadius: const BorderRadiusDirectional.only(
-                        topStart: Radius.circular(20), bottomStart: Radius.circular(20)),
+                        topStart: Radius.circular(20),
+                        bottomStart: Radius.circular(20)),
                   ),
                   const SizedBox(width: 10),
                   Column(

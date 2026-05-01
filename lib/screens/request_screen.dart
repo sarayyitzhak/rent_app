@@ -64,7 +64,8 @@ class _RequestScreenState extends State<RequestScreen> {
       _item = item;
     });
 
-    _itemRequestSubscription = getItemRequestStream(_itemRequest.docRef).listen((itemRequest) {
+    _itemRequestSubscription =
+        getItemRequestStream(_itemRequest.docRef).listen((itemRequest) {
       setState(() {
         _itemRequest = itemRequest;
       });
@@ -90,24 +91,26 @@ class _RequestScreenState extends State<RequestScreen> {
   Widget build(BuildContext context) {
     var localization = Dictionary.getLocalization(context);
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'בקשה',
         isBackButton: true,
       ),
       body: Container(
-        margin: EdgeInsets.all(20),
+        margin: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
+            SizedBox(
               height: 90,
               child: Row(
                 children: [
                   CachedImage(
                     width: 90,
                     height: 90,
-                    imageRef: _item != null ? getItemImageRef(_item!.docRef, _item!.mainImage) : null,
+                    imageRef: _item != null
+                        ? getItemImageRef(_item!.docRef, _item!.mainImage)
+                        : null,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   const SizedBox(
@@ -133,47 +136,58 @@ class _RequestScreenState extends State<RequestScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Text('תאריכים:', style: kBlackHeaderTextStyle),
+                    const Text('תאריכים:', style: kBlackHeaderTextStyle),
                     Text(
                         '${dateToString(_itemRequest.time.start)}-${dateToString(_itemRequest.time.end)}',
                         style: kBlackHeaderTextStyle)
                   ],
                 ),
-                _itemRequest.extensionRequest != null ? Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text('הארכה עד:', style: TextStyle(fontSize: 14)),
-                        Text(dateToString(_itemRequest.extensionRequest!.toDate), style: TextStyle(fontSize: 14)),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text('מצב בקשה:', style: TextStyle(fontSize: 14)),
-                        Text(_itemRequest.extensionRequest!.status.getTitle(localization), style: TextStyle(fontSize: 14))
-                      ],
-                    ),
-                    ElevatedButton(
-                      onPressed: onCancelExtensionPressed,
-                      child: Text("בטל בקשה"),
-                    ),
-                  ],
-                ) : Container(),
+                _itemRequest.extensionRequest != null
+                    ? Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              const Text('הארכה עד:',
+                                  style: TextStyle(fontSize: 14)),
+                              Text(
+                                  dateToString(
+                                      _itemRequest.extensionRequest!.toDate),
+                                  style: const TextStyle(fontSize: 14)),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              const Text('מצב בקשה:',
+                                  style: TextStyle(fontSize: 14)),
+                              Text(
+                                  _itemRequest.extensionRequest!.status
+                                      .getTitle(localization),
+                                  style: const TextStyle(fontSize: 14))
+                            ],
+                          ),
+                          ElevatedButton(
+                            onPressed: onCancelExtensionPressed,
+                            child: const Text("בטל בקשה"),
+                          ),
+                        ],
+                      )
+                    : Container(),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text('מצב בקשה:', style: kBlackHeaderTextStyle),
-                Text(_itemRequest.status.getTitle(localization), style: kBlackHeaderTextStyle)
+                const Text('מצב בקשה:', style: kBlackHeaderTextStyle),
+                Text(_itemRequest.status.getTitle(localization),
+                    style: kBlackHeaderTextStyle)
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text(
+                const Text(
                   'מחיר סופי:',
                   style: kBlackHeaderTextStyle,
                 ),
@@ -186,7 +200,7 @@ class _RequestScreenState extends State<RequestScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text(
+                const Text(
                   'מקום איסוף:',
                   style: kBlackHeaderTextStyle,
                 ),
@@ -203,7 +217,11 @@ class _RequestScreenState extends State<RequestScreen> {
               child: Column(
                 children: [
                   CustomButton(title: 'בקש הארכה', onPress: onExtensionPressed),
-                  CustomButton(title: _itemRequest.status == RequestStatus.waiting ? 'מחק בקשה' : 'בטל בקשה', onPress: onCancelPressed)
+                  CustomButton(
+                      title: _itemRequest.status == RequestStatus.waiting
+                          ? 'מחק בקשה'
+                          : 'בטל בקשה',
+                      onPress: onCancelPressed)
                 ],
               ),
             ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rent_app/l10n/app_localizations.dart';
+
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
-import 'package:rent_app/globals.dart';
 
 import '../dictionary.dart';
 import '../services/current_position_service.dart';
@@ -27,7 +27,9 @@ class MapDialog extends StatelessWidget {
           searchBarHintText: localization.searchLocation,
           urlTemplate: kMapUrl,
           mapLanguage: localization.language,
-          initPosition: LatLong(CurrentPositionService().geoPoint?.latitude ?? 23, CurrentPositionService().geoPoint?.longitude ?? 25),
+          initPosition: LatLong(
+              CurrentPositionService().geoPoint?.latitude ?? 23,
+              CurrentPositionService().geoPoint?.longitude ?? 25),
           selectLocationButtonStyle: ButtonStyle(
             backgroundColor: WidgetStateProperty.all(Colors.blue),
           ),

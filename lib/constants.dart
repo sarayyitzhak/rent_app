@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -7,14 +5,16 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'models/item.dart';
 import 'services/query_batch.dart';
 
-typedef QueryBatchGetter = Future<QueryBatch<Item>> Function(DocumentSnapshot? startAfterDoc);
+typedef QueryBatchGetter = Future<QueryBatch<Item>> Function(
+    DocumentSnapshot? startAfterDoc);
 
 const kYellowLogoImage = 'assets/images/handshake_yellow.png';
 const kWhiteLogoImage = 'assets/images/handshake.png';
 const kGoogleApiKey = 'AIzaSyDHz-rjDLdurz6ugj5oXvG4DaeRfR0QXIA';
 const kMapTilerApiKey = '90JJ6DPLZWrrH2aGs87z';
 
-const kMapUrl = 'https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=$kMapTilerApiKey';
+const kMapUrl =
+    'https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=$kMapTilerApiKey';
 
 const kMaxDistance = 5000; /* meters */
 const kMaxDistanceForNearby = 200; /* meters */
@@ -23,11 +23,10 @@ const kMaxDistanceForMeters = 500; /* meters */
 const kIconRadius = 12.0;
 
 const kTopHeaderTextStyle = TextStyle(
-  color: kDarkYellow,
-  fontSize: 28,
-  fontWeight: FontWeight.bold,
-  letterSpacing: 1
-);
+    color: kDarkYellow,
+    fontSize: 28,
+    fontWeight: FontWeight.bold,
+    letterSpacing: 1);
 
 const kHeadersTextStyle = TextStyle(
   color: kDarkYellow,
@@ -64,16 +63,19 @@ const kButtonTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
 );
 
+const kSmallButtonTextStyle = TextStyle(
+  color: kBlackColor,
+  fontSize: 18,
+  fontWeight: FontWeight.bold,
+);
+
 const kWhiteTextStyle = TextStyle(
   color: kWhiteColor,
   fontSize: 14,
   fontWeight: FontWeight.bold,
 );
 
-const kBlackBigTextStyle = TextStyle(
-    fontSize: 34,
-    fontWeight: FontWeight.bold
-);
+const kBlackBigTextStyle = TextStyle(fontSize: 34, fontWeight: FontWeight.bold);
 
 const kTextFieldHintTextStyle = TextStyle(
   color: kGreyColor,
@@ -83,8 +85,7 @@ const kTextFieldHintTextStyle = TextStyle(
 
 const kTextFieldDecoration = InputDecoration(
   hintText: '',
-  contentPadding:
-  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
   border: OutlineInputBorder(
     borderRadius: BorderRadius.all(Radius.circular(32.0)),
   ),
@@ -104,8 +105,7 @@ const kTextFieldDecoration = InputDecoration(
 
 const kTextFieldDecorationOnlyBorder = InputDecoration(
   hintText: '',
-  contentPadding:
-  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
   border: OutlineInputBorder(
     borderRadius: BorderRadius.all(Radius.circular(32.0)),
   ),
@@ -127,31 +127,43 @@ const kDarkButtonStyle = ButtonStyle(
   backgroundColor: WidgetStatePropertyAll(kPastelYellow),
   textStyle: WidgetStatePropertyAll(kButtonTextStyle),
   elevation: WidgetStatePropertyAll(8),
-  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
+  padding: WidgetStatePropertyAll(
+      EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
 );
 
 const kLightButtonStyle = ButtonStyle(
   backgroundColor: WidgetStatePropertyAll(kLightYellow),
   textStyle: WidgetStatePropertyAll(kButtonTextStyle),
-  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
+  padding: WidgetStatePropertyAll(
+      EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
 );
 
 const kSmallButtonStyle = ButtonStyle(
-backgroundColor: WidgetStatePropertyAll(kPastelYellowOpacity),
-textStyle: WidgetStatePropertyAll(kBlackTextStyle),
-padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
+  backgroundColor: WidgetStatePropertyAll(kPastelYellowOpacity),
+  textStyle: WidgetStatePropertyAll(kSmallButtonTextStyle),
+  padding: WidgetStatePropertyAll(
+      EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
+);
+
+const kSmallButtonClickedStyle = ButtonStyle(
+  backgroundColor: WidgetStatePropertyAll(kPastelYellow),
+  textStyle: WidgetStatePropertyAll(kSmallButtonTextStyle),
+  padding: WidgetStatePropertyAll(
+      EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
 );
 
 const kAcceptButtonStyle = ButtonStyle(
   backgroundColor: WidgetStatePropertyAll(Colors.green),
   textStyle: WidgetStatePropertyAll(kBlackTextStyle),
-  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
+  padding: WidgetStatePropertyAll(
+      EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
 );
 
 const kRejectButtonStyle = ButtonStyle(
   backgroundColor: WidgetStatePropertyAll(Colors.red),
   textStyle: WidgetStatePropertyAll(kBlackTextStyle),
-  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
+  padding: WidgetStatePropertyAll(
+      EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
 );
 
 const kAddressButtonStyle = ButtonStyle(
@@ -159,7 +171,8 @@ const kAddressButtonStyle = ButtonStyle(
   fixedSize: WidgetStatePropertyAll(Size(400, 20)),
   backgroundColor: WidgetStatePropertyAll(kPastelYellowOpacity),
   textStyle: WidgetStatePropertyAll(kSmallBlackTextStyle),
-  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
+  padding: WidgetStatePropertyAll(
+      EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
 );
 
 const kMessageContainerDecoration = BoxDecoration(
@@ -180,18 +193,19 @@ const kSendButtonTextStyle = TextStyle(
   fontSize: 18.0,
 );
 
-const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
-    'chat_channel_id',
-    'Chat Notifications',
-    channelDescription: 'Notifications for chat messages',
-    importance: Importance.high,
-    priority: Priority.high,
-    showWhen: false,
-    icon: 'app_icon',
+const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+  'chat_channel_id',
+  'Chat Notifications',
+  channelDescription: 'Notifications for chat messages',
+  importance: Importance.high,
+  priority: Priority.high,
+  showWhen: false,
+  icon: 'app_icon',
 );
 
-const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
-
+const NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
 
 const kDarkYellow = Color(0xFFFFC30B);
 const kLightYellow = Color(0xFFFAF0E6);
@@ -204,13 +218,13 @@ const kBlue = Colors.lightBlueAccent;
 const kGreyColor = Colors.grey;
 
 const kUserSideBubbleEn = BorderRadius.only(
-    topLeft: Radius.circular(30),
-    bottomLeft: Radius.circular(30),
-    bottomRight: Radius.circular(30),
+  topLeft: Radius.circular(30),
+  bottomLeft: Radius.circular(30),
+  bottomRight: Radius.circular(30),
 );
 
 const kContactSideBubbleEn = BorderRadius.only(
-    topRight: Radius.circular(30),
-    bottomLeft: Radius.circular(30),
-    bottomRight: Radius.circular(30),
+  topRight: Radius.circular(30),
+  bottomLeft: Radius.circular(30),
+  bottomRight: Radius.circular(30),
 );

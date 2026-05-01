@@ -30,7 +30,8 @@ class _SendItemContainerState extends State<SendItemContainer> {
         _goToChat = true;
       });
 
-      _chatRef = await sendItemMessage(widget.item.contactUserID, widget.item.docRef, _messageTextController.text);
+      _chatRef = await sendItemMessage(widget.item.contactUserID,
+          widget.item.docRef, _messageTextController.text);
 
       setState(() {
         _messageSendLoading = false;
@@ -51,7 +52,8 @@ class _SendItemContainerState extends State<SendItemContainer> {
       });
 
       if (mounted) {
-        Navigator.pushNamed(context, ChatScreen.id, arguments: ChatScreenArguments(chat));
+        Navigator.pushNamed(context, ChatScreen.id,
+            arguments: ChatScreenArguments(chat));
       }
     }
   }
@@ -68,7 +70,7 @@ class _SendItemContainerState extends State<SendItemContainer> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           "שלח הודעה למשכיר",
           style: kBlackHeaderTextStyle,
         ),
@@ -95,7 +97,8 @@ class _SendItemContainerState extends State<SendItemContainer> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
                 child: _messageSendLoading
                     ? CircleAvatar(
                         backgroundColor: Colors.blueAccent,
@@ -113,7 +116,7 @@ class _SendItemContainerState extends State<SendItemContainer> {
                                   borderRadius: BorderRadius.circular(20),
                                   color: Colors.blueAccent,
                                 ),
-                                child: Text(
+                                child: const Text(
                                   'פתח את הצאט',
                                   style: TextStyle(color: Colors.white),
                                 )),

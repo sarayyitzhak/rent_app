@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/globals.dart';
-import 'package:rent_app/models/chat.dart';
 import 'package:rent_app/screens/chats_screen.dart';
 import 'package:rent_app/screens/search_screen.dart';
 import 'package:rent_app/screens/user_items_screen.dart';
@@ -27,6 +26,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   int _selectedBottomBarIndex = 0;
   int _unreadChats = 0;
   Timer? _lastSeenTimeTimer;
+  bool _isInitializing = true;
 
   StreamSubscription? _userChatsSubscription;
 
@@ -52,16 +52,17 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   Future<void> _initAppData() async {
     await getUser();
     requestMicrophonePermission();
-    requestNotificationsPermission();
+    await requestNotificationsPermission();
     onTokenRefreshed();
     // messagingListenForeground();
-    setToken();
+    await setToken();
     onMessageOpenedApp(context);
     CurrentPositionService().init();
   }
 
   void _fetchUserChats() {
-    _userChatsSubscription = getUserUnreadChatCountStream().listen((int unreadChats) {
+    _userChatsSubscription =
+        getUserUnreadChatCountStream().listen((int unreadChats) {
       setState(() {
         _unreadChats = unreadChats;
       });
@@ -72,6 +73,21 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     _lastSeenTimeTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
       updateUserLastSeenTime();
     });
+  }
+
+  Future<void> _initializeMainScreen() async {
+    try {
+      await _initAppData();
+      _fetchUserChats();
+      _onAppEntered();
+      _startPeriodicUpdates();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isInitializing = false;
+        });
+      }
+    }
   }
 
   Widget _buildNotificationIcon(IconData icon, int notificationCount) {
@@ -116,14 +132,16 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   void _onAppDetached() {
     updateUserLastSeenTime(false);
     if (activeChat != null) {
-      bool isUserIndex0 = activeChat!.participantInfo0.uid == userDetails.docRef.id;
+      bool isUserIndex0 =
+          activeChat!.participantInfo0.uid == userDetails.docRef.id;
       updateChatUserTyping(activeChat!.docRef, isUserIndex0, false);
     }
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
       _onAppDetached();
     } else if (state == AppLifecycleState.resumed) {
       updateUserLastSeenTime();
@@ -135,11 +153,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     super.initState();
 
     WidgetsBinding.instance.addObserver(this);
-
-    _initAppData();
-    _fetchUserChats();
-    _onAppEntered();
-    _startPeriodicUpdates();
+    _initializeMainScreen();
   }
 
   @override
@@ -154,6 +168,14 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    if (_isInitializing) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: kPastelYellow),
+        ),
+      );
+    }
+
     return Scaffold(
       body: PopScope(
         canPop: false,

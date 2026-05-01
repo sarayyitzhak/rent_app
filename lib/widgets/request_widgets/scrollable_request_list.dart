@@ -5,12 +5,31 @@ import '../../models/item_request.dart';
 
 class ScrollableRequestList extends StatelessWidget {
   final Future<List<ItemRequest>> future;
-  const ScrollableRequestList({super.key, required this.future});
+  final String? emptyText;
+  final TextStyle? emptyTextStyle;
+
+  const ScrollableRequestList(
+      {super.key,
+      required this.future,
+      this.emptyText,
+      this.emptyTextStyle});
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(future: future, builder: (context, snapshot) {
       if (snapshot.hasData) {
+        if (snapshot.data!.isEmpty && emptyText != null) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Text(
+                emptyText!,
+                textAlign: TextAlign.center,
+                style: emptyTextStyle,
+              ),
+            ),
+          );
+        }
         return ListView(
           children: snapshot.data!.map((request) => RequestCard(request: request)).toList(),
         );

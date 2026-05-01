@@ -58,24 +58,47 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   Future<void> onRegisterButtonPressed() async {
     if (passwordController.text != confirmPasswordController.text) {
-      throw 'password confirmation failed';
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password confirmation failed')),
+      );
+      return;
     }
+
+    if (phoneNumberController.text.trim().isEmpty ||
+        int.tryParse(phoneNumberController.text.trim()) == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid phone number')),
+      );
+      return;
+    }
+
     showDialog(
       context: context,
       barrierDismissible: false, // Prevent user from closing the dialog
       builder: (context) => const Center(child: CircularProgressIndicator(color: kPastelYellow,)),
     );
     FocusScope.of(context).requestFocus(FocusNode());
+    bool isSuccess = false;
     try {
       await createNewUser(emailController.text, passwordController.text, nameController.text, phoneNumberController.text);
+      isSuccess = true;
     } catch (e) {
       print(e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration failed: $e')),
+        );
+      }
     }
-    Navigator.pop(context);
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      MainScreen.id,
-          (Route<dynamic> route) => false, // This removes all previous routes
-    );
+    if (mounted) {
+      Navigator.pop(context);
+    }
+    if (isSuccess && mounted) {
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        MainScreen.id,
+            (Route<dynamic> route) => false, // This removes all previous routes
+      );
+    }
   }
 
   @override

@@ -42,6 +42,10 @@ class _ItemGridState extends State<ItemGrid> {
 
     _queryBatch = await widget.queryBatchGetterNotifier.queryBatchGetter(_queryBatch.lastDoc);
 
+    if (!mounted) {
+      return;
+    }
+
     setState(() {
       if (_cards.isNotEmpty) {
         _cards.removeWhere((ItemCard card) => card.item == null);

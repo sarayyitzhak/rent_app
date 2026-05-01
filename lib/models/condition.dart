@@ -1,4 +1,5 @@
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rent_app/l10n/app_localizations.dart';
+
 
 enum Condition{
   NEW('New', 0),

@@ -1,10 +1,5 @@
-import 'dart:math';
-import 'dart:typed_data';
-
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:rent_app/models/file_data.dart';
 import 'package:rent_app/models/message.dart';
 import 'package:rent_app/services/cloud_services.dart';
@@ -42,9 +37,11 @@ class _RecordMessageBubbleState extends State<RecordMessageBubble> {
     if (isPlaying) {
       await player.pause();
     } else {
-      FileData fileData = await getFileData(getMessageFileRef(widget.message.docRef, 'aac'), 'aac');
+      FileData fileData = await getFileData(
+          getMessageFileRef(widget.message.docRef, 'aac'), 'aac');
       if (fileData.exists) {
-        await player.play(BytesSource(fileData.data), position: Duration(seconds: _position.toInt()));
+        await player.play(BytesSource(fileData.data),
+            position: Duration(seconds: _position.toInt()));
       }
     }
     setState(() {
@@ -59,7 +56,8 @@ class _RecordMessageBubbleState extends State<RecordMessageBubble> {
   }
 
   Future<void> _initPlayer() async {
-    FileData fileData = await getFileData(getMessageFileRef(widget.message.docRef, 'aac'), 'aac');
+    FileData fileData = await getFileData(
+        getMessageFileRef(widget.message.docRef, 'aac'), 'aac');
     if (fileData.exists) {
       player.setSourceBytes(fileData.data);
     }
