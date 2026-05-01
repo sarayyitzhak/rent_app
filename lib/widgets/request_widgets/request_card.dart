@@ -120,6 +120,10 @@ class _RequestCardState extends State<RequestCard> {
   void fetchData() async {
     Item? item = widget.item ?? await getItemById(widget.request.itemID);
 
+    if (!mounted) {
+      return;
+    }
+
     setState(() {
       _item = item;
     });
@@ -135,7 +139,6 @@ class _RequestCardState extends State<RequestCard> {
 
   @override
   Widget build(BuildContext context) {
-    var localization = Dictionary.getLocalization(context);
     return GestureDetector(
       onTap: widget.request.status == RequestStatus.ownerApproved
           ? () async => Navigator.pushNamed(context, ItemReviewScreen.id,
@@ -152,83 +155,87 @@ class _RequestCardState extends State<RequestCard> {
           height: 100,
           child: Row(
             children: [
-              Row(
-                children: [
-                  CachedImage(
-                    width: 100,
-                    height: 100,
-                    imageRef: _item != null
-                        ? getItemImageRef(_item!.docRef, _item!.mainImage)
-                        : null,
-                    borderRadius: const BorderRadiusDirectional.only(
-                        topStart: Radius.circular(20),
-                        bottomStart: Radius.circular(20)),
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
+              CachedImage(
+                width: 100,
+                height: 100,
+                imageRef: _item != null
+                    ? getItemImageRef(_item!.docRef, _item!.mainImage)
+                    : null,
+                borderRadius: const BorderRadiusDirectional.only(
+                    topStart: Radius.circular(20),
+                    bottomStart: Radius.circular(20)),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        _item?.title ?? '',
-                        style: kBlackHeaderTextStyle,
-                      ),
-                    ),
-                    PositionedDirectional(
-                      start: 0,
-                      top: 0,
-                      bottom: 0,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          Expanded(
+                            child: Text(
+                              _item?.title ?? '',
+                              style: kBlackHeaderTextStyle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
                           Text(
-                            _item?.title ?? '',
-                            style: kBlackHeaderTextStyle,
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.calendar_month_rounded,
-                                color: getColor(),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${dateToString(widget.request.time.start)} - ${dateToString(widget.request.time.end)}',
-                                textDirection: TextDirection.ltr,
-                                style: TextStyle(color: getColor(), fontWeight: FontWeight.w500),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.location_pin,
-                                color: Colors.black54,
-                              ),
-                              const SizedBox(width: 4),
-                              FutureBuilder(
-                                future: AddressService().getAddress(widget.request.geoPoint),
-                                builder: (context, snapshot) => Text(
-                                  snapshot.data ?? '',
-                                  style: const TextStyle(
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              ),
-                            ],
+                            getFormattedFinalPrice(),
+                            style: kHeadersTextStyle,
                           ),
                         ],
                       ),
-                    ),
-                    PositionedDirectional(
-                      bottom: 8,
-                      end: 16,
-                      child: Text(
-                        getFormattedFinalPrice(),
-                        style: kHeadersTextStyle,
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_month_rounded,
+                            color: getColor(),
+                            size: 18,
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              '${dateToString(widget.request.time.start)} - ${dateToString(widget.request.time.end)}',
+                              textDirection: TextDirection.ltr,
+                              style: TextStyle(
+                                  color: getColor(), fontWeight: FontWeight.w500),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_pin,
+                            color: Colors.black54,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: FutureBuilder(
+                              future: AddressService()
+                                  .getAddress(widget.request.geoPoint),
+                              builder: (context, snapshot) => Text(
+                                snapshot.data ?? '',
+                                style: const TextStyle(color: Colors.black54),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      getStatusWidget(context),
+                    ],
+                  ),
                 ),
               ),
             ],
