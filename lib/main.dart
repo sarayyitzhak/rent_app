@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:rent_app/screens/add_item_screen.dart';
 import 'package:rent_app/screens/category_screen.dart';
 import 'package:rent_app/screens/chat_screen.dart';
@@ -27,7 +26,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:rent_app/screens/user_profile_screen.dart';
 import 'package:rent_app/screens/user_review_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rent_app/l10n/app_localizations.dart';
+
 import 'package:flutter/material.dart';
 import 'package:rent_app/constants.dart';
 import 'package:rent_app/screens/login_screen.dart';
@@ -39,11 +39,11 @@ import 'screens/user_screen.dart';
 import 'screens/registration_screen.dart';
 import 'screens/main_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rent_app/globals.dart';
 
-Future<void> onDidReceiveLocalNotification(int id, String? title, String? body, String? payload) async {
+Future<void> onDidReceiveLocalNotification(
+    int id, String? title, String? body, String? payload) async {
   print('---------');
   // Handle foreground notifications (optional)
 }
@@ -54,7 +54,7 @@ void main() async {
   try {
     if (Platform.isAndroid) {
       await Firebase.initializeApp(
-        options: const FirebaseOptions(
+          options: const FirebaseOptions(
         apiKey: 'AIzaSyDW-5bhyRKZGryAWLcpXeCC5gDo0Wmameo',
         appId: '1:115036149089:android:82d681f3cff220f54aa120',
         messagingSenderId: '115036149089', //
@@ -64,7 +64,8 @@ void main() async {
     } else if (Platform.isIOS) {
       await Firebase.initializeApp();
     }
-    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
@@ -84,14 +85,18 @@ void main() async {
     //   appleProvider: AppleProvider.debug,
     // ) as FirebaseAppCheck;
 
-    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
     // var initializationSettingsIOS = IOSInitializationSettings(
     //     onDidReceiveLocalNotification: onDidReceiveLocalNotification);
     final DarwinInitializationSettings initializationSettingsDarwin =
-        DarwinInitializationSettings(onDidReceiveLocalNotification: (id, title, body, payload) => showNotification);
+        DarwinInitializationSettings(
+            onDidReceiveLocalNotification: (id, title, body, payload) =>
+                showNotification);
 
     final bool? result = await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(
           alert: true,
           badge: true,
@@ -99,10 +104,13 @@ void main() async {
         );
 
     final InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsDarwin);
+        InitializationSettings(
+            android: initializationSettingsAndroid,
+            iOS: initializationSettingsDarwin);
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (details) => handleNotificationOnBackGround,
+      onDidReceiveNotificationResponse: (details) =>
+          handleNotificationOnBackGround,
       // onDidReceiveBackgroundNotificationResponse: (details) => print('--------------------------------'),
     );
 
@@ -139,7 +147,7 @@ class MyApp extends StatelessWidget {
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.white,
         ),
-        cardTheme: const CardTheme(color: Colors.white),
+        // cardTheme: const CardTheme(color: Colors.white), TODO: i just deleated it
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             foregroundColor: kDarkYellow, // Default text color
@@ -157,29 +165,43 @@ class MyApp extends StatelessWidget {
           HomeScreen.id: (context) => const HomeScreen(),
           UserScreen.id: (context) => const UserScreen(),
           UserItemsScreen.id: (context) => const UserItemsScreen(),
-          AddItemScreen.id: (context) => AddItemScreen(settings.arguments as AddItemScreenArguments),
-          ItemScreen.id: (context) => ItemScreen(settings.arguments as ItemScreenArguments),
-          RentalScreen.id: (context) => RentalScreen(settings.arguments as RentalScreenArguments),
-          RequestSubmittedScreen.id: (context) => const RequestSubmittedScreen(),
+          AddItemScreen.id: (context) =>
+              AddItemScreen(settings.arguments as AddItemScreenArguments),
+          ItemScreen.id: (context) =>
+              ItemScreen(settings.arguments as ItemScreenArguments),
+          RentalScreen.id: (context) =>
+              RentalScreen(settings.arguments as RentalScreenArguments),
+          RequestSubmittedScreen.id: (context) =>
+              const RequestSubmittedScreen(),
           ItemRequestsScreen.id: (context) => const ItemRequestsScreen(),
           ChatsScreen.id: (context) => const ChatsScreen(),
-          ChatScreen.id: (context) => ChatScreen(settings.arguments as ChatScreenArguments),
+          ChatScreen.id: (context) =>
+              ChatScreen(settings.arguments as ChatScreenArguments),
           SearchScreen.id: (context) => const SearchScreen(),
-          SearchResultScreen.id: (context) => SearchResultScreen(settings.arguments as SearchResultScreenArguments),
-          CategoryScreen.id: (context) => CategoryScreen(settings.arguments as CategoryScreenArguments),
+          SearchResultScreen.id: (context) => SearchResultScreen(
+              settings.arguments as SearchResultScreenArguments),
+          CategoryScreen.id: (context) =>
+              CategoryScreen(settings.arguments as CategoryScreenArguments),
           ProfileScreen.id: (context) => const ProfileScreen(),
-          RequestScreen.id: (context) => RequestScreen(settings.arguments as RequestScreenArguments),
-          ReviewsScreen.id: (context) => ReviewsScreen(settings.arguments as ReviewsScreenArguments),
-          ItemReviewScreen.id: (context) => ItemReviewScreen(settings.arguments as ItemReviewScreenArguments),
-          UserReviewScreen.id: (context) => UserReviewScreen(settings.arguments as UserReviewScreenArguments),
+          RequestScreen.id: (context) =>
+              RequestScreen(settings.arguments as RequestScreenArguments),
+          ReviewsScreen.id: (context) =>
+              ReviewsScreen(settings.arguments as ReviewsScreenArguments),
+          ItemReviewScreen.id: (context) =>
+              ItemReviewScreen(settings.arguments as ItemReviewScreenArguments),
+          UserReviewScreen.id: (context) =>
+              UserReviewScreen(settings.arguments as UserReviewScreenArguments),
           FinalReviewScreen.id: (context) => const FinalReviewScreen(),
-          ItemGridScreen.id: (context) => ItemGridScreen(settings.arguments as ItemGridScreenArguments),
+          ItemGridScreen.id: (context) =>
+              ItemGridScreen(settings.arguments as ItemGridScreenArguments),
           EditUserDetailsScreen.id: (context) => const EditUserDetailsScreen(),
           RentalHistoryScreen.id: (context) => const RentalHistoryScreen(),
-          RequestListScreen.id: (context) => RequestListScreen(settings.arguments as RequestListScreenArguments),
-          UserProfileScreen.id: (context) => UserProfileScreen(settings.arguments as UserProfileScreenArguments),
-          ImageViewGalleryScreen.id: (context) =>
-              ImageViewGalleryScreen(settings.arguments as ImageViewGalleryScreenArguments),
+          RequestListScreen.id: (context) => RequestListScreen(
+              settings.arguments as RequestListScreenArguments),
+          UserProfileScreen.id: (context) => UserProfileScreen(
+              settings.arguments as UserProfileScreenArguments),
+          ImageViewGalleryScreen.id: (context) => ImageViewGalleryScreen(
+              settings.arguments as ImageViewGalleryScreenArguments),
         };
         return MaterialPageRoute(builder: routes[settings.name]!);
       },

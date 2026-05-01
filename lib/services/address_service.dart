@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
 class AddressService {
   static final AddressService _instance = AddressService._internal();
-  static const int kMaxRadius = 10;  /* in meters */
+  static const int kMaxRadius = 10; /* in meters */
 
   final Map<GeoPoint, String> _addresses = {};
 
@@ -18,7 +17,10 @@ class AddressService {
   Future<String?> getAddress(GeoPoint geoPoint) async {
     for (GeoPoint addressGeoPoint in _addresses.keys) {
       double distance = Geolocator.distanceBetween(
-          geoPoint.latitude, geoPoint.longitude, addressGeoPoint.latitude, addressGeoPoint.longitude);
+          geoPoint.latitude,
+          geoPoint.longitude,
+          addressGeoPoint.latitude,
+          addressGeoPoint.longitude);
       if (distance < kMaxRadius) {
         return _addresses[addressGeoPoint];
       }

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rent_app/dictionary.dart';
 import 'package:rent_app/globals.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +27,8 @@ class _ProfileScreenState extends State<EditUserDetailsScreen> {
   late bool _showPhoneNumber;
 
   void onEditButtonPressed() {
-    updateUserDetails(nameController.text, int.parse(phoneNumberController.text), _showPhoneNumber);
+    updateUserDetails(nameController.text,
+        int.parse(phoneNumberController.text), _showPhoneNumber);
 
     userDetails.name = nameController.text;
     userDetails.phoneNumber = int.parse(phoneNumberController.text);
@@ -53,7 +53,8 @@ class _ProfileScreenState extends State<EditUserDetailsScreen> {
   void initState() {
     super.initState();
     nameController = TextEditingController(text: userDetails.name);
-    phoneNumberController = TextEditingController(text: '0${userDetails.phoneNumber}');
+    phoneNumberController =
+        TextEditingController(text: '0${userDetails.phoneNumber}');
     _showPhoneNumber = userDetails.showPhoneNumber;
   }
 
@@ -77,12 +78,14 @@ class _ProfileScreenState extends State<EditUserDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               GestureDetector(
-                onTap: () => SelectImageDialog(context).pickImage(_onImagePicked),
+                onTap: () =>
+                    SelectImageDialog(context).pickImage(_onImagePicked),
                 child: Center(
                   child: CachedImage(
                     width: 80,
                     height: 80,
-                    imageRef: getUserImageRef(userDetails.docRef, userDetails.photoID),
+                    imageRef: getUserImageRef(
+                        userDetails.docRef, userDetails.photoID),
                     borderRadius: BorderRadius.circular(100),
                     errorIcon: Icons.person,
                   ),

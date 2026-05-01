@@ -57,9 +57,11 @@ class _RequestCardState extends State<RequestCard> {
       if (_status == RequestStatus.ownerApproved) {
         return Row(
           children: [
-            createStatusButton(RequestStatus.applicantApproved, Colors.green),
+            createStatusButton(localization.accept,
+                RequestStatus.applicantApproved, Colors.green),
             const SizedBox(width: 5),
-            createStatusButton(RequestStatus.applicantRejected, Colors.red),
+            createStatusButton(localization.reject,
+                RequestStatus.applicantRejected, Colors.red)
           ],
         );
       }
@@ -67,9 +69,11 @@ class _RequestCardState extends State<RequestCard> {
       if (_status == RequestStatus.waiting) {
         return Row(
           children: [
-            createStatusButton(RequestStatus.ownerApproved, Colors.green),
+            createStatusButton(
+                localization.accept, RequestStatus.ownerApproved, Colors.green),
             const SizedBox(width: 5),
-            createStatusButton(RequestStatus.ownerRejected, Colors.red),
+            createStatusButton(
+                localization.reject, RequestStatus.ownerRejected, Colors.red)
           ],
         );
       }
@@ -90,21 +94,21 @@ class _RequestCardState extends State<RequestCard> {
     );
   }
 
-  Widget createStatusButton(RequestStatus status, Color color) {
-    return CircleAvatar(
-      backgroundColor: color,
-      child: IconButton(
-        onPressed: () {
-          setState(() {
-            _status = status;
-            updateRequestStatus(widget.request.docRef, status);
-          });
-        },
-        icon: Icon(
-          status == RequestStatus.applicantApproved || status == RequestStatus.ownerApproved ? Icons.check : Icons.close,
-          color: Colors.white,
-        ),
-      ),
+  ElevatedButton createStatusButton(
+      String title, RequestStatus status, Color color) {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          _status = status;
+          updateRequestStatus(widget.request.docRef, status);
+        });
+      },
+      style: ElevatedButton.styleFrom(
+          foregroundColor: kWhiteColor,
+          backgroundColor: color,
+          elevation: 3,
+          textStyle: kWhiteTextStyle),
+      child: Text(title),
     );
   }
 
@@ -134,7 +138,8 @@ class _RequestCardState extends State<RequestCard> {
     var localization = Dictionary.getLocalization(context);
     return GestureDetector(
       onTap: widget.request.status == RequestStatus.ownerApproved
-          ? () async => Navigator.pushNamed(context, ItemReviewScreen.id, arguments: ItemReviewScreenArguments(_item!))
+          ? () async => Navigator.pushNamed(context, ItemReviewScreen.id,
+              arguments: ItemReviewScreenArguments(_item!))
           : () => Navigator.pushNamed(context, RequestScreen.id,
               arguments: RequestScreenArguments(itemRequest: widget.request)),
       child: Card(
@@ -143,29 +148,29 @@ class _RequestCardState extends State<RequestCard> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Container(
+        child: SizedBox(
           height: 100,
           child: Row(
             children: [
-              CachedImage(
-                width: 100,
-                height: 100,
-                imageRef: _item != null ? getItemImageRef(_item!.docRef, _item!.mainImage) : null,
-                borderRadius: const BorderRadiusDirectional.only(
-                  topStart: Radius.circular(20),
-                  bottomStart: Radius.circular(20),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Stack(
-                  children: [
-                    PositionedDirectional(
-                      top: 8,
-                      end: 8,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: getStatusWidget(context),
+              Row(
+                children: [
+                  CachedImage(
+                    width: 100,
+                    height: 100,
+                    imageRef: _item != null
+                        ? getItemImageRef(_item!.docRef, _item!.mainImage)
+                        : null,
+                    borderRadius: const BorderRadiusDirectional.only(
+                        topStart: Radius.circular(20),
+                        bottomStart: Radius.circular(20)),
+                  ),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _item?.title ?? '',
+                        style: kBlackHeaderTextStyle,
                       ),
                     ),
                     PositionedDirectional(

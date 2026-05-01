@@ -27,7 +27,8 @@ class _ExtensionRequestDialogState extends State<ExtensionRequestDialog> {
       return;
     }
     setState(() {
-      isInvalidDate = !widget.itemRequest.time.end.isBefore(_controller.selectedRange!.endDate!);
+      isInvalidDate = !widget.itemRequest.time.end
+          .isBefore(_controller.selectedRange!.endDate!);
     });
   }
 
@@ -37,13 +38,15 @@ class _ExtensionRequestDialogState extends State<ExtensionRequestDialog> {
     }
 
     setState(() {
-      isInvalidDate = !widget.itemRequest.time.end.isBefore(_controller.selectedRange!.endDate!);
+      isInvalidDate = !widget.itemRequest.time.end
+          .isBefore(_controller.selectedRange!.endDate!);
     });
 
     if (isInvalidDate) {
       return;
     }
-    updateExtensionRequest(widget.itemRequest.docRef, _controller.selectedRange!.endDate!);
+    updateExtensionRequest(
+        widget.itemRequest.docRef, _controller.selectedRange!.endDate!);
     Navigator.pop(context);
   }
 
@@ -68,16 +71,20 @@ class _ExtensionRequestDialogState extends State<ExtensionRequestDialog> {
               if (itemRequest.status == RequestStatus.waiting) {
                 waitingDates.addAll(getDateList(itemRequest.time));
               } else if (itemRequest.status == RequestStatus.ownerApproved) {
-                var startDate = itemRequest.time.start.subtract(const Duration(days: 1));
+                var startDate =
+                    itemRequest.time.start.subtract(const Duration(days: 1));
                 if (startDate.isAfter(widget.itemRequest.time.end)) {
                   if (maxDate == null || startDate.isBefore(maxDate)) {
                     maxDate = startDate;
                   }
                 }
-                if (itemRequest.extensionRequest != null && itemRequest.extensionRequest!.status == RequestStatus.waiting) {
+                if (itemRequest.extensionRequest != null &&
+                    itemRequest.extensionRequest!.status ==
+                        RequestStatus.waiting) {
                   var start = itemRequest.time.end.add(const Duration(days: 1));
                   var end = itemRequest.extensionRequest!.toDate;
-                  waitingDates.addAll(getDateList(DateTimeRange(start: start, end: end)));
+                  waitingDates.addAll(
+                      getDateList(DateTimeRange(start: start, end: end)));
                 }
               }
             }
@@ -87,7 +94,7 @@ class _ExtensionRequestDialogState extends State<ExtensionRequestDialog> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  const Text(
                     'בחר תאריך סיום',
                     style: kBlackHeaderTextStyle,
                   ),
@@ -95,35 +102,40 @@ class _ExtensionRequestDialogState extends State<ExtensionRequestDialog> {
                     controller: _controller,
                     view: DateRangePickerView.month,
                     selectionMode: DateRangePickerSelectionMode.extendableRange,
-                    extendableRangeSelectionDirection: ExtendableRangeSelectionDirection.forward,
-                    initialSelectedRange: PickerDateRange(widget.itemRequest.time.start, widget.itemRequest.time.end),
+                    extendableRangeSelectionDirection:
+                        ExtendableRangeSelectionDirection.forward,
+                    initialSelectedRange: PickerDateRange(
+                        widget.itemRequest.time.start,
+                        widget.itemRequest.time.end),
                     enablePastDates: false,
                     maxDate: maxDate,
                     todayHighlightColor: Colors.blue,
                     backgroundColor: Colors.transparent,
                     selectionColor: Colors.blue,
                     onSelectionChanged: onSelectionChanged,
-                    headerStyle: DateRangePickerHeaderStyle(
+                    headerStyle: const DateRangePickerHeaderStyle(
                       backgroundColor: Colors.transparent,
                     ),
                     monthCellStyle: DateRangePickerMonthCellStyle(
-                      todayTextStyle: TextStyle(
+                      todayTextStyle: const TextStyle(
                         color: Colors.blue,
                       ),
                       cellDecoration: BoxDecoration(
                         color: Colors.blueGrey.withOpacity(0.2),
                         shape: BoxShape.circle,
                       ),
-                      disabledDatesDecoration: BoxDecoration(
+                      disabledDatesDecoration: const BoxDecoration(
                         color: Colors.transparent,
                         shape: BoxShape.circle,
                       ),
-                      disabledDatesTextStyle: TextStyle(color: Colors.grey),
-                      blackoutDatesDecoration: BoxDecoration(
+                      disabledDatesTextStyle:
+                          const TextStyle(color: Colors.grey),
+                      blackoutDatesDecoration: const BoxDecoration(
                         color: Colors.transparent,
                         shape: BoxShape.circle,
                       ),
-                      blackoutDateTextStyle: TextStyle(color: Colors.grey),
+                      blackoutDateTextStyle:
+                          const TextStyle(color: Colors.grey),
                       specialDatesDecoration: BoxDecoration(
                         color: Colors.yellow.withOpacity(0.4),
                         shape: BoxShape.circle,
@@ -138,30 +150,31 @@ class _ExtensionRequestDialogState extends State<ExtensionRequestDialog> {
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.error_outline,
                               color: Colors.red,
                             ),
-                            SizedBox(width: 5),
+                            const SizedBox(width: 5),
                             Text(
                               'יש לבחור תאריך מאוחר יותר מ- ${dateToString(widget.itemRequest.time.end)}',
-                              style: TextStyle(fontSize: 14, color: Colors.red),
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.red),
                             ),
                           ],
                         )
                       : Container(),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
                         onPressed: () => onChoosePressed(context),
-                        child: Text("בחר"),
+                        child: const Text("בחר"),
                       ),
-                      SizedBox(width: 16),
+                      const SizedBox(width: 16),
                       ElevatedButton(
                         onPressed: () => onCancelPressed(context),
-                        child: Text("ביטול"),
+                        child: const Text("ביטול"),
                       ),
                     ],
                   ),
@@ -171,9 +184,10 @@ class _ExtensionRequestDialogState extends State<ExtensionRequestDialog> {
           } else {
             return Container(
                 padding: const EdgeInsets.all(20),
-                child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [LoadingAnimationWidget.stretchedDots(color: Colors.grey, size: 50)]));
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  LoadingAnimationWidget.stretchedDots(
+                      color: Colors.grey, size: 50)
+                ]));
           }
         },
       ),

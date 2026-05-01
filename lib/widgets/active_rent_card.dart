@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:rent_app/models/item.dart';
 import 'package:rent_app/models/item_request.dart';
-import 'package:rent_app/screens/item_review_screen.dart';
 import 'package:rent_app/screens/request_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import '../../constants.dart';
-import '../../models/request_status.dart';
 import '../../utils.dart';
 import 'cached_image.dart';
 
@@ -19,7 +17,6 @@ class ActiveRentCard extends StatefulWidget {
 }
 
 class _RequestCardState extends State<ActiveRentCard> {
-
   Item? _item;
 
   void fetchData() async {
@@ -46,7 +43,7 @@ class _RequestCardState extends State<ActiveRentCard> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Container(
+        child: SizedBox(
           height: 150,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -57,11 +54,12 @@ class _RequestCardState extends State<ActiveRentCard> {
                   CachedImage(
                     width: 110,
                     height: 150,
-                    imageRef: _item != null ? getItemImageRef(_item!.docRef, _item!.mainImage) : null,
+                    imageRef: _item != null
+                        ? getItemImageRef(_item!.docRef, _item!.mainImage)
+                        : null,
                     borderRadius: const BorderRadiusDirectional.only(
                         topStart: Radius.circular(20),
-                        bottomStart: Radius.circular(20)
-                    ),
+                        bottomStart: Radius.circular(20)),
                   ),
                   const SizedBox(width: 10),
                   Padding(
@@ -77,8 +75,18 @@ class _RequestCardState extends State<ActiveRentCard> {
                           '${dateToString(widget.request.time.start)}-${dateToString(widget.request.time.end)}',
                           style: kSmallBlackTextStyle,
                         ),
-                        SizedBox(height: 8, width: 100, child: LinearProgressIndicator(value: widget.request.getActiveRentProgressTime()!, color: kDarkYellow, backgroundColor: kPastelYellowOpacity, borderRadius: BorderRadius.circular(6),)),
-                        if(DateTime.now().isAfter(widget.request.time.end)) Text('זהו היום האחרון להשכרה'), // lastDay
+                        SizedBox(
+                            height: 8,
+                            width: 100,
+                            child: LinearProgressIndicator(
+                              value:
+                                  widget.request.getActiveRentProgressTime()!,
+                              color: kDarkYellow,
+                              backgroundColor: kPastelYellowOpacity,
+                              borderRadius: BorderRadius.circular(6),
+                            )),
+                        if (DateTime.now().isAfter(widget.request.time.end))
+                          const Text('זהו היום האחרון להשכרה'), // lastDay
                       ],
                     ),
                   ),

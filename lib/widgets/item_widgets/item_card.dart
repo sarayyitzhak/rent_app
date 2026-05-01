@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/globals.dart';
 import 'package:rent_app/screens/item_screen.dart';
@@ -26,7 +25,9 @@ class ItemCard extends StatelessWidget {
     if (item == null) {
       return Card(
         elevation: 5,
-        margin: isHorizontal ? const EdgeInsets.symmetric(horizontal: 5, vertical: 10) : null,
+        margin: isHorizontal
+            ? const EdgeInsets.symmetric(horizontal: 5, vertical: 10)
+            : null,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -63,23 +64,29 @@ class ItemCard extends StatelessWidget {
     }
     bool isMine = item!.contactUserID == userDetails.docRef.id;
     String? distanceFromMe;
-    double? distance = CurrentPositionService().getDistanceFromCurrentPosition(item!.geoPoint);
+    double? distance =
+        CurrentPositionService().getDistanceFromCurrentPosition(item!.geoPoint);
     if (distance != null) {
       if (distance < kMaxDistance) {
         if (distance < kMaxDistanceForNearby) {
           distanceFromMe = localization.nearby;
         } else if (distance < kMaxDistanceForMeters) {
-          distanceFromMe = localization.metersFromYou(distance.toStringAsFixed(0));
+          distanceFromMe =
+              localization.metersFromYou(distance.toStringAsFixed(0));
         } else {
-          distanceFromMe = localization.kmFromYou((distance / 1000).toStringAsFixed(1));
+          distanceFromMe =
+              localization.kmFromYou((distance / 1000).toStringAsFixed(1));
         }
       }
     }
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, ItemScreen.id, arguments: ItemScreenArguments(item: item!)),
+      onTap: () => Navigator.pushNamed(context, ItemScreen.id,
+          arguments: ItemScreenArguments(item: item!)),
       child: Card(
         elevation: 5,
-        margin: isHorizontal ? const EdgeInsets.symmetric(horizontal: 5, vertical: 10) : null,
+        margin: isHorizontal
+            ? const EdgeInsets.symmetric(horizontal: 5, vertical: 10)
+            : null,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -93,7 +100,8 @@ class ItemCard extends StatelessWidget {
                   children: [
                     CachedImage(
                       imageRef: getItemImageRef(item!.docRef, item!.mainImage),
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(20)),
                     ),
                     if (!isMine && distanceFromMe != null)
                       PositionedDirectional(
@@ -105,7 +113,8 @@ class ItemCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 2, horizontal: 6),
                             child: Text(
                               distanceFromMe,
                               style: const TextStyle(color: Colors.white),
@@ -136,7 +145,8 @@ class ItemCard extends StatelessWidget {
                       item!.title,
                       style: kBlackHeaderTextStyle,
                     ),
-                    if (item!.getRate() != null) RatingStarsWidget(rate: item!.getRate()!),
+                    if (item!.getRate() != null)
+                      RatingStarsWidget(rate: item!.getRate()!),
                   ],
                 ),
               ), //description

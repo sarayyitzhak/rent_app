@@ -31,6 +31,16 @@ class CachedImage extends StatefulWidget {
 class _CachedImageState extends State<CachedImage> {
   Widget? _image;
 
+  @override
+  void didUpdateWidget(covariant CachedImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final oldPath = oldWidget.imageRef?.fullPath;
+    final newPath = widget.imageRef?.fullPath;
+    if (oldPath != newPath) {
+      _image = null;
+    }
+  }
+
   Widget _getPlaceholder(BuildContext context) {
     return widget.placeholder != null
         ? widget.placeholder!(context)

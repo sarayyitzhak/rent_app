@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rent_app/constants.dart';
@@ -8,7 +7,8 @@ import 'package:rent_app/screens/request_list_screen.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/utils.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rent_app/l10n/app_localizations.dart';
+
 import 'package:rent_app/widgets/rating_stars_widget.dart';
 import '../widgets/cached_image.dart';
 import '../widgets/scrollable_active_rent_list.dart';
@@ -37,11 +37,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> fetchData() async {
     String? image = getCurrentUser()?.photoURL;
-    List<ItemRequest> currentMonthRentsFromMe = await getUserApprovedRequestsFrom(DateTime(DateTime.now().year, DateTime.now().month), true);
-    List<ItemRequest> currentMonthRentsOfMe = await getUserApprovedRequestsFrom(DateTime(DateTime.now().year, DateTime.now().month), false);
+    List<ItemRequest> currentMonthRentsFromMe =
+        await getUserApprovedRequestsFrom(
+            DateTime(DateTime.now().year, DateTime.now().month), true);
+    List<ItemRequest> currentMonthRentsOfMe = await getUserApprovedRequestsFrom(
+        DateTime(DateTime.now().year, DateTime.now().month), false);
     double? overallRate = await getUserOverallRate(userDetails.docRef);
-    double? availabilityLevel = await getUserAvailabilityLevel(userDetails.docRef);
-    double? punctualityLevel = await getUserPunctualityLevel(userDetails.docRef);
+    double? availabilityLevel =
+        await getUserAvailabilityLevel(userDetails.docRef);
+    double? punctualityLevel =
+        await getUserPunctualityLevel(userDetails.docRef);
     List<ItemRequest> activeRentalOfMe = await getCurrentRents(false);
     List<ItemRequest> activeRentalFromMe = await getCurrentRents(true);
     setState(() {
@@ -66,143 +71,168 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     var localization = AppLocalizations.of(context)!;
     return Scaffold(
-        appBar: CustomAppBar(title: localization.profile),
-        body: _overallRate != -1 ? Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'שלום, ${userDetails.name}!',
-                    style: kTopHeaderTextStyle,
-                  ),
-                  CachedImage(
-                    width: 70,
-                    height: 70,
-                    imageRef: getUserImageRef(userDetails.docRef, userDetails.photoID),
-                    borderRadius: BorderRadius.circular(100),
-                    errorIcon: Icons.person,
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      appBar: CustomAppBar(title: localization.profile),
+      body: _overallRate != -1
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('הרווחת החודש'),
                       Text(
-                        getFormattedPrice(getMonthlyOutcome(_currentMonthRentsFromMe)),
-                        style: kBlackBigTextStyle,
+                        'שלום, ${userDetails.name}!',
+                        style: kTopHeaderTextStyle,
+                      ),
+                      CachedImage(
+                        width: 70,
+                        height: 70,
+                        imageRef: getUserImageRef(
+                            userDetails.docRef, userDetails.photoID),
+                        borderRadius: BorderRadius.circular(100),
+                        errorIcon: Icons.person,
                       ),
                     ],
                   ),
-                  SizedBox(width: 50),
-                  GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, RequestListScreen.id, arguments: RequestListScreenArguments('שכרו ממך החודש', _currentMonthRentsFromMe)),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('שכרו ממך החודש'),
-                        Text(
-                          _currentMonthRentsFromMe.length.toString(),
-                          style: kBlackBigTextStyle,
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                children: [
-                  Column(
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
                     children: [
-                      Text('דירוגך הכללי הוא'),
-                      _overallRate != null
-                          ? RatingStarsWidget(
-                          rate: userDetails.getRate()!,
-                          textStyle: kBlackBigTextStyle,
-                          size: 40)
-                          : Text('-', style: kBlackBigTextStyle),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('הרווחת החודש'),
+                          Text(
+                            getFormattedPrice(
+                                getMonthlyOutcome(_currentMonthRentsFromMe)),
+                            style: kBlackBigTextStyle,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 50),
+                      GestureDetector(
+                        onTap: () => Navigator.pushNamed(
+                            context, RequestListScreen.id,
+                            arguments: RequestListScreenArguments(
+                                'שכרו ממך החודש', _currentMonthRentsFromMe)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('שכרו ממך החודש'),
+                            Text(
+                              _currentMonthRentsFromMe.length.toString(),
+                              style: kBlackBigTextStyle,
+                            ),
+                          ],
+                        ),
+                      )
                     ],
                   ),
-                  SizedBox(width: 80),
-                  GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, RequestListScreen.id, arguments: RequestListScreenArguments('השכרת החודש', _currentMonthRentsOfMe)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    children: [
+                      Column(
+                        children: [
+                          const Text('דירוגך הכללי הוא'),
+                          _overallRate != null
+                              ? RatingStarsWidget(
+                                  rate: userDetails.getRate()!,
+                                  textStyle: kBlackBigTextStyle,
+                                  size: 40)
+                              : const Text('-', style: kBlackBigTextStyle),
+                        ],
+                      ),
+                      const SizedBox(width: 80),
+                      GestureDetector(
+                        onTap: () => Navigator.pushNamed(
+                            context, RequestListScreen.id,
+                            arguments: RequestListScreenArguments(
+                                'השכרת החודש', _currentMonthRentsOfMe)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('השכרת החודש'),
+                            Text(
+                              _currentMonthRentsOfMe.length.toString(),
+                              style: kBlackBigTextStyle,
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                if (_availabilityLevel != null && _availabilityLevel != 0)
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 20, right: 20, top: 20, bottom: 5),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('השכרת החודש'),
-                        Text(
-                          _currentMonthRentsOfMe.length.toString(),
-                          style: kBlackBigTextStyle,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('זמינות'),
+                            Text((_availabilityLevel! * 2).toStringAsFixed(1))
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10,
+                          width: double.infinity,
+                          child: LinearProgressIndicator(
+                            value: _availabilityLevel! / 5,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
                         ),
                       ],
                     ),
-                  )
-                ],
-              ),
-            ),
-            if(_availabilityLevel != null && _availabilityLevel != 0) Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 5),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text('זמינות'), Text((_availabilityLevel! * 2).toStringAsFixed(1))],
                   ),
-                  SizedBox(
-                    height: 10,
-                    width: double.infinity,
-                    child: LinearProgressIndicator(
-                      value: _availabilityLevel! / 5,
-                      borderRadius: BorderRadius.circular(6),
+                if (_punctualityLevel != null && _punctualityLevel != 0)
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 20, right: 20, bottom: 20, top: 5),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('עמידה בזמנים'),
+                            Text((_punctualityLevel! * 2).toStringAsFixed(1))
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10,
+                          width: double.infinity,
+                          child: LinearProgressIndicator(
+                            value: _punctualityLevel! / 5,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-            if(_punctualityLevel != null && _punctualityLevel != 0) Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20, top: 5),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text('עמידה בזמנים'), Text((_punctualityLevel! * 2).toStringAsFixed(1))],
+                if (_activeRentalOfMe.isNotEmpty)
+                  ScrollableActiveRentList(
+                    isRentedFromMe: false,
+                    title: 'אני משכיר',
+                    rentals: _activeRentalOfMe,
                   ),
-                  SizedBox(
-                    height: 10,
-                    width: double.infinity,
-                    child: LinearProgressIndicator(
-                      value: _punctualityLevel! / 5,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
+                if (_activeRentalFromMe.isNotEmpty)
+                  ScrollableActiveRentList(
+                    isRentedFromMe: true,
+                    title: 'משכירים ממני',
+                    rentals: _activeRentalFromMe,
                   ),
-                ],
-              ),
-            ),
-            if(_activeRentalOfMe.isNotEmpty) ScrollableActiveRentList(
-              isRentedFromMe: false,
-              title: 'אני משכיר',
-              rentals: _activeRentalOfMe,
-            ),
-            if(_activeRentalFromMe.isNotEmpty) ScrollableActiveRentList(
-              isRentedFromMe: true,
-              title: 'משכירים ממני',
-              rentals: _activeRentalFromMe,
-            ),
-          ],
-        ) : Center(child: LoadingAnimationWidget.stretchedDots(color: Colors.grey, size: 50)),);
+              ],
+            )
+          : Center(
+              child: LoadingAnimationWidget.stretchedDots(
+                  color: Colors.grey, size: 50)),
+    );
   }
 }

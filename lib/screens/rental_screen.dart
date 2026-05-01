@@ -34,11 +34,13 @@ class _RentalScreenState extends State<RentalScreen> {
 
   StreamSubscription? _itemRequestsSubscription;
 
-  void onSendRequestPressed(){
+  void onSendRequestPressed() {
     DateTimeRange? dateTimeRange = _getDateTimeRange();
     if (dateTimeRange == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("נבחר טווח תאריכים לא חוקי")),
+        const SnackBar(
+            content: Text(
+                "נבחר טווח תאריכים לא חוקי")), // localization.theSelectedDateRangeIsInvalid
       );
       return;
     }
@@ -51,7 +53,8 @@ class _RentalScreenState extends State<RentalScreen> {
     if (_getSelectedStartDate() == null) {
       return null;
     }
-    return DateTimeRange(start: _getSelectedStartDate()!, end: _getSelectedEndDate()!);
+    return DateTimeRange(
+        start: _getSelectedStartDate()!, end: _getSelectedEndDate()!);
   }
 
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
@@ -64,11 +67,17 @@ class _RentalScreenState extends State<RentalScreen> {
         _controller.selectedRange = null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("טווח התאריכים מכיל תאריך תפוס. אנא בחר טווח אחר")),
+        const SnackBar(
+            content: Text(
+                "טווח התאריכים מכיל תאריך תפוס. אנא בחר טווח אחר")), // localization.theDateRangeContainsAnUnavailableDate
       );
     } else {
       setState(() {
-        totalPrice = widget.args.item.price * (_getSelectedEndDate()!.difference(_getSelectedStartDate()!).inDays + 1);
+        totalPrice = widget.args.item.price *
+            (_getSelectedEndDate()!
+                    .difference(_getSelectedStartDate()!)
+                    .inDays +
+                1);
       });
     }
   }
@@ -86,11 +95,15 @@ class _RentalScreenState extends State<RentalScreen> {
       return false;
     }
 
-    return _blackoutDates.any((date) => date.isAfter(_getSelectedStartDate()!) && date.isBefore(_getSelectedEndDate()!));
+    return _blackoutDates.any((date) =>
+        date.isAfter(_getSelectedStartDate()!) &&
+        date.isBefore(_getSelectedEndDate()!));
   }
 
   void _updateDates() async {
-    _itemRequestsSubscription = getFutureItemRequestsStream(widget.args.item.docRef).listen((List<ItemRequest> itemRequests) {
+    _itemRequestsSubscription =
+        getFutureItemRequestsStream(widget.args.item.docRef)
+            .listen((List<ItemRequest> itemRequests) {
       List<DateTime> blackoutDates = [];
       List<DateTime> waitingDates = [];
 
@@ -100,10 +113,12 @@ class _RentalScreenState extends State<RentalScreen> {
         } else if (itemRequest.status == RequestStatus.ownerApproved) {
           blackoutDates.addAll(getDateList(itemRequest.time));
 
-          if (itemRequest.extensionRequest != null && itemRequest.extensionRequest!.status == RequestStatus.waiting) {
+          if (itemRequest.extensionRequest != null &&
+              itemRequest.extensionRequest!.status == RequestStatus.waiting) {
             var start = itemRequest.time.end.add(const Duration(days: 1));
             var end = itemRequest.extensionRequest!.toDate;
-            waitingDates.addAll(getDateList(DateTimeRange(start: start, end: end)));
+            waitingDates
+                .addAll(getDateList(DateTimeRange(start: start, end: end)));
           }
         }
       }
@@ -120,7 +135,6 @@ class _RentalScreenState extends State<RentalScreen> {
       }
     });
   }
-
 
   @override
   void initState() {
@@ -139,24 +153,25 @@ class _RentalScreenState extends State<RentalScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'בקשה לשכירת מוצר',
         isBackButton: true,
       ),
       body: Container(
-        margin: EdgeInsets.all(20),
+        margin: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
+            SizedBox(
               height: 90,
               child: Row(
                 children: [
                   CachedImage(
                     height: 90,
                     width: 90,
-                    imageRef: getItemImageRef(widget.args.item.docRef, widget.args.item.mainImage),
+                    imageRef: getItemImageRef(
+                        widget.args.item.docRef, widget.args.item.mainImage),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   const SizedBox(
@@ -176,7 +191,7 @@ class _RentalScreenState extends State<RentalScreen> {
                 ],
               ),
             ),
-            Text(
+            const Text(
               'מתי תרצה להשתמש במוצר?',
               style: kBlackHeaderTextStyle,
             ),
@@ -190,32 +205,28 @@ class _RentalScreenState extends State<RentalScreen> {
               startRangeSelectionColor: Colors.blue,
               endRangeSelectionColor: Colors.blue,
               rangeSelectionColor: Colors.blue.withOpacity(0.2),
-              headerStyle: DateRangePickerHeaderStyle(
+              headerStyle: const DateRangePickerHeaderStyle(
                 backgroundColor: Colors.transparent,
               ),
               onSelectionChanged: _onSelectionChanged,
               monthCellStyle: DateRangePickerMonthCellStyle(
-                todayTextStyle: TextStyle(
+                todayTextStyle: const TextStyle(
                   color: Colors.blue,
                 ),
                 cellDecoration: BoxDecoration(
                   color: Colors.blueGrey.withOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
-                disabledDatesDecoration: BoxDecoration(
+                disabledDatesDecoration: const BoxDecoration(
                   color: Colors.transparent,
                   shape: BoxShape.circle,
                 ),
-                disabledDatesTextStyle: TextStyle(
-                    color: Colors.grey
-                ),
-                blackoutDatesDecoration: BoxDecoration(
+                disabledDatesTextStyle: const TextStyle(color: Colors.grey),
+                blackoutDatesDecoration: const BoxDecoration(
                   color: Colors.transparent,
                   shape: BoxShape.circle,
                 ),
-                blackoutDateTextStyle: TextStyle(
-                  color: Colors.grey
-                ),
+                blackoutDateTextStyle: const TextStyle(color: Colors.grey),
                 specialDatesDecoration: BoxDecoration(
                   color: Colors.yellow.withOpacity(0.4),
                   shape: BoxShape.circle,
@@ -230,16 +241,26 @@ class _RentalScreenState extends State<RentalScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text('מחיר סופי:', style: kBlackHeaderTextStyle,),
-                Text(getFormattedPrice(totalPrice), style: kBlackHeaderTextStyle,),
+                const Text(
+                  'מחיר סופי:',
+                  style: kBlackHeaderTextStyle,
+                ),
+                Text(
+                  getFormattedPrice(totalPrice),
+                  style: kBlackHeaderTextStyle,
+                ),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text('מקום איסוף:', style: kBlackHeaderTextStyle,),
+                const Text(
+                  'מקום איסוף:',
+                  style: kBlackHeaderTextStyle,
+                ),
                 FutureBuilder(
-                  future: AddressService().getAddress(widget.args.item.geoPoint),
+                  future:
+                      AddressService().getAddress(widget.args.item.geoPoint),
                   builder: (context, snapshot) => Text(
                     snapshot.data ?? '',
                     style: kBlackHeaderTextStyle,
@@ -249,8 +270,8 @@ class _RentalScreenState extends State<RentalScreen> {
             ),
             Align(
                 alignment: Alignment.bottomCenter,
-                child: CustomButton(title: 'הגש בקשה', onPress: () => onSendRequestPressed())
-            ),
+                child: CustomButton(
+                    title: 'הגש בקשה', onPress: () => onSendRequestPressed())),
           ],
         ),
       ),

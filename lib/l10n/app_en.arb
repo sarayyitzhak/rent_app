@@ -92,7 +92,7 @@
   "lastSeen": "Last seen",
   "unknownLocation": "Unknown location",
   "peopleLikedTheItem": "people liked the item",
-  "peopleSeenTheItem": "peopleSeenThisItem",
+  "peopleSeenTheItem": "people seen this item",
   "today": "Today",
   "yesterday": "Yesterday",
   "show_more": "Show more",
@@ -221,7 +221,13 @@
   "categoryTravel": "Travel",
   "categoryElectronics": "Electronics",
   "categoryGames": "Games",
-  "categoryPets": "Pets"
+  "categoryPets": "Pets", 
+  "history": "History",
+  "rentalHistory": "Rental History",
+  "theSelectedDateRangeIsInvalid": "The selected date range is invalid",
+  "theDateRangeContainsAnUnavailableDate": "The date range contains an unavailable date. Please select different dates",
+  "emptyItems": "You haven’t added any items to your store yet!\nClick Add Item and upload your first items",
+  "noPendingRequests": "There are no pending requests at the moment" 
 
 
 }

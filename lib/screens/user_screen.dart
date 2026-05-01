@@ -40,7 +40,8 @@ class _UserScreenState extends State<UserScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
-                onTap: () => Navigator.pushNamed(context, EditUserDetailsScreen.id),
+                onTap: () =>
+                    Navigator.pushNamed(context, EditUserDetailsScreen.id),
                 child: Container(
                   padding: const EdgeInsets.only(bottom: 30),
                   width: double.infinity,
@@ -49,7 +50,8 @@ class _UserScreenState extends State<UserScreen> {
                       CachedImage(
                         width: 70,
                         height: 70,
-                        imageRef: getUserImageRef(userDetails.docRef, userDetails.photoID),
+                        imageRef: getUserImageRef(
+                            userDetails.docRef, userDetails.photoID),
                         borderRadius: BorderRadius.circular(100),
                         errorIcon: Icons.person,
                       ),
@@ -70,33 +72,60 @@ class _UserScreenState extends State<UserScreen> {
                   borderRadius: BorderRadius.circular(10),
                   color: kPastelYellow,
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextButton(
-                        onPressed: () => Navigator.pushNamed(context, ProfileScreen.id),
-                        child: IconAboveText(icon: Icons.person_outline, label: localization.profile, size: 40)),
+                        onPressed: () =>
+                            Navigator.pushNamed(context, ProfileScreen.id),
+                        child: IconAboveText(
+                            icon: Icons.person_outline,
+                            label: localization.profile,
+                            size: 40)),
                     TextButton(
-                        onPressed: () => Navigator.pushNamed(context, ItemGridScreen.id,
-                            arguments: ItemGridScreenArguments(localization.wishlist, getUserFavoriteItems)),
-                        child:
-                            IconAboveText(icon: Icons.receipt_long_outlined, label: localization.wishlist, size: 40)),
+                        onPressed: () => Navigator.pushNamed(
+                            context, ItemGridScreen.id,
+                            arguments: ItemGridScreenArguments(
+                                localization.wishlist, getUserFavoriteItems)),
+                        child: IconAboveText(
+                            icon: Icons.receipt_long_outlined,
+                            label: localization.wishlist,
+                            size: 40)),
                     TextButton(
-                        onPressed: () => Navigator.pushNamed(context, RentalHistoryScreen.id),
-                        child:
-                            IconAboveText(icon: Icons.history_edu, label: 'היסטוריה', size: 40)),
+                        onPressed: () => Navigator.pushNamed(
+                            context, RentalHistoryScreen.id),
+                        child: IconAboveText(
+                            icon: Icons.history_edu,
+                            label: localization.history,
+                            size: 40)),
                   ],
                 ),
               ),
               const SizedBox(
                 height: 20,
               ),
-              buildButton(label: localization.notifications, icon: Icons.notifications_none, onPress: () {}),
-              buildButton(label: localization.paymentMethod, icon: Icons.credit_card, onPress: () {}),
-              buildButton(label: localization.settings, icon: Icons.settings_outlined, onPress: () {}),
-              buildButton(label: localization.help, icon: Icons.help_outline, onPress: () {}),
-              buildButton(label: localization.privacyPolicy, icon: Icons.key, onPress: () {}),
+              buildButton(
+                  label: localization.notifications,
+                  icon: Icons.notifications_none,
+                  onPress: () {}),
+              buildButton(
+                  label: localization.paymentMethod,
+                  icon: Icons.credit_card,
+                  onPress: () {}),
+              buildButton(
+                  label: localization.settings,
+                  icon: Icons.settings_outlined,
+                  onPress: () {}),
+              buildButton(
+                  label: localization.help,
+                  icon: Icons.help_outline,
+                  onPress: () {}),
+              buildButton(
+                  label: localization.privacyPolicy,
+                  icon: Icons.key,
+                  onPress: () {}),
               buildButton(
                   label: localization.logout,
                   icon: Icons.logout,
@@ -127,7 +156,10 @@ Map<String, IconData> buttonsTextAndIcon = {
 
 //models
 
-TextButton buildButton({required String label, required IconData icon, required VoidCallback onPress}) {
+TextButton buildButton(
+    {required String label,
+    required IconData icon,
+    required VoidCallback onPress}) {
   return TextButton.icon(
     onPressed: onPress,
     label: Text(

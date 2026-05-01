@@ -34,7 +34,7 @@ class _SelectableImagesContainerState extends State<SelectableImagesContainer> {
 
   Widget _getImageWidget(FileData fileData) {
     return Container(
-      key: ValueKey(fileData.fullPath),
+      key: ValueKey(fileData.fullPath.isNotEmpty ? fileData.fullPath : fileData.fullName),
       width: 150,
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
       decoration: BoxDecoration(

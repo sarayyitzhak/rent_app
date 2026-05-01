@@ -13,7 +13,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   AppBar build(BuildContext context) {
     return AppBar(
-      title: Text(title),
+      title: LayoutBuilder(
+        builder: (context, constraints) {
+          return FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              title,
+              maxLines: 1,
+              softWrap: false,
+            ),
+          );
+        },
+      ),
       titleTextStyle: kTopHeaderTextStyle,
       centerTitle: true,
       leading: isBackButton

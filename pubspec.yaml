@@ -53,8 +53,7 @@ dependencies:
   sqflite: ^2.3.3+1
   path_provider: ^2.1.4
   provider: ^6.1.2
-  flutter_image_compress: ^2.3.0
-  image_compression_flutter: ^1.0.4
+  flutter_image_compress: ^2.4.0
   cached_network_image: ^3.4.0
   flutter_cache_manager: ^3.4.1
   url_launcher: ^6.3.0
@@ -133,3 +132,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+dependency_overrides:
+  intl: ^0.20.2

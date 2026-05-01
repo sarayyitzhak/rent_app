@@ -41,69 +41,79 @@ class _UserReviewScreenState extends State<UserReviewScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         'מה דעתך הכללית על המשכיר?',
                         style: kBlackHeaderTextStyle,
                       ),
                       RatingStarsRow(onChanged: (v) => overallRate = v.toInt()),
-                      SizedBox(height: 15),
-
-                      Text(
+                      const SizedBox(height: 15),
+                      const Text(
                         'מה רמת הזמינות שלו?',
                         style: kBlackHeaderTextStyle,
                       ),
-                      RatingStarsRow(onChanged: (v) => availabilityLevel = v.toInt()),
-                      SizedBox(height: 15),
-
-                      Text(
+                      RatingStarsRow(
+                          onChanged: (v) => availabilityLevel = v.toInt()),
+                      const SizedBox(height: 15),
+                      const Text(
                         'עד כמה הוא עמד בזמנים שקבעתם?',
                         style: kBlackHeaderTextStyle,
                       ),
-                      RatingStarsRow(onChanged: (v) => punctualityLevel = v.toInt()),
-                      SizedBox(height: 15),
+                      RatingStarsRow(
+                          onChanged: (v) => punctualityLevel = v.toInt()),
+                      const SizedBox(height: 15),
                     ],
                   ),
-                  SizedBox(height: 30),
-
+                  const SizedBox(height: 30),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'ספר לנו עוד',
                         style: kBlackTextStyle,
                       ),
                       Container(
                         height: 150,
                         width: double.infinity,
-                        padding: EdgeInsets.symmetric(horizontal: 15),
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
                         decoration: BoxDecoration(
                           color: Colors.grey[300],
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: TextField(
                           controller: textController,
-                          decoration: InputDecoration(
-                            hintText: 'שיתוף פרטים על חווית ההשכרה שלך עם משכיר זה',
+                          decoration: const InputDecoration(
+                            hintText:
+                                'שיתוף פרטים על חווית ההשכרה שלך עם משכיר זה',
                             hintStyle: TextStyle(color: Colors.black54),
                             border: InputBorder.none,
                           ),
                           maxLines: 8,
                         ),
                       ),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                     ],
                   ),
-                  SizedBox(height: 40),
-
-                  ElevatedButton(onPressed: () {
-                    if(overallRate != null || availabilityLevel != null || punctualityLevel != null || textController.text.isNotEmpty){
-                      addUserReview(user.docRef, overallRate, availabilityLevel, punctualityLevel, textController.text);
-                      Navigator.pushNamed(context, FinalReviewScreen.id);
-                    } // else make then answer
-
-                  }, child: Text('סיום'), style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(Colors.grey[200]),
-                  ),),
+                  const SizedBox(height: 40),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (overallRate != null ||
+                          availabilityLevel != null ||
+                          punctualityLevel != null ||
+                          textController.text.isNotEmpty) {
+                        addUserReview(
+                            user.docRef,
+                            overallRate,
+                            availabilityLevel,
+                            punctualityLevel,
+                            textController.text);
+                        Navigator.pushNamed(context, FinalReviewScreen.id);
+                      } // else make then answer
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(Colors.grey[200]),
+                    ),
+                    child: const Text('סיום'),
+                  ),
                 ],
               ),
             ),

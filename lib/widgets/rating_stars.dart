@@ -40,7 +40,7 @@ class _RatingStarsRowState extends State<RatingStarsRow> {
       // valueLabelRadius: 10,
       maxValue: 5,
       starSpacing: 2,
-      animationDuration: Duration(milliseconds: 1000),
+      animationDuration: const Duration(milliseconds: 1000),
       starOffColor: const Color(0xffe7e8ea),
       starColor: kActiveButtonColor,
     );

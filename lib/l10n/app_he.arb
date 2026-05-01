@@ -222,5 +222,13 @@
   "categoryTravel": "טיולים",
   "categoryElectronics": "אלקטרוניקה",
   "categoryGames": "משחקים",
-  "categoryPets": "חיות"
+  "categoryPets": "חיות", 
+  "history": "היסטוריה",
+  "rentalHistory": "היסטוריית השכרות",
+  "theSelectedDateRangeIsInvalid": "טווח התאריכים שנבחר אינו חוקי",
+  "theDateRangeContainsAnUnavailableDate": "טווח התאריכים מכיל תאריך תפוס. אנא בחר טווח אחר",
+  "emptyItems": "עדיין לא הוספת מוצרים לחנות שלך! לחץ על הוסף מוצר והעלה את המוצרים הראשונים שלך",
+  "noPendingRequests": "אין בקשות ממתינות כרגע" 
+
+
 }

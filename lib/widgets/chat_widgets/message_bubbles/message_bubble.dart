@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:rent_app/models/chat.dart';
 import 'package:rent_app/models/message_type.dart';
 import 'package:rent_app/models/message.dart';
@@ -71,15 +70,22 @@ class MessageBubble extends StatelessWidget {
           listenable: messageTailsNotifier,
           builder: (context, child) {
             return Container(
-              margin: EdgeInsets.only(left: 10, right: 10, bottom: bottomMargin, top: topMargin),
+              margin: EdgeInsets.only(
+                  left: 10, right: 10, bottom: bottomMargin, top: topMargin),
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: isMe ? Colors.blue : Colors.grey[300],
                 borderRadius: BorderRadiusDirectional.only(
                     topStart: const Radius.circular(15),
                     topEnd: const Radius.circular(15),
-                    bottomEnd: Radius.circular(!isMe && messageTailsNotifier.contains(message.docRef.id) ? 0 : 15),
-                    bottomStart: Radius.circular(isMe && messageTailsNotifier.contains(message.docRef.id) ? 0 : 15)),
+                    bottomEnd: Radius.circular(!isMe &&
+                            messageTailsNotifier.contains(message.docRef.id)
+                        ? 0
+                        : 15),
+                    bottomStart: Radius.circular(
+                        isMe && messageTailsNotifier.contains(message.docRef.id)
+                            ? 0
+                            : 15)),
               ),
               child: child,
             );

@@ -3,10 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:rent_app/models/chat.dart';
 import 'package:rent_app/globals.dart';
-import 'package:rent_app/models/user.dart';
 import 'package:rent_app/widgets/chat_bottom_send_bar.dart';
 import 'package:rent_app/widgets/chat_widgets/chat_app_bar.dart';
-import 'package:rent_app/widgets/custom_app_bar.dart';
 import '../models/message.dart';
 import '../models/participant_data.dart';
 import '../services/cloud_services.dart';
@@ -58,15 +56,18 @@ class _ChatScreenState extends State<ChatScreen> {
     _chatSubscription = getChatStream(chat.docRef).listen((Chat chat) {
       _checkAndUpdateUserInfo(chat);
 
-      ParticipantData participantData = _isUserIndex0 ? chat.participantInfo1 : chat.participantInfo0;
-      messageReadNotifier.updateLastMessageSeenTime(participantData.lastMessageSeenTime);
+      ParticipantData participantData =
+          _isUserIndex0 ? chat.participantInfo1 : chat.participantInfo0;
+      messageReadNotifier
+          .updateLastMessageSeenTime(participantData.lastMessageSeenTime);
     });
   }
 
   void _fetchMessagesStream() {
     _loading = true;
 
-    _messagesSubscription = getMessagesStream(chat.docRef).listen((QueryBatch<Message> queryBatch) {
+    _messagesSubscription =
+        getMessagesStream(chat.docRef).listen((QueryBatch<Message> queryBatch) {
       if (queryBatch.size == 0) {
         return;
       }
@@ -76,7 +77,8 @@ class _ChatScreenState extends State<ChatScreen> {
       }
 
       setState(() {
-        _bubbles.insertAll(0, _getMessageBubbles(queryBatch.list, _bubbles.isNotEmpty));
+        _bubbles.insertAll(
+            0, _getMessageBubbles(queryBatch.list, _bubbles.isNotEmpty));
       });
 
       _lastMessage = queryBatch.list.first;
@@ -100,13 +102,17 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   List<Widget> _getMessageBubbles(List<Message> messages, bool isNewMessages) {
-    return isNewMessages ? _getNewMessageBubbles(messages) : _getOldMessageBubbles(messages);
+    return isNewMessages
+        ? _getNewMessageBubbles(messages)
+        : _getOldMessageBubbles(messages);
   }
 
   List<Widget> _getNewMessageBubbles(List<Message> messages) {
     List<Widget> bubbles = [];
     for (Message message in messages) {
-      int daysDifference = _lastMessage != null ? getDaysDifference(message.sentAt, _lastMessage!.sentAt) : 0;
+      int daysDifference = _lastMessage != null
+          ? getDaysDifference(message.sentAt, _lastMessage!.sentAt)
+          : 0;
 
       messageTailsNotifier.add(message.docRef.id);
       if (_lastMessage?.sentBy0 == message.sentBy0 && daysDifference == 0) {
@@ -118,7 +124,10 @@ class _ChatScreenState extends State<ChatScreen> {
         chat: chat,
         message: message,
         isMe: _isUserIndex0 == message.sentBy0,
-        topMargin: _lastMessage?.sentBy0 != message.sentBy0 && daysDifference == 0 ? 9 : 1,
+        topMargin:
+            _lastMessage?.sentBy0 != message.sentBy0 && daysDifference == 0
+                ? 9
+                : 1,
         bottomMargin: 1,
         messageReadNotifier: messageReadNotifier,
         messageTailsNotifier: messageTailsNotifier,
@@ -127,7 +136,9 @@ class _ChatScreenState extends State<ChatScreen> {
       bubbles.add(messageBubble);
       if (daysDifference != 0) {
         DateTime sentAt = message.sentAt;
-        bubbles.add(DateBubble(key: ValueKey(sentAt.millisecondsSinceEpoch.toString()), dateTime: sentAt));
+        bubbles.add(DateBubble(
+            key: ValueKey(sentAt.millisecondsSinceEpoch.toString()),
+            dateTime: sentAt));
       }
     }
     return bubbles;
@@ -136,10 +147,14 @@ class _ChatScreenState extends State<ChatScreen> {
   List<Widget> _getOldMessageBubbles(List<Message> messages) {
     List<Widget> bubbles = [];
     for (Message message in messages) {
-      int daysDifference = _firstMessage != null ? getDaysDifference(message.sentAt, _firstMessage!.sentAt) : 0;
+      int daysDifference = _firstMessage != null
+          ? getDaysDifference(message.sentAt, _firstMessage!.sentAt)
+          : 0;
       if (daysDifference != 0) {
         DateTime sentAt = _firstMessage!.sentAt;
-        bubbles.add(DateBubble(key: ValueKey(sentAt.millisecondsSinceEpoch.toString()), dateTime: sentAt));
+        bubbles.add(DateBubble(
+            key: ValueKey(sentAt.millisecondsSinceEpoch.toString()),
+            dateTime: sentAt));
       }
 
       if (_firstMessage?.sentBy0 != message.sentBy0 || daysDifference > 0) {
@@ -151,7 +166,11 @@ class _ChatScreenState extends State<ChatScreen> {
         chat: chat,
         message: message,
         isMe: _isUserIndex0 == message.sentBy0,
-        bottomMargin: _firstMessage != null && _firstMessage?.sentBy0 != message.sentBy0 && daysDifference == 0 ? 9 : 1,
+        bottomMargin: _firstMessage != null &&
+                _firstMessage?.sentBy0 != message.sentBy0 &&
+                daysDifference == 0
+            ? 9
+            : 1,
         topMargin: 1,
         messageReadNotifier: messageReadNotifier,
         messageTailsNotifier: messageTailsNotifier,
@@ -162,7 +181,9 @@ class _ChatScreenState extends State<ChatScreen> {
     }
     if (!_queryBatch.hasMore) {
       DateTime sentAt = _firstMessage!.sentAt;
-      bubbles.add(DateBubble(key: ValueKey(sentAt.millisecondsSinceEpoch.toString()), dateTime: sentAt));
+      bubbles.add(DateBubble(
+          key: ValueKey(sentAt.millisecondsSinceEpoch.toString()),
+          dateTime: sentAt));
     }
     return bubbles;
   }
@@ -173,18 +194,22 @@ class _ChatScreenState extends State<ChatScreen> {
 
     chat = widget.args.chat;
     _isUserIndex0 = chat.participantInfo0.uid == userDetails.docRef.id;
-    _participantInfo = _isUserIndex0 ? chat.participantInfo1 : chat.participantInfo0;
+    _participantInfo =
+        _isUserIndex0 ? chat.participantInfo1 : chat.participantInfo0;
     activeChat = chat;
 
-    messageReadNotifier.lastMessageSeenTime = _participantInfo.lastMessageSeenTime;
+    messageReadNotifier.lastMessageSeenTime =
+        _participantInfo.lastMessageSeenTime;
 
     _fetchChatStream();
     _fetchMessagesStream();
   }
 
   void _checkAndUpdateUserInfo(Chat chat) {
-    ParticipantData userParticipantData = _isUserIndex0 ? chat.participantInfo0 : chat.participantInfo1;
-    if (userParticipantData.lastMessageSeenTime.isBefore(chat.lastMessageTime)) {
+    ParticipantData userParticipantData =
+        _isUserIndex0 ? chat.participantInfo0 : chat.participantInfo1;
+    if (userParticipantData.lastMessageSeenTime
+        .isBefore(chat.lastMessageTime)) {
       updateChatUserInfo(chat.docRef, _isUserIndex0, chat.lastMessageTime);
     }
   }
