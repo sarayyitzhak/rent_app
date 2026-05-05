@@ -10,9 +10,13 @@ import '../models/chat.dart';
 class VoiceRecorderButton extends StatefulWidget {
   final Chat chat;
   final bool isUserIndex0;
+  final VoidCallback? onMessageSent;
 
   const VoiceRecorderButton(
-      {super.key, required this.chat, required this.isUserIndex0});
+      {super.key,
+      required this.chat,
+      required this.isUserIndex0,
+      this.onMessageSent});
 
   @override
   State<VoiceRecorderButton> createState() => _VoiceRecorderButtonState();
@@ -102,7 +106,8 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
       return;
     }
 
-    sendRecordMessage(widget.chat.docRef, widget.isUserIndex0, recordedFile);
+    await sendRecordMessage(widget.chat.docRef, widget.isUserIndex0, recordedFile);
+    widget.onMessageSent?.call();
     // prepare a fresh path for the next recording
     await _setFilePath();
   }

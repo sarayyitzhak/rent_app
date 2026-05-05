@@ -11,8 +11,13 @@ import '../dialogs/select_image_dialog.dart';
 class ChatBottomSendBar extends StatefulWidget {
   final Chat chat;
   final bool isUserIndex0;
+  final VoidCallback? onMessageSent;
 
-  const ChatBottomSendBar({super.key, required this.chat, required this.isUserIndex0});
+  const ChatBottomSendBar(
+      {super.key,
+      required this.chat,
+      required this.isUserIndex0,
+      this.onMessageSent});
 
   @override
   State<ChatBottomSendBar> createState() => _ChatBottomSendBarState();
@@ -25,9 +30,11 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
   bool _isTyping = false;
   Timer? _typingTimer;
 
-  void onSendPressed() {
+  Future<void> onSendPressed() async {
     if (messageTextController.text.isNotEmpty) {
-      sendTextMessage(widget.chat.docRef, widget.isUserIndex0, messageTextController.text);
+      await sendTextMessage(
+          widget.chat.docRef, widget.isUserIndex0, messageTextController.text);
+      widget.onMessageSent?.call();
 
       _typingTimer?.cancel();
       _isTyping = false;
@@ -40,12 +47,13 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
     }
   }
 
-  void onImagePressed(File newImage) {
+  Future<void> onImagePressed(File newImage) async {
     setState(() {
       image = newImage;
     });
 
-    sendImageMessage(widget.chat.docRef, widget.isUserIndex0, image!);
+    await sendImageMessage(widget.chat.docRef, widget.isUserIndex0, image!);
+    widget.onMessageSent?.call();
 
     setState(() {
       showMic = true;
@@ -126,11 +134,17 @@ class _ChatBottomSendBarState extends State<ChatBottomSendBar> {
                   ),
                 ),
                 if (showMic)
-                  VoiceRecorderButton(chat: widget.chat, isUserIndex0: widget.isUserIndex0),
+                  VoiceRecorderButton(
+                    chat: widget.chat,
+                    isUserIndex0: widget.isUserIndex0,
+                    onMessageSent: widget.onMessageSent,
+                  ),
                 IconButton(
                   icon: const Icon(Icons.camera_alt_outlined),
                   onPressed: () {
-                    SelectImageDialog(context).pickImage(onImagePressed);
+                    SelectImageDialog(context).pickImage((file) {
+                      onImagePressed(file);
+                    });
                   },
                 ),
               ],

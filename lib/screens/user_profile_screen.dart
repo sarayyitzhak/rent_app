@@ -9,7 +9,6 @@ import 'package:rent_app/widgets/custom_app_bar.dart';
 import '../dictionary.dart';
 import '../constants.dart';
 import '../models/item.dart';
-import '../models/chat.dart';
 import 'chat_screen.dart';
 import '../services/cloud_services.dart';
 import '../services/query_batch.dart';
@@ -71,12 +70,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   Future<void> _openChatWithUser() async {
-    Chat chat = await getOrCreateChatWithUser(widget.args.user.docRef.id);
+    ChatOpenResult chatOpenResult =
+        await getOrCreateChatWithUser(widget.args.user.docRef.id);
     if (!mounted) {
       return;
     }
     Navigator.pushNamed(context, ChatScreen.id,
-        arguments: ChatScreenArguments(chat));
+        arguments: ChatScreenArguments(chatOpenResult.chat,
+            isTemporaryEmptyChat: chatOpenResult.isNew));
   }
 
   @override

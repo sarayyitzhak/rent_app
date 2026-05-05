@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/models/chat.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
@@ -38,14 +39,28 @@ class _ChatsScreenState extends State<ChatsScreen> {
   void _fetchChatsStream() {
     _loading = true;
 
-    _chatsSubscription = getUserChatsStream().listen((QueryBatch<Chat> queryBatch) {
+    _chatsSubscription = getUserChatsSnapshotStream()
+        .listen((QuerySnapshot<Map<String, dynamic>> snapshot) {
       if (_chatMap.isEmpty) {
-        _queryBatch = queryBatch;
+        _queryBatch = QueryBatch(
+          snapshot.docs.map(Chat.fromDocumentSnapshot).toList(),
+          snapshot.size == 20,
+          snapshot.docs.lastOrNull,
+        );
       }
 
-      _updateChatMap(queryBatch.list);
+      for (DocumentChange<Map<String, dynamic>> change in snapshot.docChanges) {
+        String chatId = change.doc.id;
+        if (change.type == DocumentChangeType.removed) {
+          _chatMap.remove(chatId);
+        } else {
+          _chatMap[chatId] = Chat.fromDocumentSnapshot(change.doc);
+        }
+      }
       _updateChats();
 
+      _loading = false;
+    }, onError: (_) {
       _loading = false;
     });
   }
@@ -71,8 +86,12 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   void _updateChats() {
     List<Chat> chats = _chatMap.values.toList();
-    chats.sort((chat1, chat2) => chat2.lastMessageTime.compareTo(chat1.lastMessageTime));
+    chats.sort((chat1, chat2) =>
+        chat2.lastMessageTime.compareTo(chat1.lastMessageTime));
 
+    if (!mounted) {
+      return;
+    }
     setState(() {
       _chats = chats;
     });
@@ -87,9 +106,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   @override
   void dispose() {
-    super.dispose();
-
     _chatsSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -101,7 +119,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
         onNotification: onScroll,
         child: ListView.builder(
           itemCount: _chats.length,
-          itemBuilder: (context, index) => ChatCard(key: ValueKey(_chats[index].docRef.id), chat: _chats[index]),
+          itemBuilder: (context, index) => ChatCard(
+              key: ValueKey(_chats[index].docRef.id), chat: _chats[index]),
         ),
       ),
     );

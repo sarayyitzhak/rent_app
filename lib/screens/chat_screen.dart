@@ -35,6 +35,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Message? _firstMessage;
   Message? _lastMessage;
   bool _loading = false;
+  bool _messageSentInSession = false;
 
   final MessageReadNotifier messageReadNotifier = MessageReadNotifier();
   final MessageTailsNotifier messageTailsNotifier = MessageTailsNotifier();
@@ -216,6 +217,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
+    if (widget.args.isTemporaryEmptyChat && !_messageSentInSession) {
+      deleteChatIfEmpty(chat.docRef);
+    }
     activeChat = null;
     _chatSubscription?.cancel();
     _messagesSubscription?.cancel();
@@ -253,7 +257,13 @@ class _ChatScreenState extends State<ChatScreen> {
               // decoration: kMessageContainerDecoration,
               color: Colors.grey[300],
               padding: const EdgeInsets.only(right: 8),
-              child: ChatBottomSendBar(chat: chat, isUserIndex0: _isUserIndex0),
+              child: ChatBottomSendBar(
+                chat: chat,
+                isUserIndex0: _isUserIndex0,
+                onMessageSent: () {
+                  _messageSentInSession = true;
+                },
+              ),
             ),
           ],
         ),
@@ -264,6 +274,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
 class ChatScreenArguments {
   final Chat chat;
+  final bool isTemporaryEmptyChat;
 
-  ChatScreenArguments(this.chat);
+  ChatScreenArguments(this.chat, {this.isTemporaryEmptyChat = false});
 }

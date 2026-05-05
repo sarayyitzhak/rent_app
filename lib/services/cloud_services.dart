@@ -507,7 +507,14 @@ Future<void> sendRecordMessage(
   batch.commit();
 }
 
-Future<Chat> getOrCreateChatWithUser(String userID) async {
+class ChatOpenResult {
+  final Chat chat;
+  final bool isNew;
+
+  ChatOpenResult({required this.chat, required this.isNew});
+}
+
+Future<ChatOpenResult> getOrCreateChatWithUser(String userID) async {
   Chat? existingChat = await _firestore
       .collection('chats')
       .where(Filter.or(
@@ -524,7 +531,7 @@ Future<Chat> getOrCreateChatWithUser(String userID) async {
           query.docs.map(Chat.fromDocumentSnapshot).firstOrNull);
 
   if (existingChat != null) {
-    return existingChat;
+    return ChatOpenResult(chat: existingChat, isNew: false);
   }
 
   DocumentReference chatRef = _firestore.collection('chats').doc();
@@ -545,7 +552,14 @@ Future<Chat> getOrCreateChatWithUser(String userID) async {
     }
   });
 
-  return getChat(chatRef);
+  return ChatOpenResult(chat: await getChat(chatRef), isNew: true);
+}
+
+Future<void> deleteChatIfEmpty(DocumentReference chatRef) async {
+  QuerySnapshot messages = await chatRef.collection('messages').limit(1).get();
+  if (messages.docs.isEmpty) {
+    await chatRef.delete();
+  }
 }
 
 Future<DocumentReference> sendItemMessage(
@@ -661,19 +675,15 @@ Future<void> updateAllUserChatsTyping() {
   });
 }
 
-Stream<QueryBatch<Chat>> getUserChatsStream() {
-  Query query = _firestore
+Stream<QuerySnapshot<Map<String, dynamic>>> getUserChatsSnapshotStream() {
+  return _firestore
       .collection('chats')
       .where(Filter.or(
           Filter('participantInfo0.uid', isEqualTo: userDetails.docRef.id),
           Filter('participantInfo1.uid', isEqualTo: userDetails.docRef.id)))
       .orderBy('lastMessageTime', descending: true)
-      .limit(20);
-
-  return query.snapshots().map((QuerySnapshot query) => QueryBatch(
-      query.docs.map(Chat.fromDocumentSnapshot).toList(),
-      query.size == 20,
-      query.docs.lastOrNull));
+      .limit(20)
+      .snapshots();
 }
 
 Future<QueryBatch<Chat>> getUserChats(DocumentSnapshot? startAfterDoc) {
