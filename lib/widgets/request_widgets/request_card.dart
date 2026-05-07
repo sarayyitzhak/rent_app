@@ -151,24 +151,27 @@ class _RequestCardState extends State<RequestCard> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        child: SizedBox(
-          height: 100,
+        child: IntrinsicHeight(
           child: Row(
             children: [
-              CachedImage(
+              SizedBox(
                 width: 100,
-                height: 100,
-                imageRef: _item != null
-                    ? getItemImageRef(_item!.docRef, _item!.mainImage)
-                    : null,
-                borderRadius: const BorderRadiusDirectional.only(
-                    topStart: Radius.circular(20),
-                    bottomStart: Radius.circular(20)),
+                child: CachedImage(
+                  imageRef: _item != null
+                      ? getItemImageRef(_item!.docRef, _item!.mainImage)
+                      : null,
+                  borderRadius: const BorderRadiusDirectional.only(
+                      topStart: Radius.circular(20),
+                      bottomStart: Radius.circular(20)),
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 110),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -236,6 +239,7 @@ class _RequestCardState extends State<RequestCard> {
                       getStatusWidget(context),
                     ],
                   ),
+                ),
                 ),
               ),
             ],

@@ -48,7 +48,8 @@ class _ItemScreenState extends State<ItemScreen> {
   Future<void> _fetchData() async {
     Item item = widget.args.item ?? await getItemByRef(widget.args.itemRef!);
     isMe = item.contactUserID == userDetails.docRef.id;
-    UserDetails details = isMe ? userDetails : await getUserByID(item.contactUserID);
+    UserDetails details =
+        isMe ? userDetails : await getUserByID(item.contactUserID);
     int reviewCount = await getTextItemReviewsCount(item.docRef);
 
     setState(() {
@@ -84,8 +85,10 @@ class _ItemScreenState extends State<ItemScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, ImageViewGalleryScreen.id,
-                        arguments: ImageViewGalleryScreenArguments(_imageRefs, _pageController.page?.toInt() ?? 0)),
+                    onTap: () => Navigator.pushNamed(
+                        context, ImageViewGalleryScreen.id,
+                        arguments: ImageViewGalleryScreenArguments(
+                            _imageRefs, _pageController.page?.toInt() ?? 0)),
                     child: Stack(
                       children: [
                         SizedBox(
@@ -125,7 +128,8 @@ class _ItemScreenState extends State<ItemScreen> {
                             top: 8,
                             end: 8,
                             child: GestureDetector(
-                              onTap: () => toggleUserFavoriteItem(_item!.docRef),
+                              onTap: () =>
+                                  toggleUserFavoriteItem(_item!.docRef),
                               child: Card(
                                 color: Colors.black.withOpacity(0.3),
                                 shape: RoundedRectangleBorder(
@@ -182,7 +186,9 @@ class _ItemScreenState extends State<ItemScreen> {
                                 child: Container(
                                     margin: const EdgeInsets.all(5),
                                     decoration: BoxDecoration(
-                                        color: kPastelYellowOpacity, borderRadius: BorderRadius.circular(10)),
+                                        color: kPastelYellowOpacity,
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
                                     child: ListTile(
                                       title: Text(
                                         '${_item!.favoriteCount} ${localization.peopleLikedTheItem} ',
@@ -196,9 +202,11 @@ class _ItemScreenState extends State<ItemScreen> {
                                 child: Container(
                                   margin: const EdgeInsets.all(5),
                                   decoration: BoxDecoration(
-                                      color: kPastelYellowOpacity, borderRadius: BorderRadius.circular(10)),
+                                      color: kPastelYellowOpacity,
+                                      borderRadius: BorderRadius.circular(10)),
                                   child: ListTile(
-                                    title: Text('${_item!.seenCount} ${localization.peopleSeenTheItem} ',
+                                    title: Text(
+                                        '${_item!.seenCount} ${localization.peopleSeenTheItem} ',
                                         style: kSmallBlackTextStyle),
                                     leading: const Icon(Icons.remove_red_eye),
                                     iconColor: Colors.blue.shade800,
@@ -233,11 +241,13 @@ class _ItemScreenState extends State<ItemScreen> {
                           color: Colors.grey,
                           thickness: 1,
                         ),
-                        SendItemContainer(_item!),
-                        const Divider(
-                          color: Colors.grey,
-                          thickness: 1,
-                        ),
+                        if (!isMe) ...[
+                          SendItemContainer(_item!),
+                          const Divider(
+                            color: Colors.grey,
+                            thickness: 1,
+                          ),
+                        ],
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -251,37 +261,50 @@ class _ItemScreenState extends State<ItemScreen> {
                                   ),
                                   if (_userDetails != null)
                                     GestureDetector(
-                                      onTap: () => Navigator.pushNamed(context, UserProfileScreen.id,
-                                          arguments: UserProfileScreenArguments(_userDetails!)),
+                                      onTap: () => Navigator.pushNamed(
+                                          context, UserProfileScreen.id,
+                                          arguments: UserProfileScreenArguments(
+                                              _userDetails!)),
                                       child: Row(
                                         children: [
                                           CachedImage(
                                             width: 50,
                                             height: 50,
                                             imageRef: getUserImageRef(
-                                                _userDetails!.docRef, _userDetails!.photoID),
-                                            borderRadius: BorderRadius.circular(100),
+                                                _userDetails!.docRef,
+                                                _userDetails!.photoID),
+                                            borderRadius:
+                                                BorderRadius.circular(100),
                                             errorIcon: Icons.person,
                                           ),
                                           Expanded(
                                             child: Container(
-                                              margin: const EdgeInsets.symmetric(horizontal: 12),
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12),
                                               child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
                                                     _userDetails!.name,
                                                     style: kBlackTextStyle,
                                                     maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
                                                   FutureBuilder(
-                                                    future: AddressService().getAddress(_item!.geoPoint),
-                                                    builder: (context, snapshot) => Text(
+                                                    future: AddressService()
+                                                        .getAddress(
+                                                            _item!.geoPoint),
+                                                    builder:
+                                                        (context, snapshot) =>
+                                                            Text(
                                                       snapshot.data ?? '',
                                                       style: kBlackTextStyle,
                                                       maxLines: 2,
-                                                      overflow: TextOverflow.ellipsis,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                     ),
                                                   ),
                                                 ],
@@ -295,7 +318,9 @@ class _ItemScreenState extends State<ItemScreen> {
                               ),
                             ),
                             if (_userDetails!.showPhoneNumber)
-                              DialIconButton(phoneNumber: phoneNumberToString(_userDetails!.phoneNumber)),
+                              DialIconButton(
+                                  phoneNumber: phoneNumberToString(
+                                      _userDetails!.phoneNumber)),
                           ],
                         ),
                         const Divider(
@@ -316,9 +341,12 @@ class _ItemScreenState extends State<ItemScreen> {
                           children: [
                             _reviewCount != 0
                                 ? TextButton(
-                                    child: Text('${localization.usersReviews} ($_reviewCount)'),
-                                    onPressed: () => Navigator.pushNamed(context, ReviewsScreen.id,
-                                        arguments: ReviewsScreenArguments(_item!)),
+                                    child: Text(
+                                        '${localization.usersReviews} ($_reviewCount)'),
+                                    onPressed: () => Navigator.pushNamed(
+                                        context, ReviewsScreen.id,
+                                        arguments:
+                                            ReviewsScreenArguments(_item!)),
                                   )
                                 : Text(
                                     localization.noReviewsYet,
@@ -335,13 +363,16 @@ class _ItemScreenState extends State<ItemScreen> {
                     title: isMe ? localization.edit : localization.rentItem,
                     onPress: isMe
                         ? () => Navigator.pushNamed(context, AddItemScreen.id,
-                            arguments: AddItemScreenArguments(item: _item!, isEditMode: true))
+                            arguments: AddItemScreenArguments(
+                                item: _item!, isEditMode: true))
                         : () => Navigator.pushNamed(context, RentalScreen.id,
                             arguments: RentalScreenArguments(item: _item!)),
                   )),
                 ],
               ))
-            : Center(child: LoadingAnimationWidget.stretchedDots(color: Colors.grey, size: 50)),
+            : Center(
+                child: LoadingAnimationWidget.stretchedDots(
+                    color: Colors.grey, size: 50)),
       ),
     );
   }
