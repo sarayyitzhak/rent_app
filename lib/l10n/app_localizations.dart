@@ -125,6 +125,18 @@ abstract class AppLocalizations {
   /// **'Best Sellers Of {category}'**
   String bestSellersOf(Object category);
 
+  /// No description provided for @no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get no;
+
+  /// No description provided for @yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yes;
+
   /// No description provided for @home.
   ///
   /// In en, this message translates to:
@@ -1012,6 +1024,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'There are no pending requests at the moment'**
   String get noPendingRequests;
+
+  /// No description provided for @cancelRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel request'**
+  String get cancelRequest;
+
+  /// No description provided for @deleteRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete request'**
+  String get deleteRequest;
+
+  /// No description provided for @askForExtension.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for an extension'**
+  String get askForExtension;
+
+  /// No description provided for @pickupLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup location '**
+  String get pickupLocation;
+
+  /// No description provided for @finalPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Final price'**
+  String get finalPrice;
+
+  /// No description provided for @requestStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Request status'**
+  String get requestStatus;
+
+  /// No description provided for @extensionUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Extension until'**
+  String get extensionUntil;
+
+  /// No description provided for @dates.
+  ///
+  /// In en, this message translates to:
+  /// **'Dates'**
+  String get dates;
+
+  /// No description provided for @request.
+  ///
+  /// In en, this message translates to:
+  /// **'Request'**
+  String get request;
+
+  /// No description provided for @selectEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an end date'**
+  String get selectEndDate;
+
+  /// No description provided for @pleaseSelectDateLaterThan.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a date later than'**
+  String get pleaseSelectDateLaterThan;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @deleteConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this request?'**
+  String get deleteConfirmation;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

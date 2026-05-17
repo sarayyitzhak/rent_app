@@ -9,6 +9,8 @@
       "category": {}
     }
   },
+  "no": "לא",
+  "yes": "כן",
   "home": "בית",
   "user": "משתמש",
   "myProfile": "הפרופיל שלי",
@@ -228,7 +230,21 @@
   "theSelectedDateRangeIsInvalid": "טווח התאריכים שנבחר אינו חוקי",
   "theDateRangeContainsAnUnavailableDate": "טווח התאריכים מכיל תאריך תפוס. אנא בחר טווח אחר",
   "emptyItems": "עדיין לא הוספת מוצרים לחנות שלך! לחץ על הוסף מוצר והעלה את המוצרים הראשונים שלך",
-  "noPendingRequests": "אין בקשות ממתינות כרגע" 
+  "noPendingRequests": "אין בקשות ממתינות כרגע",
+  "cancelRequest": "ביטול בקשה",
+  "deleteRequest": "מחיקת בקשה",
+  "askForExtension": "בקש הארכה",
+  "pickupLocation": " מקום איסוף",
+  "finalPrice": "מחיר סופי",
+  "requestStatus": "סטטוס בקשה",
+  "extensionUntil": "הארכה עד",
+  "dates": "תאריכים",
+  "request": "בקשה",
+  "selectEndDate": "בחר תאריך סיום",
+  "pleaseSelectDateLaterThan": "אנא בחר תאריך מאוחר מ",
+  "cancel": "ביטול",
+  "deleteConfirmation": "האם אתה בטוח?"
+  
 
 
 }

@@ -26,6 +26,12 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
+  String get no => 'לא';
+
+  @override
+  String get yes => 'כן';
+
+  @override
   String get home => 'בית';
 
   @override
@@ -482,4 +488,43 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get noPendingRequests => 'אין בקשות ממתינות כרגע';
+
+  @override
+  String get cancelRequest => 'ביטול בקשה';
+
+  @override
+  String get deleteRequest => 'מחיקת בקשה';
+
+  @override
+  String get askForExtension => 'בקש הארכה';
+
+  @override
+  String get pickupLocation => ' מקום איסוף';
+
+  @override
+  String get finalPrice => 'מחיר סופי';
+
+  @override
+  String get requestStatus => 'סטטוס בקשה';
+
+  @override
+  String get extensionUntil => 'הארכה עד';
+
+  @override
+  String get dates => 'תאריכים';
+
+  @override
+  String get request => 'בקשה';
+
+  @override
+  String get selectEndDate => 'בחר תאריך סיום';
+
+  @override
+  String get pleaseSelectDateLaterThan => 'אנא בחר תאריך מאוחר מ';
+
+  @override
+  String get cancel => 'ביטול';
+
+  @override
+  String get deleteConfirmation => 'האם אתה בטוח?';
 }

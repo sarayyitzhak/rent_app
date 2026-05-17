@@ -6,6 +6,7 @@ import 'package:rent_app/models/request_status.dart';
 import 'package:rent_app/services/cloud_services.dart';
 import 'package:rent_app/utils.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import '../../dictionary.dart';
 
 class ExtensionRequestDialog extends StatefulWidget {
   static String id = 'request_screen';
@@ -56,6 +57,7 @@ class _ExtensionRequestDialogState extends State<ExtensionRequestDialog> {
 
   @override
   Widget build(BuildContext context) {
+    var localization = Dictionary.getLocalization(context);
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -94,8 +96,8 @@ class _ExtensionRequestDialogState extends State<ExtensionRequestDialog> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'בחר תאריך סיום',
+                  Text(
+                    localization.selectEndDate,
                     style: kBlackHeaderTextStyle,
                   ),
                   SfDateRangePicker(
@@ -156,7 +158,8 @@ class _ExtensionRequestDialogState extends State<ExtensionRequestDialog> {
                             ),
                             const SizedBox(width: 5),
                             Text(
-                              'יש לבחור תאריך מאוחר יותר מ- ${dateToString(widget.itemRequest.time.end)}',
+                              localization.pleaseSelectDateLaterThan +
+                                  dateToString(widget.itemRequest.time.end),
                               style: const TextStyle(
                                   fontSize: 14, color: Colors.red),
                             ),
@@ -169,12 +172,12 @@ class _ExtensionRequestDialogState extends State<ExtensionRequestDialog> {
                     children: [
                       ElevatedButton(
                         onPressed: () => onChoosePressed(context),
-                        child: const Text("בחר"),
+                        child: Text(localization.select),
                       ),
                       const SizedBox(width: 16),
                       ElevatedButton(
                         onPressed: () => onCancelPressed(context),
-                        child: const Text("ביטול"),
+                        child: Text(localization.cancel),
                       ),
                     ],
                   ),

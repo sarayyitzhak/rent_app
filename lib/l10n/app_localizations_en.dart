@@ -26,6 +26,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get no => 'No';
+
+  @override
+  String get yes => 'Yes';
+
+  @override
   String get home => 'Home';
 
   @override
@@ -482,4 +488,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noPendingRequests => 'There are no pending requests at the moment';
+
+  @override
+  String get cancelRequest => 'Cancel request';
+
+  @override
+  String get deleteRequest => 'Delete request';
+
+  @override
+  String get askForExtension => 'Ask for an extension';
+
+  @override
+  String get pickupLocation => 'Pickup location ';
+
+  @override
+  String get finalPrice => 'Final price';
+
+  @override
+  String get requestStatus => 'Request status';
+
+  @override
+  String get extensionUntil => 'Extension until';
+
+  @override
+  String get dates => 'Dates';
+
+  @override
+  String get request => 'Request';
+
+  @override
+  String get selectEndDate => 'Select an end date';
+
+  @override
+  String get pleaseSelectDateLaterThan => 'Please select a date later than';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get deleteConfirmation => 'Are you sure you want to delete this request?';
 }

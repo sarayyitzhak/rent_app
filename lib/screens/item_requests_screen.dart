@@ -22,10 +22,13 @@ class ItemRequestsScreen extends StatefulWidget {
   State<ItemRequestsScreen> createState() => _ItemRequestsScreenState();
 }
 
-class _ItemRequestsScreenState extends State<ItemRequestsScreen> with SingleTickerProviderStateMixin {
+class _ItemRequestsScreenState extends State<ItemRequestsScreen>
+    with SingleTickerProviderStateMixin {
   final Map<String, ItemRequest> _requestMap = {};
   final Map<String, Item> _itemMap = {};
   final Map<String, TabType> _requestTabMap = {};
+  Set<String> _futureRequestIds = {};
+  final Set<String> _removingRequestIds = {};
 
   bool _showMyRequests = true;
   late TabController _tabController;
@@ -66,31 +69,50 @@ class _ItemRequestsScreenState extends State<ItemRequestsScreen> with SingleTick
 
   Widget getRequests(TabType tabType) {
     List<MapEntry<String, TabType>> entries = _requestTabMap.entries
-        .where((MapEntry<String, TabType> entry) => entry.value == tabType && _requestMap.containsKey(entry.key))
+        .where((MapEntry<String, TabType> entry) =>
+            entry.value == tabType && _requestMap.containsKey(entry.key))
         .toList();
 
-    entries
-        .sort((entry1, entry2) => _requestMap[entry1.key]!.time.start.compareTo(_requestMap[entry2.key]!.time.start));
+    entries.sort((entry1, entry2) => _requestMap[entry1.key]!
+        .time
+        .start
+        .compareTo(_requestMap[entry2.key]!.time.start));
 
     if (tabType == TabType.processed) {
       entries = entries.reversed.toList();
     }
 
-    List<RequestCard> requests = entries
-        .map((MapEntry<String, TabType> entry) => RequestCard(
-              key: ValueKey(entry.key),
-              request: _requestMap[entry.key]!,
-              item: _itemMap[_requestMap[entry.key]!.itemID],
-            ))
-        .toList();
+    List<Widget> requests = entries.map((MapEntry<String, TabType> entry) {
+      final String requestId = entry.key;
+      final bool isRemoving = _removingRequestIds.contains(requestId);
+      return AnimatedOpacity(
+        key: ValueKey(requestId),
+        opacity: isRemoving ? 0 : 1,
+        duration: const Duration(milliseconds: 260),
+        child: AnimatedSize(
+          duration: const Duration(milliseconds: 260),
+          curve: Curves.easeInOut,
+          child: isRemoving
+              ? const SizedBox.shrink()
+              : RequestCard(
+                  request: _requestMap[requestId]!,
+                  item: _itemMap[_requestMap[requestId]!.itemID],
+                ),
+        ),
+      );
+    }).toList();
 
-    return _streamDataFetched ? NotificationListener<ScrollNotification>(
-      onNotification: onScroll,
-      child: ListView.builder(
-        itemCount: requests.length,
-        itemBuilder: (context, index) => requests[index],
-      ),
-    ) : Center(child: LoadingAnimationWidget.stretchedDots(color: Colors.grey, size: 50));
+    return _streamDataFetched
+        ? NotificationListener<ScrollNotification>(
+            onNotification: onScroll,
+            child: ListView.builder(
+              itemCount: requests.length,
+              itemBuilder: (context, index) => requests[index],
+            ),
+          )
+        : Center(
+            child: LoadingAnimationWidget.stretchedDots(
+                color: Colors.grey, size: 50));
   }
 
   bool onScroll(ScrollNotification scrollInfo) {
@@ -121,11 +143,14 @@ class _ItemRequestsScreenState extends State<ItemRequestsScreen> with SingleTick
   Future<void> _updateData(List<ItemRequest> requests) async {
     for (ItemRequest request in requests) {
       _requestMap[request.docRef.id] = request;
+      _removingRequestIds.remove(request.docRef.id);
       RequestStatus status = getRequestStatus(request);
       if (status == RequestStatus.waiting) {
-        _requestTabMap[request.docRef.id] = _showMyRequests ? TabType.waiting : TabType.requireAttention;
+        _requestTabMap[request.docRef.id] =
+            _showMyRequests ? TabType.waiting : TabType.requireAttention;
       } else if (status == RequestStatus.ownerApproved) {
-        _requestTabMap[request.docRef.id] = _showMyRequests ? TabType.requireAttention : TabType.waiting;
+        _requestTabMap[request.docRef.id] =
+            _showMyRequests ? TabType.requireAttention : TabType.waiting;
       } else {
         _requestTabMap[request.docRef.id] = TabType.processed;
       }
@@ -141,14 +166,46 @@ class _ItemRequestsScreenState extends State<ItemRequestsScreen> with SingleTick
     _requestMap.clear();
     _requestTabMap.clear();
     _itemMap.clear();
+    _futureRequestIds = {};
+    _removingRequestIds.clear();
     _queryBatch = QueryBatch.empty();
     _streamDataFetched = false;
 
     _fetchPastRequests();
 
-    _itemRequestSubscription = getFutureRequestsStream(!_showMyRequests).listen((List<ItemRequest> requests) {
+    _itemRequestSubscription = getFutureRequestsStream(!_showMyRequests)
+        .listen((List<ItemRequest> requests) {
+      final Set<String> incomingIds = requests.map((r) => r.docRef.id).toSet();
+
+      // Remove future requests that disappeared from stream (e.g. deleted).
+      final Set<String> removedIds = _futureRequestIds.difference(incomingIds);
+      for (final id in removedIds) {
+        _animateAndRemoveRequest(id);
+      }
+
+      _futureRequestIds = incomingIds;
       _streamDataFetched = true;
       _updateData(requests);
+    });
+  }
+
+  void _animateAndRemoveRequest(String requestId) {
+    if (_removingRequestIds.contains(requestId)) {
+      return;
+    }
+
+    _removingRequestIds.add(requestId);
+    if (mounted) {
+      setState(() {});
+    }
+
+    Future.delayed(const Duration(milliseconds: 280), () {
+      _removingRequestIds.remove(requestId);
+      _requestMap.remove(requestId);
+      _requestTabMap.remove(requestId);
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
@@ -183,7 +240,8 @@ class _ItemRequestsScreenState extends State<ItemRequestsScreen> with SingleTick
               TextButton(
                   onPressed: () => onRequestsTypeClicked(true),
                   style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(_showMyRequests ? kDarkYellow : kPastelYellowOpacity),
+                    backgroundColor: WidgetStatePropertyAll(
+                        _showMyRequests ? kDarkYellow : kPastelYellowOpacity),
                   ),
                   child: Text(
                     localization.my_requests,
@@ -195,7 +253,8 @@ class _ItemRequestsScreenState extends State<ItemRequestsScreen> with SingleTick
               TextButton(
                   onPressed: () => onRequestsTypeClicked(false),
                   style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(_showMyRequests ? kPastelYellowOpacity : kDarkYellow),
+                    backgroundColor: WidgetStatePropertyAll(
+                        _showMyRequests ? kPastelYellowOpacity : kDarkYellow),
                   ),
                   child: Text(
                     localization.requested_from_me,
@@ -212,7 +271,9 @@ class _ItemRequestsScreenState extends State<ItemRequestsScreen> with SingleTick
             child: buildStatusTabBar(context),
           ),
           Expanded(
-            child: TabBarView(controller: _tabController, children: TabType.values.map(getRequests).toList()),
+            child: TabBarView(
+                controller: _tabController,
+                children: TabType.values.map(getRequests).toList()),
           ),
         ],
       ),

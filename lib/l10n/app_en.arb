@@ -9,6 +9,8 @@
       "category": {}
     }
   },
+  "no": "No",
+  "yes": "Yes",
   "home": "Home",
   "user": "User",
   "myProfile": "My Profile",
@@ -227,7 +229,24 @@
   "theSelectedDateRangeIsInvalid": "The selected date range is invalid",
   "theDateRangeContainsAnUnavailableDate": "The date range contains an unavailable date. Please select different dates",
   "emptyItems": "You haven’t added any items to your store yet!\nClick Add Item and upload your first items",
-  "noPendingRequests": "There are no pending requests at the moment" 
+  "noPendingRequests": "There are no pending requests at the moment",
+  "cancelRequest": "Cancel request",
+  "deleteRequest": "Delete request",
+  "askForExtension": "Ask for an extension",
+  "pickupLocation": "Pickup location ",
+  "finalPrice": "Final price",
+  "requestStatus": "Request status",
+  "extensionUntil": "Extension until",
+  "dates": "Dates",
+  "request": "Request",
+  "selectEndDate": "Select an end date",
+  "pleaseSelectDateLaterThan": "Please select a date later than",
+  "cancel": "Cancel",
+  "deleteConfirmation": "Are you sure you want to delete this request?"
+  
+
+  
+
 
 
 }

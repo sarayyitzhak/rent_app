@@ -50,13 +50,43 @@ class _RequestScreenState extends State<RequestScreen> {
     removeExtensionRequest(_itemRequest.docRef);
   }
 
-  Future<void> onCancelPressed() async {
+  Future<void> onCancelPressed(BuildContext context) async {
+    var localization = Dictionary.getLocalization(context);
     if (_itemRequest.status == RequestStatus.waiting) {
-      await deleteRequest(_itemRequest.docRef);
+      final bool? shouldDelete = await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(localization.deleteRequest),
+            content: Text(localization.deleteConfirmation),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(localization.no),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(localization.yes),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (shouldDelete != true) {
+        return;
+      }
+
+      final docRef = _itemRequest.docRef;
       if (!mounted) {
         return;
       }
       Navigator.pop(context);
+
+      // Pop first so the user can see the card animate out on the requests list.
+      unawaited(Future<void>.delayed(const Duration(milliseconds: 300), () {
+        return deleteRequest(docRef);
+      }));
     }
   }
 
@@ -94,8 +124,8 @@ class _RequestScreenState extends State<RequestScreen> {
   Widget build(BuildContext context) {
     var localization = Dictionary.getLocalization(context);
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'בקשה',
+      appBar: CustomAppBar(
+        title: localization.request,
         isBackButton: true,
       ),
       body: Container(
@@ -137,12 +167,17 @@ class _RequestScreenState extends State<RequestScreen> {
             Column(
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('תאריכים:', style: kBlackHeaderTextStyle),
-                    Text(
+                    Text(localization.dates, style: kBlackHeaderTextStyle),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
                         '${dateToString(_itemRequest.time.start)}-${dateToString(_itemRequest.time.end)}',
-                        style: kBlackHeaderTextStyle)
+                        style: kBlackHeaderTextStyle,
+                        textAlign: TextAlign.end,
+                      ),
+                    )
                   ],
                 ),
                 _itemRequest.extensionRequest != null
@@ -151,7 +186,7 @@ class _RequestScreenState extends State<RequestScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              const Text('הארכה עד:',
+                              Text(localization.extensionUntil,
                                   style: TextStyle(fontSize: 14)),
                               Text(
                                   dateToString(
@@ -162,7 +197,7 @@ class _RequestScreenState extends State<RequestScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              const Text('מצב בקשה:',
+                              Text(localization.requestStatus,
                                   style: TextStyle(fontSize: 14)),
                               Text(
                                   _itemRequest.extensionRequest!.status
@@ -172,7 +207,7 @@ class _RequestScreenState extends State<RequestScreen> {
                           ),
                           ElevatedButton(
                             onPressed: onCancelExtensionPressed,
-                            child: const Text("בטל בקשה"),
+                            child: Text(localization.cancelRequest),
                           ),
                         ],
                       )
@@ -180,38 +215,52 @@ class _RequestScreenState extends State<RequestScreen> {
               ],
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('מצב בקשה:', style: kBlackHeaderTextStyle),
-                Text(_itemRequest.status.getTitle(localization),
-                    style: kBlackHeaderTextStyle)
+                Text(localization.requestStatus, style: kBlackHeaderTextStyle),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(_itemRequest.status.getTitle(localization),
+                      style: kBlackHeaderTextStyle, textAlign: TextAlign.end),
+                )
               ],
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'מחיר סופי:',
-                  style: kBlackHeaderTextStyle,
-                ),
                 Text(
-                  getFormattedFinalPrice(),
+                  localization.finalPrice,
                   style: kBlackHeaderTextStyle,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    getFormattedFinalPrice(),
+                    style: kBlackHeaderTextStyle,
+                    textAlign: TextAlign.end,
+                  ),
                 ),
               ],
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'מקום איסוף:',
+                Text(
+                  localization.pickupLocation,
                   style: kBlackHeaderTextStyle,
                 ),
-                FutureBuilder(
-                  future: AddressService().getAddress(_itemRequest.geoPoint),
-                  builder: (context, snapshot) => Text(
-                    snapshot.data ?? '',
-                    style: kBlackHeaderTextStyle,
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FutureBuilder(
+                    future: AddressService().getAddress(_itemRequest.geoPoint),
+                    builder: (context, snapshot) => Text(
+                      snapshot.data ?? '',
+                      style: kBlackHeaderTextStyle,
+                      maxLines: 3,
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
+                    ),
                   ),
                 ),
               ],
@@ -219,12 +268,14 @@ class _RequestScreenState extends State<RequestScreen> {
             Center(
               child: Column(
                 children: [
-                  CustomButton(title: 'בקש הארכה', onPress: onExtensionPressed),
+                  CustomButton(
+                      title: localization.askForExtension,
+                      onPress: onExtensionPressed),
                   CustomButton(
                       title: _itemRequest.status == RequestStatus.waiting
-                          ? 'מחק בקשה'
-                          : 'בטל בקשה',
-                      onPress: onCancelPressed)
+                          ? localization.deleteRequest
+                          : localization.cancelRequest,
+                      onPress: () => onCancelPressed(context))
                 ],
               ),
             ),
