@@ -50,9 +50,12 @@ class _RequestScreenState extends State<RequestScreen> {
     removeExtensionRequest(_itemRequest.docRef);
   }
 
-  void onCancelPressed() {
+  Future<void> onCancelPressed() async {
     if (_itemRequest.status == RequestStatus.waiting) {
-      deleteRequest(_itemRequest.docRef);
+      await deleteRequest(_itemRequest.docRef);
+      if (!mounted) {
+        return;
+      }
       Navigator.pop(context);
     }
   }

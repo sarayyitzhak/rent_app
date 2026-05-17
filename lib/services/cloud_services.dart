@@ -284,6 +284,16 @@ Future<List<ItemRequest>> getUserRequestsStream() {
           query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
 }
 
+Stream<List<ItemRequest>> getUserRequestsSnapshotStream() {
+  return _firestore
+      .collection('requests')
+      .where('ownerID', isEqualTo: userDetails.docRef.id)
+      .orderBy('requestTime', descending: true)
+      .snapshots()
+      .map((QuerySnapshot query) =>
+          query.docs.map(ItemRequest.fromDocumentSnapshot).toList());
+}
+
 Stream<List<ItemRequest>> getFutureRequestsStream(bool isUserOwner) {
   return _firestore
       .collection('requests')
@@ -394,8 +404,8 @@ void removeExtensionRequest(DocumentReference docRef) {
   docRef.update({'extensionRequest': FieldValue.delete()});
 }
 
-void deleteRequest(DocumentReference docRef) {
-  docRef.delete();
+Future<void> deleteRequest(DocumentReference docRef) {
+  return docRef.delete();
 }
 
 Future<List<ItemRequest>> getUserApprovedRequestsFrom(

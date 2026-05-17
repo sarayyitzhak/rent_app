@@ -101,7 +101,7 @@ class _UserItemsScreenState extends State<UserItemsScreen> {
                 )
               : Expanded(
                   child: ScrollableRequestList(
-                  future: getUserRequestsStream(),
+                  stream: getUserRequestsSnapshotStream(),
                   emptyText: localization.noPendingRequests,
                   emptyTextStyle: kBlackHeaderTextStyle,
                 )),
