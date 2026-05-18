@@ -13,8 +13,14 @@ import '../cached_image.dart';
 
 class ChatCard extends StatefulWidget {
   final Chat chat;
+  final bool isEditing;
+  final Future<void> Function(Chat chat)? onDelete;
 
-  const ChatCard({super.key, required this.chat});
+  const ChatCard(
+      {super.key,
+      required this.chat,
+      this.isEditing = false,
+      this.onDelete});
 
   @override
   State<ChatCard> createState() => _ChatCardState();
@@ -30,6 +36,10 @@ class _ChatCardState extends State<ChatCard> {
         ? widget.chat.participantInfo1.uid
         : widget.chat.participantInfo0.uid;
     UserDetails participantUser = await getUserByID(otherParticipantUid);
+
+    if (!mounted) {
+      return;
+    }
 
     setState(() {
       _participantUser = participantUser;
@@ -69,8 +79,10 @@ class _ChatCardState extends State<ChatCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, ChatScreen.id,
-          arguments: ChatScreenArguments(widget.chat)),
+      onTap: widget.isEditing
+          ? null
+          : () => Navigator.pushNamed(context, ChatScreen.id,
+              arguments: ChatScreenArguments(widget.chat)),
       child: Container(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
           margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
@@ -112,7 +124,17 @@ class _ChatCardState extends State<ChatCard> {
               ),
               Column(
                 children: [
-                  Text(getHourMinuteFormat(widget.chat.lastMessageTime)),
+                  if (!widget.isEditing)
+                    Text(getHourMinuteFormat(widget.chat.lastMessageTime)),
+                  if (widget.isEditing)
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      onPressed: () async {
+                        if (widget.onDelete != null) {
+                          await widget.onDelete!(widget.chat);
+                        }
+                      },
+                    ),
                   if (_getUnreadMessageCount() > 0)
                     Container(
                       padding: const EdgeInsets.all(6),

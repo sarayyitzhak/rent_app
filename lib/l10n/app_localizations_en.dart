@@ -32,6 +32,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yes => 'Yes';
 
   @override
+  String get done => 'Done';
+
+  @override
   String get home => 'Home';
 
   @override

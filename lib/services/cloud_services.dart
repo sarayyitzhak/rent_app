@@ -572,6 +572,18 @@ Future<void> deleteChatIfEmpty(DocumentReference chatRef) async {
   }
 }
 
+Future<void> deleteChat(DocumentReference chatRef) async {
+  QuerySnapshot messages = await chatRef.collection('messages').get();
+  WriteBatch batch = _firestore.batch();
+
+  for (final doc in messages.docs) {
+    batch.delete(doc.reference);
+  }
+  batch.delete(chatRef);
+
+  await batch.commit();
+}
+
 Future<DocumentReference> sendItemMessage(
     String userID, DocumentReference itemRef, String text) async {
   WriteBatch batch = _firestore.batch();

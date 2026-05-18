@@ -137,6 +137,12 @@ abstract class AppLocalizations {
   /// **'Yes'**
   String get yes;
 
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
   /// No description provided for @home.
   ///
   /// In en, this message translates to:

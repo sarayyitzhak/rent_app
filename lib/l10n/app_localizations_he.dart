@@ -32,6 +32,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get yes => 'כן';
 
   @override
+  String get done => 'סיום';
+
+  @override
   String get home => 'בית';
 
   @override

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_app/models/chat.dart';
-import 'package:rent_app/widgets/custom_app_bar.dart';
+import 'package:rent_app/constants.dart';
 import '../dictionary.dart';
 import '../services/cloud_services.dart';
 import '../services/query_batch.dart';
@@ -23,6 +23,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
   final Map<String, Chat> _chatMap = {};
   List<Chat> _chats = [];
   bool _loading = false;
+  bool _isEditing = false;
 
   StreamSubscription? _chatsSubscription;
 
@@ -39,8 +40,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
   void _fetchChatsStream() {
     _loading = true;
 
-    _chatsSubscription = getUserChatsSnapshotStream()
-        .listen((QuerySnapshot<Map<String, dynamic>> snapshot) {
+    _chatsSubscription = getUserChatsSnapshotStream().listen(
+        (QuerySnapshot<Map<String, dynamic>> snapshot) {
       if (_chatMap.isEmpty) {
         _queryBatch = QueryBatch(
           snapshot.docs.map(Chat.fromDocumentSnapshot).toList(),
@@ -114,13 +115,38 @@ class _ChatsScreenState extends State<ChatsScreen> {
   Widget build(BuildContext context) {
     var localization = Dictionary.getLocalization(context);
     return Scaffold(
-      appBar: CustomAppBar(title: localization.chats, isBackButton: false),
+      appBar: AppBar(
+        title: Text(localization.chats, style: kTopHeaderTextStyle),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        actions: [
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _isEditing = !_isEditing;
+              });
+            },
+            child: Text(
+              _isEditing ? localization.done : localization.edit,
+              style: TextStyle(
+                color: _isEditing ? Colors.red : kDarkYellow,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
       body: NotificationListener<ScrollNotification>(
         onNotification: onScroll,
         child: ListView.builder(
           itemCount: _chats.length,
           itemBuilder: (context, index) => ChatCard(
-              key: ValueKey(_chats[index].docRef.id), chat: _chats[index]),
+              key: ValueKey(_chats[index].docRef.id),
+              chat: _chats[index],
+              isEditing: _isEditing,
+              onDelete: (chat) async {
+                await deleteChat(chat.docRef);
+              }),
         ),
       ),
     );
