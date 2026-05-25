@@ -264,6 +264,15 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getUserItemsStream() {
       .snapshots();
 }
 
+Stream<QuerySnapshot<Map<String, dynamic>>> getContactUserItemsStream(
+    DocumentReference userRef) {
+  return _firestore
+      .collection('items')
+      .where('contactUserID', isEqualTo: userRef.id)
+      .orderBy('createdAt', descending: true)
+      .snapshots();
+}
+
 Future<List<Item>> getItemsByContactUser(DocumentReference user) {
   return _getItemsByQuery(
       _firestore

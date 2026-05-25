@@ -8,7 +8,12 @@ import '../services/card_utils.dart';
 class DynamicScrollableItemGrid extends StatelessWidget {
   Stream<dynamic>? stream;
   ScrollController? controller;
-  DynamicScrollableItemGrid({super.key, required this.stream, this.controller});
+  final bool isScrollable;
+  DynamicScrollableItemGrid(
+      {super.key,
+      required this.stream,
+      this.controller,
+      this.isScrollable = true});
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +32,9 @@ class DynamicScrollableItemGrid extends StatelessWidget {
             child: GridView.count(
               crossAxisCount: 2,
               shrinkWrap: true,
+              physics: isScrollable
+                  ? const AlwaysScrollableScrollPhysics()
+                  : const NeverScrollableScrollPhysics(),
               crossAxisSpacing: 0,
               childAspectRatio: 0.71,
               controller: controller,

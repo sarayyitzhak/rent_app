@@ -243,7 +243,17 @@
   "selectEndDate": "Select an end date",
   "pleaseSelectDateLaterThan": "Please select a date later than",
   "cancel": "Cancel",
-  "deleteConfirmation": "Are you sure you want to delete this request?"
+  "deleteConfirmation": "Are you sure you want to delete this request?",
+  "monthlyEarnings": "Monthly Earnings",
+  "rentedThisMonth": "Rented This Month",
+  "rentedOutThisMonth": "Rented Out This Month",
+  "overallRating": "Overall Rating",
+  "punctuality": "Punctuality",
+  "availability": "Availability",
+  "rentingOut": "Renting Out",
+  "peopleRentFromMe": "People Rent From Me"
+
+
   
 
   

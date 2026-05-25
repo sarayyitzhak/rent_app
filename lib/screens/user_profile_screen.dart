@@ -1,18 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rent_app/models/user.dart';
 import 'package:rent_app/models/user_review.dart';
+import 'package:rent_app/l10n/app_localizations.dart';
 import 'package:rent_app/utils.dart';
 import 'package:rent_app/widgets/cached_image.dart';
 import 'package:rent_app/widgets/custom_app_bar.dart';
+import 'package:rent_app/widgets/dynamic_scrollable_item_grid.dart';
 import '../dictionary.dart';
 import '../constants.dart';
-import '../models/item.dart';
 import 'chat_screen.dart';
 import '../services/cloud_services.dart';
-import '../services/query_batch.dart';
-import '../widgets/item_widgets/item_grid.dart';
 import '../widgets/rating_stars_widget.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -32,10 +30,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   late double? _punctualityLevel = 0;
   late List<UserReview> _reviews = [];
   late Map<String, UserDetails> _reviewWithWriter = {};
-
-  Future<QueryBatch<Item>> getUserItems(DocumentSnapshot? startAfterDoc) {
-    return getContactUserItems(widget.args.user.docRef, startAfterDoc);
-  }
 
   Future<Map<String, UserDetails>> getUserReviewsWithWriterDetails(
       List<UserReview> reviews) async {
@@ -57,6 +51,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     List<UserReview> reviews = await getUserReviews(widget.args.user.docRef);
     Map<String, UserDetails> reviewWithWriter =
         await getUserReviewsWithWriterDetails(reviews);
+
+    if (!mounted) {
+      return;
+    }
 
     setState(() {
       _rentCount = rentCount;
@@ -86,6 +84,118 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     fetchData();
   }
 
+  Widget _buildTopStats(AppLocalizations localization) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          CachedImage(
+            width: 70,
+            height: 70,
+            imageRef:
+                getUserImageRef(widget.args.user.docRef, widget.args.user.photoID),
+            borderRadius: BorderRadius.circular(100),
+            errorIcon: Icons.person,
+          ),
+          Column(
+            children: [
+              Text(
+                _rentCount.toString(),
+                style: kBlackBoldTextStyle,
+              ),
+              Text(localization.rentals)
+            ],
+          ),
+          Column(
+            children: [
+              _overallRate != 0 && _overallRate != null
+                  ? RatingStarsWidget(
+                      rate: _overallRate!,
+                      textStyle: kBlackBoldTextStyle,
+                      size: 20)
+                  : const Text('-'),
+              Text(localization.rating)
+            ],
+          ),
+          Column(
+            children: [
+              Text(
+                _itemCount.toString(),
+                style: kBlackBoldTextStyle,
+              ),
+              Text(localization.items)
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLevelBar(String title, double value) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [Text(title), Text((value * 2).toStringAsFixed(1))],
+          ),
+          SizedBox(
+            height: 10,
+            width: double.infinity,
+            child: LinearProgressIndicator(
+              value: value / 5,
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReviewsStrip() {
+    return SizedBox(
+      height: 80,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: _reviews.map((r) {
+          return Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Card(
+              color: Colors.white70,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          '${_reviewWithWriter[r.docRef.id]!.name}: ',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '"${r.text}"',
+                          style: const TextStyle(fontStyle: FontStyle.italic),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      dateToString(r.createdAt),
+                      style: const TextStyle(color: kGreyColor),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var localization = Dictionary.getLocalization(context);
@@ -98,154 +208,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           ? CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
-                  child: Container(
-                      child: Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 15, horizontal: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            CachedImage(
-                              width: 70,
-                              height: 70,
-                              imageRef: getUserImageRef(widget.args.user.docRef,
-                                  widget.args.user.photoID),
-                              borderRadius: BorderRadius.circular(100),
-                              errorIcon: Icons.person,
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  _rentCount.toString(),
-                                  style: kBlackBoldTextStyle,
-                                ),
-                                Text(localization.rentals)
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                _overallRate != 0 && _overallRate != null
-                                    ? RatingStarsWidget(
-                                        rate: _overallRate!,
-                                        textStyle: kBlackBoldTextStyle,
-                                        size: 20)
-                                    : const Text('-'),
-                                Text(localization.rating)
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  _itemCount.toString(),
-                                  style: kBlackBoldTextStyle,
-                                ),
-                                Text(localization.items)
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
+                      _buildTopStats(localization),
                       if (_availabilityLevel != null && _availabilityLevel != 0)
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 20, right: 20, top: 20, bottom: 5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(localization.availability),
-                                  Text((_availabilityLevel! * 2)
-                                      .toStringAsFixed(1))
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                                width: double.infinity,
-                                child: LinearProgressIndicator(
-                                  value: _availabilityLevel! / 5,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        _buildLevelBar(localization.availability, _availabilityLevel!),
                       if (_punctualityLevel != null && _punctualityLevel != 0)
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 20, right: 20, bottom: 20, top: 5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(localization.punctuality),
-                                  Text((_punctualityLevel! * 2)
-                                      .toStringAsFixed(1))
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                                width: double.infinity,
-                                child: LinearProgressIndicator(
-                                  value: _punctualityLevel! / 5,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      if (_reviews != [] && _reviewWithWriter.isNotEmpty)
-                        SizedBox(
-                          height: 80,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: _reviews.map((r) {
-                              return Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Card(
-                                  color: Colors.white70,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        // Text(_reviewWithWriter.keys.first, style: TextStyle(fontStyle: FontStyle.italic),),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              '${_reviewWithWriter[r.docRef.id]!.name}: ',
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            Text(
-                                              '"${r.text}"',
-                                              style: const TextStyle(
-                                                  fontStyle: FontStyle.italic),
-                                            ),
-                                          ],
-                                        ),
-                                        Text(
-                                          dateToString(r.createdAt),
-                                          style: const TextStyle(
-                                              color: kGreyColor),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
+                        _buildLevelBar(localization.punctuality, _punctualityLevel!),
+                      if (_reviews.isNotEmpty && _reviewWithWriter.isNotEmpty)
+                        _buildReviewsStrip(),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: Row(
@@ -259,10 +231,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         ),
                       ),
                     ],
-                  )),
+                  ),
                 ),
-                SliverFillRemaining(
-                  child: ItemGrid(getUserItems),
+                SliverToBoxAdapter(
+                  child: DynamicScrollableItemGrid(
+                    stream: getContactUserItemsStream(widget.args.user.docRef),
+                    isScrollable: false,
+                  ),
                 )
               ],
             )

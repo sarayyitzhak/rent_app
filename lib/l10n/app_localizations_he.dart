@@ -530,4 +530,22 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get deleteConfirmation => 'האם אתה בטוח?';
+
+  @override
+  String get monthlyEarnings => 'רווח חודשי';
+
+  @override
+  String get rentedThisMonth => 'שכרת החודש';
+
+  @override
+  String get rentedOutThisMonth => 'השכרת החודש';
+
+  @override
+  String get overallRating => 'דירוג כללי';
+
+  @override
+  String get rentingOut => 'משכיר לאחרים';
+
+  @override
+  String get peopleRentFromMe => 'שוכרים ממני';
 }

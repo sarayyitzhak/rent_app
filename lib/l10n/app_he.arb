@@ -244,7 +244,17 @@
   "selectEndDate": "בחר תאריך סיום",
   "pleaseSelectDateLaterThan": "אנא בחר תאריך מאוחר מ",
   "cancel": "ביטול",
-  "deleteConfirmation": "האם אתה בטוח?"
+  "deleteConfirmation": "האם אתה בטוח?",
+  "monthlyEarnings": "רווח חודשי",
+  "rentedThisMonth": "שכרת החודש",
+  "rentedOutThisMonth": "השכרת החודש",
+  "overallRating": "דירוג כללי",
+  "punctuality": "עמידה בזמנים",
+  "availability": "זמינות",
+  "rentingOut": "משכיר לאחרים",
+  "peopleRentFromMe": "שוכרים ממני"
+
+
   
 
 

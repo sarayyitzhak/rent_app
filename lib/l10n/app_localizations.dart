@@ -1108,6 +1108,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to delete this request?'**
   String get deleteConfirmation;
+
+  /// No description provided for @monthlyEarnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Earnings'**
+  String get monthlyEarnings;
+
+  /// No description provided for @rentedThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Rented This Month'**
+  String get rentedThisMonth;
+
+  /// No description provided for @rentedOutThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Rented Out This Month'**
+  String get rentedOutThisMonth;
+
+  /// No description provided for @overallRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall Rating'**
+  String get overallRating;
+
+  /// No description provided for @rentingOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Renting Out'**
+  String get rentingOut;
+
+  /// No description provided for @peopleRentFromMe.
+  ///
+  /// In en, this message translates to:
+  /// **'People Rent From Me'**
+  String get peopleRentFromMe;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

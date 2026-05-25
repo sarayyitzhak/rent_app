@@ -530,4 +530,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteConfirmation => 'Are you sure you want to delete this request?';
+
+  @override
+  String get monthlyEarnings => 'Monthly Earnings';
+
+  @override
+  String get rentedThisMonth => 'Rented This Month';
+
+  @override
+  String get rentedOutThisMonth => 'Rented Out This Month';
+
+  @override
+  String get overallRating => 'Overall Rating';
+
+  @override
+  String get rentingOut => 'Renting Out';
+
+  @override
+  String get peopleRentFromMe => 'People Rent From Me';
 }
