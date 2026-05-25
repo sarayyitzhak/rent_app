@@ -80,7 +80,7 @@ class _ChatCardState extends State<ChatCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: widget.isEditing
-          ? null
+          ? () {}
           : () => Navigator.pushNamed(context, ChatScreen.id,
               arguments: ChatScreenArguments(widget.chat)),
       child: Container(

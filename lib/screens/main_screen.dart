@@ -27,19 +27,14 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   int _unreadChats = 0;
   Timer? _lastSeenTimeTimer;
   bool _isInitializing = true;
+  final ChatsScreenController _chatsScreenController = ChatsScreenController();
 
   StreamSubscription? _userChatsSubscription;
 
-  static final List<Widget> _widgetOptions = <Widget>[
-    const HomeScreen(),
-    const SearchScreen(),
-    const UserItemsScreen(),
-    const ChatsScreen(),
-    // const ProfileScreen(),
-    const UserScreen(),
-  ];
-
   void _onItemTapped(int index) {
+    if (_selectedBottomBarIndex == 3) {
+      _chatsScreenController.exitEditMode();
+    }
     setState(() {
       _selectedBottomBarIndex = index;
     });
@@ -191,7 +186,13 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         },
         child: IndexedStack(
           index: _selectedBottomBarIndex,
-          children: _widgetOptions,
+          children: <Widget>[
+            const HomeScreen(),
+            const SearchScreen(),
+            const UserItemsScreen(),
+            ChatsScreen(controller: _chatsScreenController),
+            const UserScreen(),
+          ],
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(

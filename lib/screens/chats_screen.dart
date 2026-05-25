@@ -9,10 +9,19 @@ import '../services/cloud_services.dart';
 import '../services/query_batch.dart';
 import '../widgets/chat_widgets/chat_card.dart';
 
+class ChatsScreenController {
+  VoidCallback? _exitEditModeCallback;
+
+  void exitEditMode() {
+    _exitEditModeCallback?.call();
+  }
+}
+
 class ChatsScreen extends StatefulWidget {
   static String id = 'chats_screen.dart';
+  final ChatsScreenController? controller;
 
-  const ChatsScreen({super.key});
+  const ChatsScreen({super.key, this.controller});
 
   @override
   State<ChatsScreen> createState() => _ChatsScreenState();
@@ -98,15 +107,26 @@ class _ChatsScreenState extends State<ChatsScreen> {
     });
   }
 
+  void _exitEditMode() {
+    if (!mounted || !_isEditing) {
+      return;
+    }
+    setState(() {
+      _isEditing = false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
 
     _fetchChatsStream();
+    widget.controller?._exitEditModeCallback = _exitEditMode;
   }
 
   @override
   void dispose() {
+    widget.controller?._exitEditModeCallback = null;
     _chatsSubscription?.cancel();
     super.dispose();
   }
@@ -136,17 +156,27 @@ class _ChatsScreenState extends State<ChatsScreen> {
           ),
         ],
       ),
-      body: NotificationListener<ScrollNotification>(
-        onNotification: onScroll,
-        child: ListView.builder(
-          itemCount: _chats.length,
-          itemBuilder: (context, index) => ChatCard(
-              key: ValueKey(_chats[index].docRef.id),
-              chat: _chats[index],
-              isEditing: _isEditing,
-              onDelete: (chat) async {
-                await deleteChat(chat.docRef);
-              }),
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          if (_isEditing) {
+            setState(() {
+              _isEditing = false;
+            });
+          }
+        },
+        child: NotificationListener<ScrollNotification>(
+          onNotification: onScroll,
+          child: ListView.builder(
+            itemCount: _chats.length,
+            itemBuilder: (context, index) => ChatCard(
+                key: ValueKey(_chats[index].docRef.id),
+                chat: _chats[index],
+                isEditing: _isEditing,
+                onDelete: (chat) async {
+                  await deleteChat(chat.docRef);
+                }),
+          ),
         ),
       ),
     );
